@@ -1,48 +1,73 @@
-# Portfolio Website
+﻿#  Elisha Lema's Portfolio Website
 
-A premium, designer-first portfolio website built with React, Vite, TypeScript, TailwindCSS, and Framer Motion.
+A modern, fully-featured portfolio website with admin dashboard, live data management, and professional design showcase.
 
-## Features
-- **Premium Design**: Dark mode aesthetic with carefully curated colors and typography.
-- **Smooth Motion**: Integrated Framer Motion for scroll reveals, staggers, and micro-interactions.
-- **Smooth Scrolling**: Powered by Lenis for a fluid experience.
-- **Responsive**: Fully optimized for all devices.
-- **Works Gallery**: Filterable project showcase with lightbox details.
+##  Project Overview
 
-## Tech Stack
-- React + TypeScript + Vite
-- TailwindCSS (Styling)
-- Framer Motion (Animation)
-- Lenis (Smooth Scroll)
-- Lucide React (Icons)
+**Status:**  Ready for Deployment  
+**Environment:** Development complete, production-ready  
+**Last Updated:** February 6, 2026
 
-## Setup & Running
+###  Features
+-  **Admin Dashboard** - Manage works, skills, and profile
+-  **Live Data Management** - Create, edit, delete portfolio items
+-  **Contact Form Integration** - EmailJS + MongoDB backup
+-  **Responsive Design** - Mobile-first, works on all devices
+-  **Smooth Animations** - Framer Motion & Lenis scrolling
+-  **Authentication** - JWT-protected admin routes
+-  **Legal Pages** - Privacy Policy & Terms of Service
+-  **Database Integration** - MongoDB for data persistence
+-  **Performance Optimized** - Fast builds with Vite
 
-### 1. Install Dependencies
+##  Quick Start (Local Development)
+
+### Prerequisites
+- Node.js 18+ installed
+- Git
+
+### Setup Instructions
+
 ```bash
+# 1. Install frontend dependencies
 npm install
-```
 
-### 2. Add Assets
-To populate the portfolio with your work:
-1. Extract the contents of `graphix.zip` into the `public/works/` directory.
-   - The structure should look like:
-     - `public/works/Logos/`
-     - `public/works/Posters & Banners/`
-     - `public/works/Screenshot*.png`
-2. Add your personal photo as `public/me.jpg`.
+# 2. Install backend dependencies
+cd server
+npm install
+cd ..
 
-### 3. Run Development Server
-```bash
+# 3. Start backend (Terminal 1)
+cd server
+node index.js
+
+# 4. Start frontend (Terminal 2)
 npm run dev
+
+# 5. Visit http://localhost:5173
 ```
 
-### 4. Build for Production
-```bash
-npm run build
-```
-The output will be in the `dist` folder.
+##  Deployment
 
-## Customization
-- **Content**: Update `src/data/works.ts` to match your filenames if they differ from the defaults.
-- **Theme**: Modify `tailwind.config.js` to adjust colors and fonts.
+See the following guides for deploying to production:
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment instructions
+- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Pre-deployment verification checklist
+- **[QUICK_DEPLOY.md](./QUICK_DEPLOY.md)** - Quick reference guide
+
+##  Tech Stack
+
+- **Frontend:** React 19.2.0 + TypeScript + Vite 7.3.1
+- **Backend:** Node.js + Express
+- **Database:** MongoDB + Mongoose
+- **Animation:** Framer Motion + Lenis
+- **Styling:** TailwindCSS
+- **Deployment:** Vercel (frontend) + Railway (backend)
+
+##  Contact
+
+**Email:** elishalema12@gmail.com  
+**Phone:** +255 674 175 613 / +255 698 568 982  
+**Location:** Tanzania
+
+---
+
+**Status:**  Production Ready
