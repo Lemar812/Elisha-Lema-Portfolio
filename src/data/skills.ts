@@ -67,12 +67,12 @@ export const stats = [
     },
     {
         id: '2',
-        value: '50+',
-        label: 'Projects Completed'
+        value: '10+',
+        label: 'Completed Projects'
     },
     {
         id: '3',
-        value: '30+',
+        value: '10+',
         label: 'Happy Clients'
     },
     {

@@ -4,7 +4,7 @@ import { Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 import Button from './Button';
 
-import { Home, Zap, Briefcase, Settings, User, MessageSquare } from 'lucide-react';
+import { Home, Zap, Briefcase, Settings, User, MessageSquare, Mail } from 'lucide-react';
 
 const navLinks = [
     { name: 'Home', href: '#hero', icon: Home },
@@ -13,6 +13,7 @@ const navLinks = [
     { name: 'Services', href: '#services', icon: Settings },
     { name: 'About', href: '#about', icon: User },
     { name: 'Testimonials', href: '#testimonials', icon: MessageSquare },
+    { name: 'Contact', href: '#contact', icon: Mail },
 ];
 
 export default function Navbar() {
