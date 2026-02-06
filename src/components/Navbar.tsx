@@ -76,12 +76,22 @@ export default function Navbar() {
                 )}>
                     <motion.a
                         href="#"
-                        className="group relative flex items-center gap-1 overflow-hidden"
+                        className="group relative flex items-center overflow-hidden"
                         whileHover="hover"
                     >
                         <div className="flex relative py-1">
-                            {"ELISHA".split("").map((letter, i) => (
-                                <div key={i} className="relative flex flex-col h-[28px] md:h-[32px] overflow-hidden">
+                            {"ELISHA LEMA".split("").map((letter, i) => (
+                                <div
+                                    key={i}
+                                    className={cn(
+                                        "relative flex flex-col h-[28px] md:h-[32px] overflow-hidden",
+                                        letter === " " ? "w-2 md:w-3" : ""
+                                    )}
+                                >
+                                    {letter === " " ? (
+                                        <span className="sr-only"> </span>
+                                    ) : (
+                                        <>
                                     <motion.span
                                         initial={{ y: 30, opacity: 0 }}
                                         animate={{
@@ -116,27 +126,10 @@ export default function Navbar() {
                                     >
                                         {letter}
                                     </motion.span>
+                                        </>
+                                    )}
                                 </div>
                             ))}
-                        </div>
-                        <div className="relative flex items-center justify-center w-3 h-3 ml-0.5">
-                            <motion.span
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 1, type: "spring", stiffness: 300 }}
-                                className="w-1.5 h-1.5 rounded-full bg-primary z-10"
-                            />
-                            <motion.span
-                                animate={{ scale: [1, 1.8, 1], opacity: [0.3, 0.6, 0.3] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                className="absolute w-full h-full rounded-full bg-primary/40 blur-[2px]"
-                            />
-                            <motion.span
-                                variants={{
-                                    hover: { scale: 2.5, opacity: 0, transition: { duration: 0.6 } }
-                                }}
-                                className="absolute w-full h-full rounded-full border border-primary opacity-0"
-                            />
                         </div>
                     </motion.a>
 
