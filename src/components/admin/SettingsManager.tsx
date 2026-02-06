@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Shield, Bell, Database, Save, RotateCcw } from 'lucide-react';
+import { Shield, Bell, RotateCcw } from 'lucide-react';
 import { staggerContainer, staggerItem } from '../../lib/motion';
 
 export default function SettingsManager() {

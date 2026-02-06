@@ -7,6 +7,7 @@ import { Mail, Copy, Check, Instagram, Linkedin, Github, MessageCircle, Phone } 
 import UpworkIcon from './icons/UpworkIcon';
 import { sectionReveal, staggerContainer, staggerItem } from '../lib/motion';
 import FloatingTooltip from './FloatingTooltip';
+import { api } from '../lib/api-config';
 
 export default function Contact() {
     const formRef = useRef<HTMLFormElement>(null);

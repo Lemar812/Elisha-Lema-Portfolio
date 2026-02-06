@@ -29,7 +29,7 @@ export default function FeaturedWorks() {
                         <motion.div key={work.id} variants={itemStagger}>
                             <WorkCard
                                 work={work}
-                                onClick={(w) => setSelectedWorkId(w.id)}
+                                onClick={(w) => setSelectedWorkId(w.id ?? null)}
                             />
                         </motion.div>
                     ))}

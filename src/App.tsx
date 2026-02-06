@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Portfolio from './Portfolio';
-import AdminDashboard from './components/admin/AdminDashboard.tsx';
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
 import Login from './components/admin/Login.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import PrivacyPolicy from './components/PrivacyPolicy.tsx';
@@ -47,12 +47,16 @@ function App() {
       <Route path="/admin/login" element={<Login />} />
       <Route path="/admin/*" element={
         <ProtectedRoute>
-          <AdminDashboard />
+          <Suspense fallback={<div className="p-8 text-center">Loading admin...</div>}>
+            <AdminDashboard />
+          </Suspense>
         </ProtectedRoute>
       } />
       <Route path="/admin" element={
         <ProtectedRoute>
-          <AdminDashboard />
+          <Suspense fallback={<div className="p-8 text-center">Loading admin...</div>}>
+            <AdminDashboard />
+          </Suspense>
         </ProtectedRoute>
       } />
     </Routes>

@@ -3,6 +3,7 @@ import { X, ExternalLink } from 'lucide-react';
 import type { Work } from '../data/works';
 import { useEffect } from 'react';
 import { modalTransition, EASE } from '../lib/motion';
+import { api } from '../lib/api-config';
 
 interface WorkModalProps {
     work: Work | null;

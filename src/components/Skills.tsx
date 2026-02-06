@@ -24,7 +24,7 @@ const BRAND_ICONS: Record<string, React.FC<{ size?: number; className?: string }
 
 export default function Skills() {
     const [skills, setSkills] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
     useEffect(() => {
         fetch(api.skills.list())

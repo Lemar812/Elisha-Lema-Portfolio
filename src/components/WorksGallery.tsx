@@ -5,6 +5,7 @@ import WorkModal from './WorkModal';
 import SectionHeading from './SectionHeading';
 import { cn } from '../lib/utils';
 import FloatingTooltip from './FloatingTooltip';
+import { api } from '../lib/api-config';
 
 const categories = [
     { name: "All", tooltip: "View Everything" },

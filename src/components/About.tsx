@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import SectionHeading from './SectionHeading';
 import { staggerItem, EASE, staggerContainer } from '../lib/motion';
 import FloatingTooltip from './FloatingTooltip';
+import { api } from '../lib/api-config';
 
 const skillsData = [
     { name: "React", color: "secondary" as const, category: "Frontend" },
