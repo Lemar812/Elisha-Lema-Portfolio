@@ -3,7 +3,8 @@ import { useState } from 'react';
 import SectionHeading from './SectionHeading';
 import { staggerContainer, staggerItem, sectionReveal, EASE } from '../lib/motion';
 import * as LucideIcons from 'lucide-react';
-import { skills as fallbackSkills, Skill } from '../data/skills';
+import { skills as fallbackSkills } from '../data/skills';
+import type { Skill } from '../data/skills';
 import {
     PhotoshopLogo,
     IllustratorLogo,
