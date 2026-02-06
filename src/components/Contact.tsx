@@ -7,7 +7,6 @@ import { Mail, Copy, Check, Instagram, Linkedin, Github, MessageCircle, Phone } 
 import UpworkIcon from './icons/UpworkIcon';
 import { sectionReveal, staggerContainer, staggerItem } from '../lib/motion';
 import FloatingTooltip from './FloatingTooltip';
-import { api } from '../lib/api-config';
 
 export default function Contact() {
     const formRef = useRef<HTMLFormElement>(null);
@@ -61,19 +60,6 @@ export default function Contact() {
                     publicKey: 'fcxUxVXBlm1_nTJfR',
                 }
             );
-
-            // Save to internal DB
-            const payload = {
-                name: senderName,
-                email: senderEmail,
-                message: message
-            };
-
-            await fetch(api.contact(), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
 
             setFormState('success');
             formRef.current.reset();

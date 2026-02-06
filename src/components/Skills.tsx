@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import SectionHeading from './SectionHeading';
 import { staggerContainer, staggerItem, sectionReveal, EASE } from '../lib/motion';
-import { api } from '../lib/api-config';
 import * as LucideIcons from 'lucide-react';
 import { skills as fallbackSkills, Skill } from '../data/skills';
 import {
@@ -24,35 +23,7 @@ const BRAND_ICONS: Record<string, React.FC<{ size?: number; className?: string }
 };
 
 export default function Skills() {
-    const [skills, setSkills] = useState<Skill[]>(fallbackSkills);
-    const [, setLoading] = useState(true);
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const loadSkills = async () => {
-            try {
-                const res = await fetch(api.skills.list());
-                if (!res.ok) throw new Error(`Failed to load skills: ${res.status}`);
-
-                const data = await res.json();
-                if (isMounted && Array.isArray(data)) {
-                    setSkills(data);
-                }
-            } catch (err) {
-                console.error(err);
-                if (isMounted) setSkills(fallbackSkills);
-            } finally {
-                if (isMounted) setLoading(false);
-            }
-        };
-
-        loadSkills();
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+    const [skills] = useState<Skill[]>(fallbackSkills);
     return (
         <section id="skills" className="py-16 md:py-24 px-4 md:px-6 relative">
             <div className="container mx-auto max-w-6xl">

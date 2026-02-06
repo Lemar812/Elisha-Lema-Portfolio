@@ -1,6 +1,6 @@
 export interface Work {
-    _id: string; // From MongoDB
-    id?: string; // Legacy
+    _id?: string;
+    id?: string;
     title: string;
     category: 'Logo' | 'Poster/Banner' | "Website's Screenshot";
     imageSrc: string;

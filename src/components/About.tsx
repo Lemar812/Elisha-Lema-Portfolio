@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SectionHeading from './SectionHeading';
 import { staggerItem, EASE, staggerContainer } from '../lib/motion';
 import FloatingTooltip from './FloatingTooltip';
-import { api } from '../lib/api-config';
 
 const skillsData = [
     { name: "React", color: "secondary" as const, category: "Frontend" },
@@ -18,14 +16,11 @@ const skillsData = [
 ];
 
 export default function About() {
-    const [profile, setProfile] = useState<any>(null);
-
-    useEffect(() => {
-        fetch(api.profile.get())
-            .then(res => res.json())
-            .then(data => setProfile(data))
-            .catch(err => console.error(err));
-    }, []);
+    const profile = {
+        bio: "I'm Elisha Lema, a passionate designer and developer from Tanzania. My journey began in a small digital studio where I discovered the magic of blending aesthetics with functionality. What started as a curious interest in design evolved into a full-fledged career where I now help businesses transform their digital presence.",
+        experience: '4+ Years',
+        location: 'Tanzania'
+    };
 
     return (
         <section id="about" className="py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
@@ -59,7 +54,7 @@ export default function About() {
                                 transition={{ delay: 0.4, duration: 0.6 }}
                                 className="font-satoshi font-black text-2xl md:text-3xl tracking-tight"
                             >
-                                Based in the <span className="text-primary">{profile?.location || 'Digital World'}</span>
+                                Based in the <span className="text-primary">{profile.location || 'Digital World'}</span>
                             </motion.p>
                             <motion.p
                                 initial={{ y: 10, opacity: 0 }}
@@ -67,7 +62,7 @@ export default function About() {
                                 transition={{ delay: 0.5, duration: 0.6 }}
                                 className="text-white/60 font-medium uppercase tracking-[0.2em] text-[10px] mt-2"
                             >
-                                {profile?.experience ? `${profile.experience} Experience` : 'Available Worldwide'}
+                                {profile.experience ? `${profile.experience} Experience` : 'Available Worldwide'}
                             </motion.p>
                         </div>
                     </div>
@@ -90,7 +85,7 @@ export default function About() {
 
                     <div className="space-y-4 md:space-y-6 text-base md:text-lg text-text-muted leading-relaxed">
                         <motion.p variants={staggerItem}>
-                            {profile?.bio || "I'm Elisha Lema, a passionate designer and developer from Tanzania. My journey began in a small digital studio where I discovered the magic of blending aesthetics with functionality. What started as a curious interest in design evolved into a full-fledged career where I now help businesses transform their digital presence."}
+                            {profile.bio || "I'm Elisha Lema, a passionate designer and developer from Tanzania. My journey began in a small digital studio where I discovered the magic of blending aesthetics with functionality. What started as a curious interest in design evolved into a full-fledged career where I now help businesses transform their digital presence."}
                         </motion.p>
                         <motion.p variants={staggerItem}>
                             Over the years, I've learned that great design isn't just about making things look beautiful—it's about solving real problems for real people. I've worked with startups, established businesses, and creative agencies, helping them build brands that resonate with their audiences. From crafting brand identities that tell compelling stories to developing responsive web applications that perform flawlessly, I bring both artistry and technical precision to every project.

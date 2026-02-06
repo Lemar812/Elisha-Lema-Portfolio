@@ -1,12 +1,8 @@
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Portfolio from './Portfolio';
-const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
-import Login from './components/admin/Login.tsx';
-import ProtectedRoute from './components/ProtectedRoute.tsx';
 import PrivacyPolicy from './components/PrivacyPolicy.tsx';
 import TermsOfService from './components/TermsOfService.tsx';
-import { api } from './lib/api-config';
 
 function App() {
   const location = useLocation();
@@ -34,31 +30,11 @@ function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  useEffect(() => {
-    fetch(api.visit(), { method: 'POST' })
-      .catch(err => console.error('Error tracking visit:', err));
-  }, []);
-
   return (
     <Routes>
       <Route path="/" element={<Portfolio />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
-      <Route path="/admin/login" element={<Login />} />
-      <Route path="/admin/*" element={
-        <ProtectedRoute>
-          <Suspense fallback={<div className="p-8 text-center">Loading admin...</div>}>
-            <AdminDashboard />
-          </Suspense>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin" element={
-        <ProtectedRoute>
-          <Suspense fallback={<div className="p-8 text-center">Loading admin...</div>}>
-            <AdminDashboard />
-          </Suspense>
-        </ProtectedRoute>
-      } />
     </Routes>
   );
 }

@@ -3,7 +3,6 @@ import { X, ExternalLink } from 'lucide-react';
 import type { Work } from '../data/works';
 import { useEffect } from 'react';
 import { modalTransition, EASE } from '../lib/motion';
-import { api } from '../lib/api-config';
 
 interface WorkModalProps {
     work: Work | null;
@@ -11,14 +10,6 @@ interface WorkModalProps {
 }
 
 export default function WorkModal({ work, onClose }: WorkModalProps) {
-
-    useEffect(() => {
-        if (work && work._id) {
-            fetch(`${api.works.list()}/${work._id}/view`, { method: 'POST' })
-                .catch(err => console.error('Error tracking view:', err));
-        }
-    }, [work]);
-
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
