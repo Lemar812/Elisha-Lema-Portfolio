@@ -28,12 +28,12 @@ export default function FloatingTooltip({
     const globalX = useMotionValue(0);
     const globalY = useMotionValue(0);
 
-    // Ultra-smooth spring physics
+    // Smooth spring tuning
     const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
     const x = useSpring(globalX, springConfig);
     const y = useSpring(globalY, springConfig);
 
-    // Velocity-based effects
+    // Velocity-based offsets
     const xVelocity = useVelocity(x);
     const rotate = useTransform(xVelocity, [-2000, 2000], [-15, 15]);
     const skewX = useTransform(xVelocity, [-2000, 2000], [-10, 10]);
@@ -119,7 +119,7 @@ export default function FloatingTooltip({
                             }}
                             className="whitespace-nowrap"
                         >
-                            {/* Outer Glow Trail effect */}
+                            {/* Outer glow trail */}
                             <motion.div
                                 animate={{
                                     scale: [1, 1.1, 1],
@@ -137,7 +137,7 @@ export default function FloatingTooltip({
                                 border ${currentStyle.border}
                                 ${currentStyle.glow}
                             `}>
-                                {/* Animated Scanner line */}
+                                {/* Scanning line */}
                                 <motion.div
                                     animate={{ left: ['-10%', '110%'] }}
                                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -157,7 +157,7 @@ export default function FloatingTooltip({
                                     {text}
                                 </span>
 
-                                {/* Stylized Arrow */}
+                                {/* Stylized pointer */}
                                 <div className={`
                                     absolute ${position === 'top' ? '-bottom-[5px]' : '-top-[5px]'} 
                                     left-1/2 -translate-x-1/2 

@@ -28,7 +28,7 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Prevent scroll when mobile menu is open
+    // Lock scroll when the mobile menu is open
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = 'hidden';
@@ -134,7 +134,7 @@ export default function Navbar() {
                         </div>
                     </motion.a>
 
-                    {/* Desktop Nav */}
+                    {/* Desktop nav */}
                     <div className="hidden md:flex items-center gap-1.5 p-1.5 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/5">
                         {navLinks.map((link) => (
                             <motion.a
@@ -166,7 +166,7 @@ export default function Navbar() {
                                     </motion.span>
                                 </div>
 
-                                {/* Premium background pill */}
+                                {/* Hover pill */}
                                 <motion.div
                                     variants={{
                                         initial: { opacity: 0, scale: 0.95 },
@@ -175,7 +175,7 @@ export default function Navbar() {
                                     className="absolute inset-0 bg-white/5 rounded-full -z-0"
                                 />
 
-                                {/* Animated underline glow */}
+                                {/* Underline glow */}
                                 <motion.div
                                     variants={{
                                         initial: { width: 0, opacity: 0 },
@@ -198,7 +198,7 @@ export default function Navbar() {
                         </Button>
                     </div>
 
-                    {/* Mobile Menu Toggle */}
+                    {/* Mobile menu toggle */}
                     <button
                         className="md:hidden w-10 h-10 flex items-center justify-center text-text-primary bg-white/5 rounded-full border border-white/10 active:scale-90 transition-all"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -209,7 +209,7 @@ export default function Navbar() {
                 </div>
             </motion.nav>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile menu overlay */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <>
@@ -258,7 +258,7 @@ export default function Navbar() {
                                     Let's Work Together
                                 </Button>
                                 <div className="mt-8 flex gap-4 justify-center">
-                                    {/* Social shortcuts can go here if needed */}
+                                    {/* Add social shortcuts here if we want them */}
                                 </div>
                             </div>
                         </motion.div>

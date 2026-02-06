@@ -14,7 +14,7 @@ export default function Hero() {
             <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <div className="grid lg:grid-cols-2 gap-6 lg:gap-6 items-center mb-16 md:mb-20">
 
-                    {/* Left Column - Content */}
+                    {/* Left side content */}
                     <motion.div
                         variants={staggerContainer}
                         initial="hidden"
@@ -34,7 +34,7 @@ export default function Hero() {
                             I break down complex user experience problems to create intuitive, focused solutions that connect with people.
                         </motion.p>
 
-                        {/* CTAs */}
+                        {/* Primary actions */}
                         <motion.div variants={staggerItem} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <Button
                                 initial="initial"
@@ -43,7 +43,7 @@ export default function Hero() {
                                 onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 <div className="relative flex items-center justify-center min-w-[120px]">
-                                    {/* Default State - Clipped */}
+                                    {/* Default state */}
                                     <div className="overflow-hidden h-6 flex items-center justify-center">
                                         <motion.div
                                             variants={{
@@ -57,12 +57,12 @@ export default function Hero() {
                                         </motion.div>
                                     </div>
 
-                                    {/* God-Tier Floating Handshake State */}
+                                    {/* Floating handshake state */}
                                     <motion.div
                                         variants={{
                                             initial: { y: 40, opacity: 0, scale: 0.5 },
                                             hover: {
-                                                y: -12, // Float UP outside the box
+                                                y: -12, // float above the button
                                                 opacity: 1,
                                                 scale: 1.1,
                                                 transition: {
@@ -94,7 +94,7 @@ export default function Hero() {
                                     </motion.div>
                                 </div>
 
-                                {/* Animated Background Glow on Hover */}
+                                {/* Background glow on hover */}
                                 <motion.div
                                     variants={{
                                         initial: { opacity: 0, scale: 0.5 },
@@ -116,7 +116,7 @@ export default function Hero() {
                             </motion.a>
                         </motion.div>
 
-                        {/* Social Icons */}
+                        {/* Social links */}
                         <motion.div variants={staggerItem} className="flex gap-4 justify-center lg:justify-start pt-2">
                             {[
                                 { icon: Github, href: "https://github.com/Lemar812", color: "hover:text-primary hover:border-primary/50", label: "GitHub", tooltipColor: "primary" as const },
@@ -142,7 +142,7 @@ export default function Hero() {
                         </motion.div>
                     </motion.div>
 
-                    {/* Right Column - Portrait */}
+                    {/* Right side portrait */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -163,14 +163,14 @@ export default function Hero() {
                             }}
                             className="relative w-[280px] h-[360px] sm:w-[320px] sm:h-[420px] md:w-[450px] md:h-[600px] group"
                         >
-                            {/* Premium Glow effect */}
+                            {/* Soft glow */}
                             <motion.div
                                 animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.05, 1] }}
                                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                                 className="absolute inset-0 rounded-[2rem] bg-gradient-to-tr from-primary/20 via-secondary/15 to-primary/20 blur-2xl md:blur-3xl group-hover:scale-110 transition-all duration-700"
                             />
 
-                            {/* Image container with tilt */}
+                            {/* Image frame with tilt */}
                             <div className="absolute inset-0 rounded-[2rem] border border-white/10 bg-surface/50 backdrop-blur-sm overflow-hidden transition-all duration-700 group-hover:border-primary/30 group-hover:shadow-[0_0_80px_rgba(124,58,237,0.25)]">
                                 <motion.img
                                     whileHover={{ scale: 1.1 }}
@@ -187,7 +187,7 @@ export default function Hero() {
                     </motion.div>
                 </div>
 
-                {/* Stats Row */}
+                {/* Stats row */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"

@@ -53,7 +53,7 @@ export default function Services() {
                                 transition={{ duration: 0.4, ease: EASE }}
                                 className="relative p-8 md:p-10 rounded-card bg-surface/50 backdrop-blur-sm border border-white/5 hover:border-primary/30 transition-all duration-500 group overflow-hidden"
                             >
-                                {/* Top corner accent */}
+                                {/* Small top-corner accent */}
                                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent -translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
 
                                 <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/5 flex items-center justify-center text-primary mb-6 md:mb-8 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-500 group-hover:rotate-6 shadow-glow-sm">
@@ -66,7 +66,7 @@ export default function Services() {
                                     {service.description}
                                 </p>
 
-                                {/* Bottom glow */}
+                                {/* Soft bottom glow */}
                                 <div className="absolute inset-0 rounded-card bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-3xl" />
                             </motion.div>
                         );

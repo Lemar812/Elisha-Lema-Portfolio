@@ -33,7 +33,7 @@ export default function WorkCard({ work, onClick, className }: WorkCardProps) {
                     }}
                 />
 
-                {/* Premium Overlay */}
+                {/* Hover overlay */}
                 <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <motion.div
                         initial={{ scale: 0.5, opacity: 0 }}
@@ -44,7 +44,7 @@ export default function WorkCard({ work, onClick, className }: WorkCardProps) {
                     </motion.div>
                 </div>
 
-                {/* Shine effect on image hover */}
+                {/* Image shine */}
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shine pointer-events-none" />
             </div>
 

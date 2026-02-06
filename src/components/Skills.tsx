@@ -63,7 +63,7 @@ export default function Skills() {
                                     borderColor: skill.color ? `${skill.color}20` : undefined
                                 }}
                             >
-                                {/* Icon */}
+                                {/* Skill icon */}
                                 <div className="flex justify-center mb-4">
                                     <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 bg-white/5 group-hover:bg-white/10 overflow-hidden p-3"
                                         style={{
@@ -104,7 +104,7 @@ export default function Skills() {
                                     </div>
                                 </div>
 
-                                {/* Hover glow effect */}
+                                {/* Hover glow */}
                                 <div
                                     className="absolute inset-0 rounded-card opacity-0 group-hover:opacity-10 transition-opacity duration-500 -z-10 blur-2xl"
                                     style={{

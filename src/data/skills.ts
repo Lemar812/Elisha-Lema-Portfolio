@@ -4,7 +4,7 @@ export interface Skill {
     name: string;
     percentage: number;
     category: 'design' | 'development';
-    icon: string; // lucide icon name OR brand key
+    icon: string; // lucide icon name or brand key
     color?: string;
 }
 

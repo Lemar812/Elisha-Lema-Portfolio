@@ -27,7 +27,7 @@ export default function Footer() {
 
     return (
         <footer ref={footerRef} className="relative pt-16 md:pt-32 pb-12 overflow-hidden">
-            {/* Large Background Text with Premium Effects */}
+            {/* Large background label */}
             <motion.div
                 style={{ x: "-50%", y, opacity, scale }}
                 className="absolute top-0 left-1/2 select-none pointer-events-none z-0"
@@ -44,11 +44,11 @@ export default function Footer() {
             </motion.div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
-                {/* Main Footer Card */}
+                {/* Main footer card */}
                 <div className="bg-surface/50 backdrop-blur-md border border-white/5 rounded-[2rem] p-8 md:p-12 lg:p-16 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
 
-                        {/* Left Column - CTA */}
+                        {/* Left column: call to action */}
                         <div className="lg:col-span-4 space-y-8">
                             <div className="space-y-4">
                                 <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
@@ -71,7 +71,7 @@ export default function Footer() {
                                     onClick={() => window.open('https://wa.me/message/5VKY4GHMGJ65J1', '_blank')}
                                 >
                                     <div className="relative flex items-center justify-center w-32">
-                                        {/* Default State - Clipped */}
+                                        {/* Default state */}
                                         <div className="overflow-hidden h-6 flex items-center justify-center">
                                             <motion.div
                                                 variants={{
@@ -84,12 +84,12 @@ export default function Footer() {
                                             </motion.div>
                                         </div>
 
-                                        {/* God-Tier Floating Handshake State */}
+                                        {/* Floating handshake state */}
                                         <motion.div
                                             variants={{
                                                 initial: { y: 40, opacity: 0, scale: 0.5 },
                                                 hover: {
-                                                    y: -15, // Prominent float
+                                                    y: -15, // stronger float
                                                     opacity: 1,
                                                     scale: 1.1,
                                                     transition: { type: "spring", stiffness: 400, damping: 20 }
@@ -120,10 +120,10 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        {/* Navigation Columns */}
+                        {/* Nav columns */}
                         <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
 
-                            {/* Navigation */}
+                            {/* Site links */}
                             <div className="space-y-6">
                                 <h4 className="text-white font-bold font-satoshi text-lg">Navigation</h4>
                                 <ul className="space-y-4">
@@ -141,7 +141,7 @@ export default function Footer() {
                                 </ul>
                             </div>
 
-                            {/* Socials */}
+                            {/* Social links */}
                             <div className="space-y-6">
                                 <h4 className="text-white font-bold font-satoshi text-lg">Connect</h4>
                                 <ul className="space-y-4">
@@ -168,7 +168,7 @@ export default function Footer() {
                                 </ul>
                             </div>
 
-                            {/* Contact Info */}
+                            {/* Contact details */}
                             <div className="space-y-6">
                                 <h4 className="text-white font-bold font-satoshi text-lg">Contact</h4>
                                 <div className="space-y-4">
@@ -202,7 +202,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
+                {/* Bottom bar */}
                 <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 pt-8">
                     <p className="text-text-muted text-sm font-mono">
                         © {currentYear} ELISHA LEMA. All rights reserved.

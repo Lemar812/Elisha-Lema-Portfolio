@@ -34,7 +34,7 @@ export default function WorksGallery() {
                     centered
                 />
 
-                {/* Filters - Scrollable on mobile */}
+                {/* Filters (scrollable on mobile) */}
                 <div className="flex justify-center mb-10 -mx-4 px-4 md:mx-0 md:px-0">
                     <div className="flex gap-2 overflow-x-auto pb-4 md:pb-0 scrollbar-hide no-scrollbar md:flex-wrap md:justify-center w-full">
                         {categories.map((cat) => (
@@ -55,7 +55,7 @@ export default function WorksGallery() {
                     </div>
                 </div>
 
-                {/* Grid - Smart responsive columns */}
+                {/* Responsive grid */}
                 <motion.div
                     layout
                     className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"

@@ -26,7 +26,7 @@
     @apply font-satoshi;
   }
 
-  /* Lenis recommended styles */
+  /* Lenis baseline styles */
   html.lenis,
   html.lenis body {
     height: auto;

@@ -41,10 +41,10 @@ export default function ScrollToTop() {
                             className="w-14 h-14 rounded-2xl bg-primary text-white shadow-[0_10px_30px_rgba(124,58,237,0.4)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group"
                             aria-label="Scroll to top"
                         >
-                            {/* Ring effect */}
+                            {/* Ring halo */}
                             <div className="absolute inset-0 rounded-2xl border-2 border-white/20 scale-100 group-hover:scale-110 transition-transform duration-300" />
 
-                            {/* Glow effect */}
+                            {/* Glow halo */}
                             <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                             <ArrowUp className="relative z-10 w-6 h-6 transition-transform duration-300 group-hover:-translate-y-1" />

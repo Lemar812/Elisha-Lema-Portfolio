@@ -26,7 +26,7 @@ const testimonials = [
     }
 ];
 
-// Duplicate for infinite scroll
+// Duplicate list for smooth scrolling
 const duplicatedTestimonials = [...testimonials, ...testimonials];
 
 export default function Testimonials() {

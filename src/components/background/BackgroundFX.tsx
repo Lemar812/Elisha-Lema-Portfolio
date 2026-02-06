@@ -17,7 +17,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Parallax values
+    // Parallax settings
     const gridY = useTransform(scrollYProgress, [0, 1], [0, -50]);
     const nodesY = useTransform(scrollYProgress, [0, 1], [0, -100]);
 
@@ -29,7 +29,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
 
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 select-none">
-            {/* Layer A: Grid/Blueprint */}
+            {/* Layer A: subtle grid */}
             <motion.div
                 style={{ y: gridY }}
                 className="absolute inset-0 opacity-[0.03] md:opacity-[0.05]"
@@ -43,7 +43,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
                 />
             </motion.div>
 
-            {/* Layer B: Node Network (Sparse & Subtle) */}
+            {/* Layer B: light node network */}
             <motion.div
                 style={{ y: nodesY }}
                 className="absolute inset-0 flex items-center justify-center opacity-[0.1] md:opacity-[0.15]"
@@ -61,7 +61,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
                 </svg>
             </motion.div>
 
-            {/* Layer C: Geometric Outlines (Floating) */}
+            {/* Layer C: floating outlines */}
             <div className="absolute inset-0">
                 {[...Array(shapeCount)].map((_, i) => (
                     <motion.div
@@ -101,7 +101,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
                 ))}
             </div>
 
-            {/* Layer D: Accent Glows (Breathing) */}
+            {/* Layer D: soft glows */}
             <div className="absolute inset-0">
                 <motion.div
                     animate={{ opacity: [0.08, 0.12, 0.08] }}
@@ -115,7 +115,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
                 />
             </div>
 
-            {/* Layer E: Code Motifs (Ultra Subtle) - Hidden on smallest mobile */}
+            {/* Layer E: faint code motifs (hidden on smallest screens) */}
             <div className="absolute inset-0 opacity-[0.015] md:opacity-[0.02] font-mono text-[10px] md:text-xs text-white hidden sm:block">
                 <motion.div
                     animate={{ y: [-10, 10, -10] }}
@@ -133,7 +133,7 @@ const BackgroundFX = ({ intensity = 'low' }: BackgroundFXProps) => {
                 </motion.div>
             </div>
 
-            {/* Vignette effect for focus */}
+            {/* Vignette to keep focus centered */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,10,10,0.3)_100%)] md:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,10,10,0.4)_100%)] pointer-events-none" />
         </div>
     );

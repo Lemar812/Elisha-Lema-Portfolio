@@ -37,7 +37,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 className={cn(baseStyles, variants[variant], sizes[size], className)}
                 {...props as any}
             >
-                {/* Shine effect */}
+                {/* Shine sweep */}
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shine pointer-events-none" />
 
                 <span className="relative flex items-center justify-center">

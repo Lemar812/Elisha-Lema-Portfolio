@@ -37,7 +37,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                         exit="exit"
                         className="relative w-full max-w-5xl bg-surface rounded-card shadow-premium overflow-hidden border border-white/10 flex flex-col md:flex-row max-h-[90vh]"
                     >
-                        {/* Image Side */}
+                        {/* Image side */}
                         <div className="w-full md:w-2/3 bg-black/40 overflow-hidden relative group">
                             <motion.img
                                 initial={{ scale: 1.1, opacity: 0 }}
@@ -49,7 +49,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                             />
                         </div>
 
-                        {/* Content Side */}
+                        {/* Content side */}
                         <div className="w-full md:w-1/3 p-10 flex flex-col h-full overflow-y-auto bg-surface/50 backdrop-blur-sm relative">
                             <motion.button
                                 whileHover={{ rotate: 90, scale: 1.1 }}
@@ -100,7 +100,7 @@ export default function WorkModal({ work, onClose }: WorkModalProps) {
                                     </div>
                                 </motion.div>
 
-                                {/* Website Link Button */}
+                                {/* Website link button */}
                                 {work.websiteUrl && (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9 }}

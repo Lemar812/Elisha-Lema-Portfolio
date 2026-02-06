@@ -43,7 +43,7 @@ export default function Contact() {
             const senderEmail = formData.get('user_email') as string;
             const message = formData.get('message') as string;
 
-            // Send email with formatted message to your inbox
+            // Send the email via EmailJS
             await emailjs.send(
                 'service_48brnvp',
                 'template_tkhc067',
@@ -95,11 +95,11 @@ export default function Contact() {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid lg:grid-cols-2 gap-10 md:gap-12 mt-12 md:mt-16 bg-surface/50 backdrop-blur-md p-6 sm:p-8 md:p-14 rounded-card border border-white/5 shadow-premium overflow-hidden relative"
                 >
-                    {/* Decorative glow */}
+                    {/* Soft background glow */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -z-10" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-[100px] -z-10" />
 
-                    {/* Info Side */}
+                    {/* Contact info */}
                     <motion.div variants={staggerItem} className="space-y-8 md:space-y-10">
                         <div>
                             <h3 className="text-xl md:text-2xl font-black font-satoshi text-white mb-3 md:mb-4 uppercase tracking-tight">Contact Info</h3>
@@ -181,7 +181,7 @@ export default function Contact() {
                         </div>
                     </motion.div>
 
-                    {/* Form Side */}
+                    {/* Message form */}
                     <motion.form variants={staggerItem} ref={formRef} onSubmit={handleSubmit} className="space-y-6 md:space-y-7 mt-8 lg:mt-0" noValidate>
                         <div className="space-y-2 group relative">
                             <label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Name</label>

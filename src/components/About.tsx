@@ -26,7 +26,7 @@ export default function About() {
         <section id="about" className="py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
             <div className="container mx-auto max-w-6xl 2xl:max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
-                {/* Image Section */}
+                {/* Photo block */}
                 <motion.div
                     initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -67,11 +67,11 @@ export default function About() {
                         </div>
                     </div>
 
-                    {/* Decorative element */}
+                    {/* Small decorative glow */}
                     <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/20 blur-3xl -z-10 group-hover:bg-primary/40 transition-colors duration-700 hidden md:block" />
                 </motion.div>
 
-                {/* Content Section */}
+                {/* Text block */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"

@@ -7,14 +7,14 @@ import TermsOfService from './components/TermsOfService.tsx';
 function App() {
   const location = useLocation();
 
-  // Disable browser's native scroll restoration and implement custom one
+  // Turn off native scroll restoration so we can handle it.
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
 
-  // Save scroll position on every scroll
+  // Store scroll position on each scroll event.
   useEffect(() => {
     const handleScroll = () => {
       sessionStorage.setItem('scrollPosition', window.scrollY.toString());
@@ -24,9 +24,9 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Restore scroll position when page loads or route changes
+  // On load/route change, reset scroll position.
   useEffect(() => {
-    // Always scroll to top on route change or page load
+    // Always jump to top on route change/load.
     window.scrollTo(0, 0);
   }, [location.pathname]);
 

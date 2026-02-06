@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
     return (
         <div className="min-h-screen bg-[#050505] text-white pt-20 pb-16 px-4 md:px-6">
             <div className="container mx-auto max-w-4xl">
-                {/* Back Button */}
+                {/* Back button */}
                 <motion.button
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -72,7 +72,7 @@ export default function PrivacyPolicy() {
                     Back to Home
                 </motion.button>
 
-                {/* Header */}
+                {/* Page header */}
                 <motion.div
                     variants={sectionReveal}
                     initial="hidden"
@@ -85,7 +85,7 @@ export default function PrivacyPolicy() {
                     <p className="text-text-muted text-lg">Last updated: February 2026</p>
                 </motion.div>
 
-                {/* Content */}
+                {/* Main content */}
                 <div className="space-y-8 md:space-y-12">
                     {sections.map((section, index) => (
                         <motion.div
@@ -106,7 +106,7 @@ export default function PrivacyPolicy() {
                     ))}
                 </div>
 
-                {/* Footer Info */}
+                {/* Footer note */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
