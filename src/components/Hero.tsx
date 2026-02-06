@@ -19,7 +19,7 @@ export default function Hero() {
                         variants={staggerContainer}
                         initial="hidden"
                         animate="visible"
-                        className="space-y-6 md:space-y-8 text-center lg:text-left order-2 lg:order-1 lg:pr-4"
+                        className="space-y-6 md:space-y-8 text-center lg:text-left order-2 lg:order-1 lg:pr-4 lg:pl-6"
                     >
                         <motion.div variants={staggerItem} className="space-y-4">
                             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold font-satoshi leading-[1.1] text-white tracking-tight">
