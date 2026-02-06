@@ -5,8 +5,8 @@ import { sectionReveal } from '../lib/motion';
 
 const testimonials = [
     {
-        name: "Alex Morgan",
-        role: "CEO, TechFlow",
+        name: "Neema John",
+        role: "Program Lead, TSOSJ",
         text: "The attention to detail is unmatched. Our brand identity was transformed completely."
     },
     {
@@ -20,7 +20,7 @@ const testimonials = [
         text: "Fast, professional, and extremely talented. Highly recommended for any web project."
     },
     {
-        name: "Reviewer 4",
+        name: "George Macha",
         role: "Director",
         text: "Exceeded our expectations in every way. The site performs beautifully."
     }
