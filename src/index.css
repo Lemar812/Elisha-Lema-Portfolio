@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  html,
+  body {
+    @apply bg-background text-text-primary font-inter antialiased selection:bg-primary/20 selection:text-primary overflow-x-hidden;
+    position: relative;
+  }
+
+  #root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-satoshi;
+  }
+
+  /* Lenis recommended styles */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    @apply overflow-hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .shadow-glow-sm {
+    box-shadow: 0 0 15px -3px rgba(124, 58, 237, 0.3);
+  }
+
+  .shadow-glow-md {
+    box-shadow: 0 0 25px -5px rgba(124, 58, 237, 0.4);
+  }
+
+  @keyframes shine {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shine {
+    animation: shine 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
