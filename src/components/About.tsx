@@ -18,13 +18,13 @@ const skillsData = [
 export default function About() {
     const profile = {
         bio: "I'm Elisha Lema, a passionate designer and developer from Tanzania. My journey began in a small digital studio where I discovered the magic of blending aesthetics with functionality. What started as a curious interest in design evolved into a full-fledged career where I now help businesses transform their digital presence.",
-        experience: '4+ Years',
+        experience: '2+ Years',
         location: 'Tanzania'
     };
 
     return (
         <section id="about" className="py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
-            <div className="container mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <div className="container mx-auto max-w-6xl 2xl:max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
                 {/* Image Section */}
                 <motion.div

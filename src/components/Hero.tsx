@@ -11,7 +11,7 @@ export default function Hero() {
 
     return (
         <section id="hero" className="min-h-screen flex items-center justify-center pt-28 md:pt-20 px-4 md:px-6 relative overflow-hidden">
-            <div className="container mx-auto">
+            <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <div className="grid lg:grid-cols-2 gap-6 lg:gap-6 items-center mb-16 md:mb-20">
 
                     {/* Left Column - Content */}

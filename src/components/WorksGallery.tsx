@@ -27,7 +27,7 @@ export default function WorksGallery() {
 
     return (
         <section id="works" className="py-16 md:py-24 px-4 md:px-6 bg-surface/30">
-            <div className="container mx-auto">
+            <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <SectionHeading
                     title="Works Gallery"
                     subtitle="Explore the complete collection of design and development projects."

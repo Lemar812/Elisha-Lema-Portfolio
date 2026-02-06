@@ -41,7 +41,7 @@ export default function Testimonials() {
 
     return (
         <section id="testimonials" className="py-16 md:py-24 px-0 md:px-6 relative overflow-hidden">
-            <div className="container mx-auto px-4 md:px-0">
+            <div className="container mx-auto max-w-6xl 2xl:max-w-7xl px-4 md:px-0">
                 <motion.div
                     variants={sectionReveal}
                     initial="hidden"

@@ -26,7 +26,7 @@ export default function Services() {
 
     return (
         <section id="services" className="py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
-            <div className="container mx-auto">
+            <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <motion.div
                     variants={sectionReveal}
                     initial="hidden"
