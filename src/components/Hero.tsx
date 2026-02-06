@@ -12,14 +12,14 @@ export default function Hero() {
     return (
         <section id="hero" className="min-h-screen flex items-center justify-center pt-28 md:pt-20 px-4 md:px-6 relative overflow-hidden">
             <div className="container mx-auto">
-                <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center mb-16 md:mb-20">
+                <div className="grid lg:grid-cols-2 gap-6 lg:gap-6 items-center mb-16 md:mb-20">
 
                     {/* Left Column - Content */}
                     <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="visible"
-                        className="space-y-6 md:space-y-8 text-center lg:text-left order-2 lg:order-1 lg:pr-2 lg:pl-10 max-w-xl lg:max-w-none"
+                        className="space-y-6 md:space-y-8 text-center lg:text-left order-2 lg:order-1 lg:pr-0 lg:pl-12 max-w-xl lg:max-w-none"
                     >
                         <motion.div variants={staggerItem} className="space-y-4">
                             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold font-satoshi leading-[1.1] text-white tracking-tight">
@@ -147,7 +147,7 @@ export default function Hero() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
-                        className="relative flex justify-center lg:justify-center order-1 lg:order-2 lg:pl-2 lg:-ml-4"
+                        className="relative flex justify-center lg:justify-center order-1 lg:order-2 lg:pl-0 lg:-ml-6"
                         style={{ perspective: 1200 }}
                     >
                         <motion.div
