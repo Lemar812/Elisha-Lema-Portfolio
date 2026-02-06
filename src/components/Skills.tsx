@@ -4,6 +4,7 @@ import SectionHeading from './SectionHeading';
 import { staggerContainer, staggerItem, sectionReveal, EASE } from '../lib/motion';
 import { api } from '../lib/api-config';
 import * as LucideIcons from 'lucide-react';
+import { skills as fallbackSkills, Skill } from '../data/skills';
 import {
     PhotoshopLogo,
     IllustratorLogo,
@@ -23,20 +24,34 @@ const BRAND_ICONS: Record<string, React.FC<{ size?: number; className?: string }
 };
 
 export default function Skills() {
-    const [skills, setSkills] = useState<any[]>([]);
+    const [skills, setSkills] = useState<Skill[]>(fallbackSkills);
     const [, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(api.skills.list())
-            .then(res => res.json())
-            .then(data => {
-                setSkills(data);
-                setLoading(false);
-            })
-            .catch(err => {
+        let isMounted = true;
+
+        const loadSkills = async () => {
+            try {
+                const res = await fetch(api.skills.list());
+                if (!res.ok) throw new Error(`Failed to load skills: ${res.status}`);
+
+                const data = await res.json();
+                if (isMounted && Array.isArray(data)) {
+                    setSkills(data);
+                }
+            } catch (err) {
                 console.error(err);
-                setLoading(false);
-            });
+                if (isMounted) setSkills(fallbackSkills);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        loadSkills();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
     return (
         <section id="skills" className="py-16 md:py-24 px-4 md:px-6 relative">
