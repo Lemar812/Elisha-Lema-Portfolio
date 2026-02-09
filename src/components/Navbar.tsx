@@ -135,7 +135,7 @@ export default function Navbar() {
                     </motion.a>
 
                     {/* Desktop nav */}
-                    <div className="hidden md:flex items-center gap-1.5 p-1.5 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/5">
+                    <div className="hidden lg:flex items-center gap-1.5 p-1.5 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/5">
                         {navLinks.map((link) => (
                             <motion.a
                                 key={link.name}
@@ -187,7 +187,7 @@ export default function Navbar() {
                         ))}
                     </div>
 
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                         <Button
                             variant="primary"
                             size="sm"
@@ -200,7 +200,7 @@ export default function Navbar() {
 
                     {/* Mobile menu toggle */}
                     <button
-                        className="md:hidden w-10 h-10 flex items-center justify-center text-text-primary bg-white/5 rounded-full border border-white/10 active:scale-90 transition-all"
+                        className="lg:hidden w-10 h-10 flex items-center justify-center text-text-primary bg-white/5 rounded-full border border-white/10 active:scale-90 transition-all"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label="Toggle Menu"
                     >
