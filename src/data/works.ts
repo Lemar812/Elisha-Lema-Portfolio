@@ -181,7 +181,7 @@ export const works: Work[] = [
         imageSrc: "/works/Website's Screenshots/NatureWiseTours.jpg",
         description: "Website snapshot highlighting layout, typography, and visual polish.",
         tags: ["Web", "UI", "Design"],
-        websiteUrl: '',
+        websiteUrl: 'https://naturewisetours.netlify.app',
     },
 ];
 
