@@ -63,11 +63,11 @@ export default function Footer() {
                                 </p>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap gap-4">
                                 <Button
                                     initial="initial"
                                     whileHover="hover"
-                                    className="bg-primary hover:bg-primary/95 text-white font-bold h-14 px-10 group/btn rounded-full !overflow-visible relative"
+                                    className="w-full sm:w-auto sm:flex-none bg-primary hover:bg-primary/95 text-white font-bold h-14 px-10 group/btn rounded-full !overflow-visible relative whitespace-nowrap"
                                     onClick={() => window.open('https://wa.me/message/5VKY4GHMGJ65J1', '_blank')}
                                 >
                                     <div className="relative flex items-center justify-center w-32">
@@ -112,7 +112,7 @@ export default function Footer() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="h-14 px-8 border-white/10 hover:border-white/20"
+                                    className="w-full sm:w-auto sm:flex-none h-14 px-8 border-white/10 hover:border-white/20 whitespace-nowrap"
                                     onClick={(e) => scrollToSection(e as any, '#works')}
                                 >
                                     See my work
