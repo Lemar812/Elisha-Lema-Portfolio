@@ -7,18 +7,43 @@ import { Mail, Copy, Check, Instagram, Linkedin, Github, MessageCircle, Phone } 
 import UpworkIcon from './icons/UpworkIcon';
 import { sectionReveal, staggerContainer, staggerItem } from '../lib/motion';
 import FloatingTooltip from './FloatingTooltip';
+import { clearInquiryDraft, loadInquiryDraft } from '../lib/assistantSession';
 
 export default function Contact() {
     const formRef = useRef<HTMLFormElement>(null);
     const [copied, setCopied] = useState<string | null>(null);
     const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const [isMobile, setIsMobile] = useState(false);
+    const [messageValue, setMessageValue] = useState('');
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    useEffect(() => {
+        const applyDraft = () => {
+            const draft = loadInquiryDraft();
+
+            if (draft) {
+                setMessageValue(draft);
+            }
+        };
+
+        applyDraft();
+
+        const handleDraft = (event: Event) => {
+            const customEvent = event as CustomEvent<{ summaryText?: string }>;
+
+            if (customEvent.detail?.summaryText) {
+                setMessageValue(customEvent.detail.summaryText);
+            }
+        };
+
+        window.addEventListener('portfolio-assistant-inquiry-draft', handleDraft as EventListener);
+        return () => window.removeEventListener('portfolio-assistant-inquiry-draft', handleDraft as EventListener);
     }, []);
 
     const handleCopy = (text: string, id: string) => {
@@ -63,6 +88,8 @@ export default function Contact() {
 
             setFormState('success');
             formRef.current.reset();
+            setMessageValue('');
+            clearInquiryDraft();
             setTimeout(() => setFormState('idle'), 5000);
         } catch (error: any) {
             console.error('EmailJS Error:', error);
@@ -219,6 +246,8 @@ export default function Contact() {
                                 <textarea
                                     id="message"
                                     name="message"
+                                    value={messageValue}
+                                    onChange={(event) => setMessageValue(event.target.value)}
                                     required
                                     onInvalid={(e) => e.preventDefault()}
                                     rows={4}

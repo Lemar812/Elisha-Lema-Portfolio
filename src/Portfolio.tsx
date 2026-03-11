@@ -11,8 +11,30 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import BackgroundFX from './components/background/BackgroundFX';
+import AssistantLauncher from './components/assistant/AssistantLauncher';
+import AssistantPanel from './components/assistant/AssistantPanel';
+import { assistantKnowledge } from './data/assistantKnowledge';
+import { useAssistant } from './hooks/useAssistant';
 
 export default function Portfolio() {
+    const {
+        isOpen,
+        isTyping,
+        messages,
+        showQuickActions,
+        quickActions,
+        inquirySummary,
+        closeAssistant,
+        toggleAssistant,
+        submitMessage,
+        handleQuickAction,
+        handleMessageAction,
+        handleMessageCta,
+        handleRecommendationClick,
+        handleCopyInquirySummary,
+        handleUseInquirySummary,
+    } = useAssistant();
+
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.2,
@@ -30,7 +52,10 @@ export default function Portfolio() {
 
         requestAnimationFrame(raf);
 
+        window.__portfolioLenis = lenis;
+
         return () => {
+            delete window.__portfolioLenis;
             lenis.destroy();
         };
     }, []);
@@ -52,6 +77,25 @@ export default function Portfolio() {
                 <Footer />
             </div>
             <ScrollToTop />
+            <AssistantPanel
+                open={isOpen}
+                title={assistantKnowledge.assistantTitle}
+                subtitle={assistantKnowledge.assistantSubtitle}
+                messages={messages}
+                isTyping={isTyping}
+                showQuickActions={showQuickActions}
+                quickActions={quickActions}
+                inquirySummary={inquirySummary}
+                onClose={closeAssistant}
+                onSubmit={submitMessage}
+                onQuickAction={handleQuickAction}
+                onMessageAction={handleMessageAction}
+                onMessageCta={handleMessageCta}
+                onRecommendationClick={handleRecommendationClick}
+                onCopyInquirySummary={handleCopyInquirySummary}
+                onUseInquirySummary={handleUseInquirySummary}
+            />
+            <AssistantLauncher open={isOpen} onToggle={toggleAssistant} />
         </div>
     );
 }
