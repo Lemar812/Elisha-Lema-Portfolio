@@ -27,9 +27,9 @@ export const assistantKnowledge: AssistantKnowledge = {
     skillsSummary:
         'Core tools and technologies include React, TypeScript, Tailwind CSS, Framer Motion, Node.js, Adobe Illustrator, Adobe Photoshop, Canva, and brand identity design.',
     projectsSummary:
-        'The works section features selected logos, posters and banners, plus website visuals such as NatureWiseTours. It is the best place to understand the range of visual style and execution.',
+        'The works section features selected logos, posters and banners, including travel and retail promotional pieces, plus website visuals such as NatureWiseTours. It is the best place to understand the range of visual style and execution.',
     testimonialsSummary:
-        'Testimonials emphasize attention to detail, premium UI feel, professionalism, and strong delivery quality across branding and web work.',
+        'Testimonials focus on clearer brand presentation, stronger promotional communication, tourism-ready visuals, and more credible business identity work.',
     contactSummary:
         'Visitors can reach Elisha through the contact form, email, phone, GitHub, LinkedIn, Upwork, Instagram, or WhatsApp. The contact section is the clearest next step for project discussions.',
     commonClientGoals: [
@@ -157,24 +157,29 @@ export const assistantKnowledge: AssistantKnowledge = {
     ],
     testimonials: [
         {
-            name: 'Neema John',
-            role: 'Program Lead, TSOSJ',
-            summary: 'Praised the attention to detail and the transformation of the brand identity.',
+            name: 'Samson Lotha',
+            role: 'Founder & Owner\nMaasai Adventures',
+            summary: 'Said the design work helped Maasai Adventures present safari experiences more professionally and communicate the brand more clearly to travelers.',
         },
         {
-            name: 'Sarah Chen',
-            role: 'Product Lead, StartUp',
-            summary: 'Highlighted the premium feel created through interface and motion design.',
+            name: 'Alexander Demetro',
+            role: 'Founder & Owner\nA & B Accessories',
+            summary: 'Noted that the branding and promotional designs gave A & B Accessories a cleaner visual identity and stronger customer trust.',
         },
         {
-            name: 'Jordan Lee',
-            role: 'Founder, Creative',
-            summary: 'Described the work as fast, professional, and strong for web projects.',
+            name: 'Baltazary Twati',
+            role: 'Founder & Managing Director\nTanzania Smile Safaris',
+            summary: 'Shared that the design work made Tanzania Smile Safaris clearer in how it presents its safari experience and overall brand image.',
         },
         {
             name: 'George Macha',
-            role: 'Director',
-            summary: 'Noted that the final site exceeded expectations and performed beautifully.',
+            role: 'Macha Stores Owner',
+            summary: 'Said the logo and business presentation gave Macha Stores a stronger identity and a cleaner, more credible presence.',
+        },
+        {
+            name: 'Jeremiah Lema',
+            role: 'CEO & Founder\nOur Destiny',
+            summary: 'Said the logo design gave Our Destiny a clear identity that reflects its mission and supports confident presentation.',
         },
     ],
     contactMethods: [

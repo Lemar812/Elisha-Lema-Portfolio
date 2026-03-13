@@ -107,7 +107,7 @@ export default function Hero() {
                                 whileHover={{ y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                                 transition={{ duration: 0.3, ease: EASE }}
-                                href="/works/cv.pdf"
+                                href="/works/cv.pdf?v=2026-03-12"
                                 download="Elisha_Lema_CV.pdf"
                                 className="inline-flex items-center justify-center px-8 py-4 rounded-button border border-white/10 bg-surface/50 backdrop-blur-sm text-white font-medium hover:border-white/20 transition-all duration-300 w-full sm:w-auto text-base"
                             >

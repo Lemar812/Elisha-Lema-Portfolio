@@ -5,24 +5,29 @@ import { sectionReveal } from '../lib/motion';
 
 const testimonials = [
     {
-        name: "Neema John",
-        role: "Program Lead, TSOSJ",
-        text: "The attention to detail is unmatched. Our brand identity was transformed completely."
+        name: "Samson Lotha",
+        role: "Founder & Owner\nMaasai Adventures",
+        text: "The design work helped Maasai Adventures present our safari experiences in a more professional and attractive way. The visuals communicate our brand much better and give potential travelers a clear sense of the adventure we offer."
     },
     {
-        name: "Sarah Chen",
-        role: "Product Lead, StartUp",
-        text: "Incredible work on the UI. The motion design added that premium feel we needed."
+        name: "Alexander Demetro",
+        role: "Founder & Owner\nA & B Accessories",
+        text: "The branding and promotional designs made a big difference for our business. Our products are now presented with a cleaner and more professional visual identity, which has helped us build stronger trust with customers."
     },
     {
-        name: "Jordan Lee",
-        role: "Founder, Creative",
-        text: "Fast, professional, and extremely talented. Highly recommended for any web project."
+        name: "Baltazary Twati",
+        role: "Founder & Managing Director\nTanzania Smile Safaris",
+        text: "The design work helped Tanzania Smile Safaris present itself with much better clarity. It strengthened how we communicate our safari experience and improved our overall brand image."
     },
     {
         name: "George Macha",
-        role: "Director",
-        text: "Exceeded our expectations in every way. The site performs beautifully."
+        role: "Macha Stores Owner",
+        text: "The logo and business presentation gave Macha Stores a stronger identity. The brand now looks cleaner, more credible, and better aligned with the kind of customers we want to attract."
+    },
+    {
+        name: "Jeremiah Lema",
+        role: "CEO & Founder\nOur Destiny",
+        text: "The logo design captured the vision of Our Destiny perfectly. It gave our brand a clear identity that represents our mission and helps us present ourselves confidently to our audience."
     }
 ];
 
@@ -50,7 +55,7 @@ export default function Testimonials() {
                 >
                     <SectionHeading
                         title="Client Stories"
-                        subtitle="Hear what my partners and clients have to say about our collaborative journey."
+                        subtitle="Feedback grounded in real branding, promotional, and business presentation work."
                         centered
                     />
                 </motion.div>
@@ -76,7 +81,7 @@ export default function Testimonials() {
                     {duplicatedTestimonials.map((t, i) => (
                         <div
                             key={i}
-                            className="w-[280px] sm:w-[320px] md:w-[450px] p-8 md:p-10 rounded-card bg-surface/40 backdrop-blur-sm border border-white/5 flex flex-col justify-between h-[300px] md:h-80 select-none group hover:border-primary/30 hover:shadow-premium hover:shadow-[0_20px_50px_rgba(124,58,237,0.1)] transition-all duration-500 relative overflow-hidden"
+                            className="w-[280px] sm:w-[320px] md:w-[450px] min-h-[320px] md:min-h-[360px] p-7 sm:p-8 md:p-10 rounded-card bg-surface/40 backdrop-blur-sm border border-white/5 flex flex-col select-none group hover:border-primary/30 hover:shadow-premium hover:shadow-[0_20px_50px_rgba(124,58,237,0.1)] transition-all duration-500 relative overflow-hidden"
                         >
                             <div className="absolute top-6 right-6 text-primary opacity-5 group-hover:opacity-20 transition-opacity duration-500">
                                 <svg width={isMobile ? 40 : 60} height={isMobile ? 40 : 60} viewBox="0 0 24 24" fill="currentColor">
@@ -84,17 +89,23 @@ export default function Testimonials() {
                                 </svg>
                             </div>
 
-                            <p className="text-base md:text-xl text-text-muted leading-relaxed relative z-10 group-hover:text-white transition-colors duration-300 italic font-medium">"{t.text}"</p>
+                            <div className="relative z-10 flex-1 pb-6 md:pb-8">
+                                <p className="text-base md:text-xl text-text-muted leading-[1.75] md:leading-[1.7] group-hover:text-white transition-colors duration-300 italic font-medium">
+                                    "{t.text}"
+                                </p>
+                            </div>
 
-                            <div className="flex items-center gap-4 border-t border-white/5 pt-5 md:pt-6 mt-5 md:mt-6">
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-tr from-primary to-secondary p-[1px]">
+                            <div className="mt-auto flex items-center gap-4 border-t border-white/5 pt-5 md:pt-6">
+                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-tr from-primary to-secondary p-[1px] shrink-0">
                                     <div className="w-full h-full rounded-full bg-surface flex items-center justify-center font-bold text-base md:text-lg text-white">
                                         {t.name.charAt(0)}
                                     </div>
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <h4 className="text-white font-black tracking-tight text-base md:text-lg group-hover:text-primary transition-colors">{t.name}</h4>
-                                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">{t.role}</p>
+                                    <p className="mt-1 text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold opacity-60 whitespace-pre-line leading-relaxed">
+                                        {t.role}
+                                    </p>
                                 </div>
                             </div>
                         </div>

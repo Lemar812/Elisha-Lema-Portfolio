@@ -4,13 +4,14 @@ import { Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 import Button from './Button';
 
-import { Home, Zap, Briefcase, Settings, User, MessageSquare, Mail } from 'lucide-react';
+import { Home, Zap, Briefcase, Settings, User, MessageSquare, Mail, BadgeDollarSign } from 'lucide-react';
 
 const navLinks = [
     { name: 'Home', href: '#hero', icon: Home },
     { name: 'Skills', href: '#skills', icon: Zap },
     { name: 'Works', href: '#works', icon: Briefcase },
     { name: 'Services', href: '#services', icon: Settings },
+    { name: 'Pricing', href: '#pricing', icon: BadgeDollarSign },
     { name: 'About', href: '#about', icon: User },
     { name: 'Testimonials', href: '#testimonials', icon: MessageSquare },
     { name: 'Contact', href: '#contact', icon: Mail },
