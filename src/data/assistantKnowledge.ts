@@ -1,21 +1,23 @@
+import { assistantSiteFeatures } from './siteFeatures';
+import { assistantWorkCategories } from './workCategories';
 import type { AssistantKnowledge } from '../lib/assistantTypes';
 
 export const assistantKnowledge: AssistantKnowledge = {
-    assistantName: 'Portfolio Guide',
-    assistantTitle: 'Portfolio Assistant',
-    assistantSubtitle: 'A concise guide to projects, services, skills, testimonials, and the best contact path.',
+    assistantName: 'Yookie',
+    assistantTitle: 'Yookie',
+    assistantSubtitle: "Elisha Lema's warm guide to projects, services, pricing direction, and the clearest next step.",
     welcomeMessage:
-        'I can help you explore selected work, recommend relevant projects, or guide you toward the fastest contact path.',
+        "Hi, I'm Yookie. I can help you explore Elisha's work, compare services, spot relevant projects, or quickly find the best next step.",
     fallbackMessage:
-        'I can help with projects, services, skills, background, testimonials, or contact. Ask about one of those and I will point you to the right section.',
+        "I'm here to help you explore Elisha Lema's projects, services, pricing, skills, testimonials, legal pages, or contact options. Tell me what you want to see and I'll guide you there.",
     scopeGuardMessage:
-        "I'm here to help with this portfolio only. Ask about projects, services, skills, testimonials, or contact and I'll keep it focused.",
+        "I'm here to help with Elisha Lema's portfolio. Ask about projects, services, pricing, skills, testimonials, legal pages, or contact and I'll keep it focused.",
     greetingMessage:
-        "Hi. Ask about projects, services, skills, background, or how to get started and I'll guide you quickly.",
+        "Hi, I'm Yookie. Ask about projects, services, pricing, skills, or how to get started, and I'll guide you.",
     leadCaptureMessage:
-        'I can help with branding, websites, and visual design work. If you share the type of project or goal, I can point you toward the most relevant work and the best next step.',
+        "I'd be happy to help with branding, websites, or visual design work. Share a bit about your project or goal, and I'll point you to the most relevant work and next step.",
     rateLimitMessage:
-        'Please wait a moment before sending another message. I can still help with projects, services, skills, or contact.',
+        "Please wait a moment before sending another message. I'm still here to help with projects, services, pricing direction, or contact.",
     contactCtaLabel: 'Contact Elisha',
     projectBriefCtaLabel: 'Use This Summary in Contact',
     identitySummary:
@@ -193,28 +195,37 @@ export const assistantKnowledge: AssistantKnowledge = {
         { label: 'WhatsApp', value: 'wa.me/message/5VKY4GHMGJ65J1', kind: 'social' },
         { label: 'Contact Form', value: 'Portfolio inquiry form', kind: 'form' },
     ],
+    siteFeatures: assistantSiteFeatures,
+    workCategories: assistantWorkCategories,
     behaviorHints: [
-        'Answer only about the portfolio owner, services, projects, skills, testimonials, and contact flow.',
-        'Stay concise, polished, and conversion-aware.',
+        'Answer only about the portfolio owner, services, projects, pricing, skills, testimonials, legal pages, and contact flow.',
+        'Stay concise, warm, polished, and conversion-aware.',
         'If the request is outside portfolio scope, redirect briefly to supported topics.',
         'If the visitor shows buying intent, guide them toward contact and ask at most one concise follow-up when needed.',
         'Recommend the most relevant project when the visitor describes a type of work.',
+        'When the visitor asks for a specific gallery category, respond with the closest supported category and use it if it exists in the actual gallery.',
         'Never invent claims, certifications, years, client counts, revenue, pricing, or project details that are not present here.',
     ],
     actionHints: [
-        { target: 'works', label: 'View Projects', when: 'when the visitor asks about work, portfolio pieces, or examples' },
-        { target: 'services', label: 'Go to Services', when: 'when the visitor asks what is offered' },
-        { target: 'skills', label: 'View Skills', when: 'when the visitor asks about tools, stack, or capabilities' },
-        { target: 'about', label: 'Read About', when: 'when the visitor asks about background or approach' },
-        { target: 'testimonials', label: 'See Testimonials', when: 'when the visitor asks for social proof or feedback' },
-        { target: 'contact', label: 'Contact', when: 'when the visitor wants to hire, discuss a project, ask for a quote, or reach out' },
-        { target: 'hero', label: 'Back to Top', when: 'when the visitor asks for the top of the page' },
+        { target: 'works', type: 'scroll', label: 'View Projects', when: 'when the visitor asks about work, portfolio pieces, logo work, or examples' },
+        { target: 'works', type: 'scroll', filter: 'Logo', label: 'Show Logo Work', when: 'when the visitor asks for logo work, branding pieces, or identity design examples' },
+        { target: 'works', type: 'scroll', filter: 'Poster/Banner', label: 'Show Poster Designs', when: 'when the visitor asks for posters, banners, flyers, brochures, or promotional visuals' },
+        { target: 'works', type: 'scroll', filter: "Website's Screenshot", label: 'Show Website Projects', when: 'when the visitor asks for website work, website projects, or web design examples' },
+        { target: 'services', type: 'scroll', label: 'Go to Services', when: 'when the visitor asks what is offered' },
+        { target: 'pricing', type: 'scroll', label: 'See Pricing', when: 'when the visitor asks about prices, rates, cost, packages, or budget direction' },
+        { target: 'skills', type: 'scroll', label: 'View Skills', when: 'when the visitor asks about tools, stack, or capabilities' },
+        { target: 'about', type: 'scroll', label: 'Read About', when: 'when the visitor asks about background or approach' },
+        { target: 'testimonials', type: 'scroll', label: 'See Testimonials', when: 'when the visitor asks for testimonials, reviews, client stories, or social proof' },
+        { target: 'contact', type: 'scroll', label: 'Contact', when: 'when the visitor wants to hire, discuss a project, ask for a quote, or reach out' },
+        { target: '/privacy-policy', type: 'route', label: 'Privacy Policy', when: 'when the visitor asks about privacy, data policy, or privacy terms' },
+        { target: '/terms-of-service', type: 'route', label: 'Terms of Service', when: 'when the visitor asks about terms, conditions, or legal details' },
+        { target: 'hero', type: 'scroll', label: 'Back to Top', when: 'when the visitor asks for the top of the page' },
     ],
     quickActions: [
-        { id: 'qa-projects', label: 'View projects', prompt: 'Show me the projects', target: 'works' },
-        { id: 'qa-services', label: 'Services', prompt: 'What services do you offer?', target: 'services' },
-        { id: 'qa-skills', label: 'Skills', prompt: 'What skills and tools do you use?', target: 'skills' },
-        { id: 'qa-about', label: 'About', prompt: 'Tell me about Elisha Lema', target: 'about' },
-        { id: 'qa-contact', label: 'Contact', prompt: 'How can I get in touch?', target: 'contact' },
+        { id: 'qa-projects', label: 'Explore projects', prompt: "Show me Elisha's projects", target: 'works' },
+        { id: 'qa-services', label: 'View services', prompt: 'What services does Elisha offer?', target: 'services' },
+        { id: 'qa-skills', label: 'See skills', prompt: 'What skills and tools does Elisha use?', target: 'skills' },
+        { id: 'qa-about', label: 'Meet Elisha', prompt: 'Tell me about Elisha Lema', target: 'about' },
+        { id: 'qa-contact', label: 'Contact Elisha', prompt: 'How can I get in touch with Elisha?', target: 'contact' },
     ],
 };

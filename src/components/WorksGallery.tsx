@@ -1,32 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WorkCard from './WorkCard';
 import WorkModal from './WorkModal';
 import SectionHeading from './SectionHeading';
 import { cn } from '../lib/utils';
 import FloatingTooltip from './FloatingTooltip';
-import { works as worksData } from '../data/works';
+import { ASSISTANT_WORKS_FILTER_EVENT } from '../lib/assistantActions';
+import { works as worksData, WORK_GALLERY_FILTERS } from '../data/works';
+import type { AssistantWorksFilter } from '../lib/assistantTypes';
 
 const categories = [
-    { name: "All", tooltip: "View Everything" },
-    { name: "Logo", tooltip: "Identity Design" },
-    { name: "Poster/Banner", tooltip: "Visual Arts" },
-    { name: "Website's Screenshot", tooltip: "Web Design" }
+    { name: 'All' as const, tooltip: 'View Everything' },
+    ...WORK_GALLERY_FILTERS.map((category) => ({
+        name: category,
+        tooltip:
+            category === 'Logo'
+                ? 'Identity Design'
+                : category === 'Poster/Banner'
+                  ? 'Visual Arts'
+                  : 'Web Design',
+    })),
 ];
 
+type WorksGalleryFilter = 'All' | AssistantWorksFilter;
+
 export default function WorksGallery() {
-    const [filter, setFilter] = useState("All");
+    const [filter, setFilter] = useState<WorksGalleryFilter>('All');
     const [selectedWorkId, setSelectedWorkId] = useState<string | null>(null);
     const works = worksData;
 
-    const filteredWorks = filter === "All"
-        ? works
-        : works.filter(work => work.category === filter);
+    useEffect(() => {
+        const handleAssistantFilter = (event: Event) => {
+            const customEvent = event as CustomEvent<{ filter?: AssistantWorksFilter }>;
+            const nextFilter = customEvent.detail?.filter;
 
-    const selectedWork = works.find(w => (w._id || w.id) === selectedWorkId) || null;
+            if (!nextFilter || !WORK_GALLERY_FILTERS.includes(nextFilter)) {
+                return;
+            }
+
+            setSelectedWorkId(null);
+            setFilter(nextFilter);
+        };
+
+        window.addEventListener(ASSISTANT_WORKS_FILTER_EVENT, handleAssistantFilter);
+        return () => window.removeEventListener(ASSISTANT_WORKS_FILTER_EVENT, handleAssistantFilter);
+    }, []);
+
+    const filteredWorks = filter === 'All' ? works : works.filter((work) => work.category === filter);
+    const selectedWork = works.find((work) => (work._id || work.id) === selectedWorkId) || null;
 
     return (
-        <section id="works" className="py-16 md:py-24 px-4 md:px-6 bg-surface/30">
+        <section id="works" className="bg-surface/30 px-4 py-16 md:px-6 md:py-24">
             <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <SectionHeading
                     title="Works Gallery"
@@ -34,57 +58,54 @@ export default function WorksGallery() {
                     centered
                 />
 
-                {/* Filters (scrollable on mobile) */}
-                <div className="flex justify-center mb-10 -mx-4 px-4 md:mx-0 md:px-0">
-                    <div className="flex gap-2 overflow-x-auto pb-4 md:pb-0 scrollbar-hide no-scrollbar md:flex-wrap md:justify-center w-full">
-                        {categories.map((cat) => (
-                            <FloatingTooltip key={cat.name} text={cat.tooltip} color={filter === cat.name ? "primary" : "secondary"} position="top">
+                <div className="-mx-4 mb-10 flex justify-center px-4 md:mx-0 md:px-0">
+                    <div className="no-scrollbar scrollbar-hide flex w-full gap-2 overflow-x-auto pb-4 md:flex-wrap md:justify-center md:pb-0">
+                        {categories.map((category) => (
+                            <FloatingTooltip
+                                key={category.name}
+                                text={category.tooltip}
+                                color={filter === category.name ? 'primary' : 'secondary'}
+                                position="top"
+                            >
                                 <button
-                                    onClick={() => setFilter(cat.name)}
+                                    type="button"
+                                    onClick={() => setFilter(category.name)}
                                     className={cn(
-                                        "px-5 md:px-6 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap outline-none flex-shrink-0",
-                                        filter === cat.name
-                                            ? "bg-primary text-white shadow-lg shadow-primary/25 scale-105"
-                                            : "bg-surface border border-white/5 text-text-muted hover:text-white hover:bg-white/5"
+                                        'flex-shrink-0 whitespace-nowrap rounded-full px-5 py-2 text-xs font-medium outline-none transition-all duration-300 md:px-6 md:text-sm',
+                                        filter === category.name
+                                            ? 'scale-105 bg-primary text-white shadow-lg shadow-primary/25'
+                                            : 'border border-white/5 bg-surface text-text-muted hover:bg-white/5 hover:text-white'
                                     )}
                                 >
-                                    {cat.name}
+                                    {category.name}
                                 </button>
                             </FloatingTooltip>
                         ))}
                     </div>
                 </div>
 
-                {/* Responsive grid */}
-                <motion.div
-                    layout
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
-                >
-                    <AnimatePresence mode='popLayout'>
+                <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+                    <AnimatePresence mode="popLayout">
                         {filteredWorks.map((work) => {
                             const workId = work._id || work.id;
                             return (
                                 <WorkCard
                                     key={workId}
                                     work={work}
-                                    onClick={(w) => setSelectedWorkId(w._id || w.id || null)}
+                                    onClick={(nextWork) => setSelectedWorkId(nextWork._id || nextWork.id || null)}
                                     className="brightness-95 hover:brightness-100"
                                 />
                             );
                         })}
                     </AnimatePresence>
                 </motion.div>
+
                 {filteredWorks.length === 0 && (
-                    <div className="text-center text-text-muted text-sm mt-12">
-                        No works added yet.
-                    </div>
+                    <div className="mt-12 text-center text-sm text-text-muted">No works added yet.</div>
                 )}
             </div>
 
-            <WorkModal
-                work={selectedWork}
-                onClose={() => setSelectedWorkId(null)}
-            />
+            <WorkModal work={selectedWork} onClose={() => setSelectedWorkId(null)} />
         </section>
     );
 }

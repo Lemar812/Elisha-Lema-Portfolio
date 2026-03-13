@@ -1,8 +1,5 @@
-import { assistantKnowledge } from '../data/assistantKnowledge';
-import { inferCommercialSignals } from './assistantLeadUtils';
 import type {
     AssistantAction,
-    AssistantActionTarget,
     AssistantApiResponse,
     AssistantCta,
     AssistantHistoryEntry,
@@ -12,49 +9,57 @@ import type {
     AssistantRecommendation,
     AssistantReply,
     AssistantResponseIntent,
+    AssistantRouteTarget,
+    AssistantSectionTarget,
+    AssistantSiteFeature,
+    AssistantWorksCategory,
+    AssistantWorksFilter,
 } from './assistantTypes';
+import { assistantKnowledge } from '../data/assistantKnowledge';
+import { assistantSiteFeatures } from '../data/siteFeatures';
+import { assistantWorkCategories } from '../data/workCategories';
+import { inferCommercialSignals } from './assistantLeadUtils';
 
-const SECTION_LABELS: Record<AssistantActionTarget, string> = {
+const SECTION_LABELS: Record<AssistantSectionTarget, string> = {
     hero: 'Back to top',
     skills: 'View skills',
     works: 'View projects',
     services: 'Go to services',
+    pricing: 'See pricing',
     about: 'Read about',
     testimonials: 'See testimonials',
     contact: 'Open contact',
 };
 
-const VALID_ACTION_TARGETS = new Set<AssistantActionTarget>([
+const ROUTE_LABELS: Record<AssistantRouteTarget, string> = {
+    '/privacy-policy': 'Open Privacy Policy',
+    '/terms-of-service': 'Open Terms of Service',
+};
+
+const VALID_SCROLL_TARGETS = new Set<AssistantSectionTarget>([
     'hero',
     'skills',
     'works',
     'services',
+    'pricing',
     'about',
     'testimonials',
     'contact',
 ]);
 
-const LEAD_KEYWORDS = [
-    'hire',
-    'work with you',
-    'start a project',
-    'pricing',
-    'price',
-    'quote',
-    'availability',
-    'available',
-    'budget',
-    'contact',
-];
+const VALID_ROUTE_TARGETS = new Set<AssistantRouteTarget>(['/privacy-policy', '/terms-of-service']);
+const VALID_WORK_FILTERS = new Set<AssistantWorksFilter>(['Logo', 'Poster/Banner', "Website's Screenshot"]);
+
+const LEAD_KEYWORDS = ['hire', 'work with you', 'start a project', 'pricing', 'price', 'quote', 'availability', 'available', 'budget', 'contact'];
 
 const INTENT_KEYWORDS: Record<AssistantIntent, string[]> = {
     greeting: ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'],
-    projects: ['project', 'projects', 'work', 'works', 'portfolio', 'case study', 'gallery'],
+    projects: ['project', 'projects', 'work', 'works', 'portfolio', 'case study', 'gallery', 'logo work', 'logos'],
     services: ['service', 'services', 'offer', 'offering', 'help with', 'what do you do', 'branding', 'website'],
     skills: ['skill', 'skills', 'stack', 'tools', 'tech', 'technology', 'software'],
     about: ['about', 'who are you', 'who is', 'background', 'bio'],
-    testimonials: ['testimonial', 'testimonials', 'review', 'reviews', 'client feedback', 'social proof'],
-    contact: ['contact', 'reach out', 'email', 'call', 'book'],
+    testimonials: ['testimonial', 'testimonials', 'review', 'reviews', 'client feedback', 'social proof', 'client stories'],
+    contact: ['contact', 'reach out', 'email', 'call', 'book', 'whatsapp'],
     lead: LEAD_KEYWORDS,
     outOfScope: ['weather', 'news', 'politics', 'sports', 'recipe', 'stock', 'bitcoin', 'math homework'],
     unknown: [],
@@ -62,6 +67,7 @@ const INTENT_KEYWORDS: Record<AssistantIntent, string[]> = {
 
 const HISTORY_LIMIT = 8;
 const STORED_HISTORY_LIMIT = 10;
+const NAVIGATION_KEYWORDS = ['where', 'show', 'take me', 'go to', 'open', 'see', 'view', 'find', 'redirect'];
 
 export function normalizeAssistantText(value: string) {
     return value.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -91,24 +97,98 @@ export function detectAssistantIntent(input: string): AssistantIntent {
     return 'unknown';
 }
 
+function hasNavigationIntent(input: string) {
+    const normalized = normalizeAssistantText(input);
+    return NAVIGATION_KEYWORDS.some((keyword) => normalized.includes(keyword));
+}
+
+function scoreSiteFeature(input: string, feature: AssistantSiteFeature) {
+    const normalized = normalizeAssistantText(input);
+    let score = 0;
+
+    for (const keyword of feature.keywords) {
+        const normalizedKeyword = normalizeAssistantText(keyword);
+
+        if (normalized === normalizedKeyword) {
+            score += 6;
+            continue;
+        }
+
+        if (normalized.includes(normalizedKeyword)) {
+            score += normalizedKeyword.includes(' ') ? 4 : 2;
+        }
+    }
+
+    if (normalized.includes(normalizeAssistantText(feature.label))) {
+        score += 3;
+    }
+
+    return score;
+}
+
+function scoreWorkCategory(input: string, category: AssistantWorksCategory) {
+    const normalized = normalizeAssistantText(input);
+    let score = 0;
+
+    for (const keyword of category.keywords) {
+        const normalizedKeyword = normalizeAssistantText(keyword);
+
+        if (normalized === normalizedKeyword) {
+            score += 7;
+            continue;
+        }
+
+        if (normalized.includes(normalizedKeyword)) {
+            score += normalizedKeyword.includes(' ') ? 5 : 3;
+        }
+    }
+
+    return score;
+}
+
+function findAssistantSiteFeature(input: string) {
+    const scoredFeature = assistantSiteFeatures
+        .map((feature) => ({ feature, score: scoreSiteFeature(input, feature) }))
+        .filter((item) => item.score > 0)
+        .sort((left, right) => right.score - left.score)[0];
+
+    return scoredFeature?.feature ?? null;
+}
+
+function findWorkCategory(input: string) {
+    const scoredCategory = assistantWorkCategories
+        .map((category) => ({ category, score: scoreWorkCategory(input, category) }))
+        .filter((item) => item.score > 0)
+        .sort((left, right) => right.score - left.score)[0];
+
+    return scoredCategory?.category ?? null;
+}
+
 export function createScrollAction(
-    target: AssistantActionTarget,
-    label = SECTION_LABELS[target]
+    target: AssistantSectionTarget,
+    label = SECTION_LABELS[target],
+    options?: { filter?: AssistantWorksFilter }
 ): AssistantAction {
     return {
-        id: `scroll-${target}`,
+        id: `scroll-${target}${options?.filter ? `-${options.filter.replace(/[^a-z]/gi, '-').toLowerCase()}` : ''}`,
         label,
         type: 'scroll',
+        target,
+        filter: target === 'works' && options?.filter && VALID_WORK_FILTERS.has(options.filter) ? options.filter : undefined,
+    };
+}
+
+export function createRouteAction(target: AssistantRouteTarget, label = ROUTE_LABELS[target]): AssistantAction {
+    return {
+        id: `route-${target.replace(/[^a-z]/gi, '-')}`,
+        label,
+        type: 'route',
         target,
     };
 }
 
 export function createContactCta(label = assistantKnowledge.contactCtaLabel): AssistantCta {
-    return {
-        label,
-        type: 'scroll',
-        target: 'contact',
-    };
+    return { label, type: 'scroll', target: 'contact' };
 }
 
 export function sanitizeAssistantAction(action: unknown): AssistantAction | null {
@@ -116,22 +196,34 @@ export function sanitizeAssistantAction(action: unknown): AssistantAction | null
         return null;
     }
 
-    const candidate = action as Partial<AssistantAction> & { target?: unknown };
+    const candidate = action as Partial<AssistantAction> & { target?: unknown; filter?: unknown };
 
-    if (candidate.type !== 'scroll' || typeof candidate.label !== 'string' || typeof candidate.id !== 'string') {
+    if (typeof candidate.id !== 'string' || typeof candidate.label !== 'string' || typeof candidate.target !== 'string') {
         return null;
     }
 
-    if (typeof candidate.target !== 'string' || !VALID_ACTION_TARGETS.has(candidate.target as AssistantActionTarget)) {
+    const id = candidate.id.trim().slice(0, 60);
+    const label = candidate.label.trim().slice(0, 40);
+
+    if (!id || !label) {
         return null;
     }
 
-    return {
-        id: candidate.id.trim().slice(0, 60) || `scroll-${candidate.target}`,
-        label: candidate.label.trim().slice(0, 40) || SECTION_LABELS[candidate.target as AssistantActionTarget],
-        type: 'scroll',
-        target: candidate.target as AssistantActionTarget,
-    };
+    if (candidate.type === 'scroll' && VALID_SCROLL_TARGETS.has(candidate.target as AssistantSectionTarget)) {
+        const target = candidate.target as AssistantSectionTarget;
+        const filter =
+            target === 'works' && typeof candidate.filter === 'string' && VALID_WORK_FILTERS.has(candidate.filter as AssistantWorksFilter)
+                ? (candidate.filter as AssistantWorksFilter)
+                : undefined;
+
+        return { id, label, type: 'scroll', target, filter };
+    }
+
+    if (candidate.type === 'route' && VALID_ROUTE_TARGETS.has(candidate.target as AssistantRouteTarget)) {
+        return { id, label, type: 'route', target: candidate.target as AssistantRouteTarget };
+    }
+
+    return null;
 }
 
 export function sanitizeAssistantActions(actions: unknown): AssistantAction[] | undefined {
@@ -164,23 +256,11 @@ export function sanitizeAssistantCta(cta: unknown): AssistantCta | undefined {
         return undefined;
     }
 
-    return {
-        label,
-        type: 'scroll',
-        target: 'contact',
-    };
+    return { label, type: 'scroll', target: 'contact' };
 }
 
 export function sanitizeAssistantIntent(intent: unknown): AssistantResponseIntent {
-    if (
-        intent === 'general' ||
-        intent === 'contact' ||
-        intent === 'projects' ||
-        intent === 'services' ||
-        intent === 'skills' ||
-        intent === 'about' ||
-        intent === 'lead'
-    ) {
+    if (intent === 'general' || intent === 'contact' || intent === 'projects' || intent === 'services' || intent === 'skills' || intent === 'about' || intent === 'lead') {
         return intent;
     }
 
@@ -229,11 +309,7 @@ export function sanitizeAssistantQualification(qualification: unknown): Assistan
 
     const candidate = qualification as Partial<AssistantQualification>;
 
-    if (
-        candidate.status !== 'insufficient' &&
-        candidate.status !== 'partial' &&
-        candidate.status !== 'sufficient'
-    ) {
+    if (candidate.status !== 'insufficient' && candidate.status !== 'partial' && candidate.status !== 'sufficient') {
         return undefined;
     }
 
@@ -266,9 +342,66 @@ export function createAssistantMessage(
     };
 }
 
+function buildFeatureNavigationReply(feature: AssistantSiteFeature, signals: ReturnType<typeof inferCommercialSignals>): AssistantReply {
+    const action = feature.actionType === 'route'
+        ? createRouteAction(feature.target as AssistantRouteTarget, feature.label)
+        : createScrollAction(feature.target as AssistantSectionTarget, feature.label);
+
+    return {
+        content: feature.description,
+        actions: [action],
+        mode: 'fallback',
+        intent:
+            feature.target === 'contact'
+                ? 'contact'
+                : feature.target === 'works'
+                  ? 'projects'
+                  : feature.target === 'services' || feature.target === 'pricing'
+                    ? 'services'
+                    : feature.target === 'skills'
+                      ? 'skills'
+                      : feature.target === 'about'
+                        ? 'about'
+                        : 'general',
+        cta: feature.target === 'contact' ? createContactCta() : undefined,
+        recommendations: feature.target === 'works' ? signals.recommendations : undefined,
+        qualification: feature.target === 'contact' && signals.qualification.status !== 'insufficient' ? signals.qualification : undefined,
+    };
+}
+
+function buildWorkCategoryReply(category: AssistantWorksCategory, signals: ReturnType<typeof inferCommercialSignals>): AssistantReply {
+    const action = createScrollAction('works', category.label, { filter: category.filter });
+    const matchingRecommendations = category.exampleProjectIds.length
+        ? signals.recommendations?.filter((recommendation) => category.exampleProjectIds.includes(recommendation.id))
+        : undefined;
+
+    return {
+        content: category.filter
+            ? `${category.description} I can take you straight there in the gallery.`
+            : `${category.description} I can take you to the gallery and highlight the closest matching pieces.`,
+        actions: [action],
+        mode: 'fallback',
+        intent: 'projects',
+        recommendations: matchingRecommendations?.length ? matchingRecommendations : signals.recommendations,
+    };
+}
+
 export function buildLocalAssistantReply(input: string, history: AssistantHistoryEntry[] = []): AssistantReply {
     const intent = detectAssistantIntent(input);
     const signals = inferCommercialSignals([...history, { role: 'user', content: input }]);
+    const matchedFeature = findAssistantSiteFeature(input);
+    const matchedWorkCategory = findWorkCategory(input);
+
+    if (matchedWorkCategory) {
+        return buildWorkCategoryReply(matchedWorkCategory, signals);
+    }
+
+    if (
+        matchedFeature &&
+        (hasNavigationIntent(input) || matchedFeature.kind === 'page' || matchedFeature.target === 'pricing')
+    ) {
+        return buildFeatureNavigationReply(matchedFeature, signals);
+    }
 
     switch (intent) {
         case 'greeting':
@@ -298,7 +431,7 @@ export function buildLocalAssistantReply(input: string, history: AssistantHistor
         case 'services':
             return {
                 content: assistantKnowledge.servicesSummary,
-                actions: [createScrollAction('services', 'Go to services')],
+                actions: [createScrollAction('services', 'Go to services'), createScrollAction('pricing', 'See pricing')],
                 mode: 'fallback',
                 intent: 'services',
                 cta: createContactCta(assistantKnowledge.projectBriefCtaLabel),
@@ -345,6 +478,10 @@ export function buildLocalAssistantReply(input: string, history: AssistantHistor
                 cta: createContactCta(),
             };
         default:
+            if (matchedFeature) {
+                return buildFeatureNavigationReply(matchedFeature, signals);
+            }
+
             return {
                 content: assistantKnowledge.fallbackMessage,
                 actions: [createScrollAction('works', 'Projects'), createScrollAction('contact', 'Contact')],

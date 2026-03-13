@@ -17,10 +17,15 @@ import AssistantPanel from './components/assistant/AssistantPanel';
 import { assistantKnowledge } from './data/assistantKnowledge';
 import { useAssistant } from './hooks/useAssistant';
 
-export default function Portfolio() {
+interface PortfolioProps {
+    canShowAssistantNudge?: boolean;
+}
+
+export default function Portfolio({ canShowAssistantNudge = true }: PortfolioProps) {
     const {
         isOpen,
         isTyping,
+        orbState,
         messages,
         showQuickActions,
         quickActions,
@@ -28,6 +33,7 @@ export default function Portfolio() {
         closeAssistant,
         toggleAssistant,
         submitMessage,
+        setIsDrafting,
         handleQuickAction,
         handleMessageAction,
         handleMessageCta,
@@ -62,7 +68,7 @@ export default function Portfolio() {
     }, []);
 
     return (
-        <div className="min-h-screen text-text-primary selection:bg-primary/30 relative bg-background">
+        <div className="relative min-h-screen bg-background text-text-primary selection:bg-primary/30">
             <BackgroundFX />
             <div className="relative z-10">
                 <Navbar />
@@ -78,7 +84,7 @@ export default function Portfolio() {
                 </main>
                 <Footer />
             </div>
-            <ScrollToTop />
+            <ScrollToTop stackedWithAssistant />
             <AssistantPanel
                 open={isOpen}
                 title={assistantKnowledge.assistantTitle}
@@ -90,6 +96,7 @@ export default function Portfolio() {
                 inquirySummary={inquirySummary}
                 onClose={closeAssistant}
                 onSubmit={submitMessage}
+                onDraftingChange={setIsDrafting}
                 onQuickAction={handleQuickAction}
                 onMessageAction={handleMessageAction}
                 onMessageCta={handleMessageCta}
@@ -97,7 +104,7 @@ export default function Portfolio() {
                 onCopyInquirySummary={handleCopyInquirySummary}
                 onUseInquirySummary={handleUseInquirySummary}
             />
-            <AssistantLauncher open={isOpen} onToggle={toggleAssistant} />
+            <AssistantLauncher open={isOpen} onToggle={toggleAssistant} canShowNudge={canShowAssistantNudge} orbState={orbState} />
         </div>
     );
 }

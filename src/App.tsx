@@ -1,42 +1,68 @@
-import { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Portfolio from './Portfolio';
 import PrivacyPolicy from './components/PrivacyPolicy.tsx';
 import TermsOfService from './components/TermsOfService.tsx';
+import PolicyConsentModal from './components/PolicyConsentModal.tsx';
+import { ASSISTANT_ROUTE_EVENT } from './lib/assistantActions';
+import { acceptPolicyConsent, hasAcceptedPolicyConsent } from './lib/policyConsent';
+import type { AssistantRouteTarget } from './lib/assistantTypes';
 
 function App() {
-  const location = useLocation();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [hasConsent, setHasConsent] = useState(() => hasAcceptedPolicyConsent());
 
-  // Turn off native scroll restoration so we can handle it.
-  useEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
+    useEffect(() => {
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+    }, []);
 
-  // Store scroll position on each scroll event.
-  useEffect(() => {
-    const handleScroll = () => {
-      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+    useEffect(() => {
+        const handleScroll = () => {
+            sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const handleAssistantRoute = (event: Event) => {
+            const customEvent = event as CustomEvent<{ route?: AssistantRouteTarget }>;
+            const route = customEvent.detail?.route;
+
+            if (!route) {
+                return;
+            }
+
+            navigate(route);
+        };
+
+        window.addEventListener(ASSISTANT_ROUTE_EVENT, handleAssistantRoute);
+        return () => window.removeEventListener(ASSISTANT_ROUTE_EVENT, handleAssistantRoute);
+    }, [navigate]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
+
+    const handleAcceptPolicies = () => {
+        acceptPolicyConsent();
+        setHasConsent(true);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // On load/route change, reset scroll position.
-  useEffect(() => {
-    // Always jump to top on route change/load.
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  return (
-    <Routes>
-      <Route path="/" element={<Portfolio />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      <Route path="/terms-of-service" element={<TermsOfService />} />
-    </Routes>
-  );
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<Portfolio canShowAssistantNudge={hasConsent} />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+            </Routes>
+            <PolicyConsentModal open={!hasConsent} onAccept={handleAcceptPolicies} />
+        </>
+    );
 }
 
 export default App;

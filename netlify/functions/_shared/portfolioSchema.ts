@@ -1,6 +1,5 @@
 import type {
     AssistantAction,
-    AssistantActionTarget,
     AssistantApiRequest,
     AssistantApiResponse,
     AssistantCta,
@@ -8,20 +7,26 @@ import type {
     AssistantQualification,
     AssistantRecommendation,
     AssistantResponseIntent,
+    AssistantRouteTarget,
+    AssistantSectionTarget,
+    AssistantWorksFilter,
 } from '../../../src/lib/assistantTypes';
 
 const MAX_MESSAGE_LENGTH = 500;
 const MAX_HISTORY_LENGTH = 8;
 const MAX_HISTORY_ITEM_LENGTH = 400;
-const VALID_TARGETS = new Set<AssistantActionTarget>([
+const VALID_SCROLL_TARGETS = new Set<AssistantSectionTarget>([
     'hero',
     'skills',
     'works',
     'services',
+    'pricing',
     'about',
     'testimonials',
     'contact',
 ]);
+const VALID_ROUTE_TARGETS = new Set<AssistantRouteTarget>(['/privacy-policy', '/terms-of-service']);
+const VALID_WORK_FILTERS = new Set<AssistantWorksFilter>(['Logo', 'Poster/Banner', "Website's Screenshot"]);
 
 function sanitizeText(value: string, maxLength: number) {
     return value.replace(/\s+/g, ' ').trim().slice(0, maxLength);
@@ -60,11 +65,7 @@ function sanitizeCta(cta: unknown): AssistantCta | undefined {
         return undefined;
     }
 
-    return {
-        label,
-        type: 'scroll',
-        target: 'contact',
-    };
+    return { label, type: 'scroll', target: 'contact' };
 }
 
 function sanitizeRecommendation(recommendation: unknown): AssistantRecommendation | null {
@@ -98,11 +99,7 @@ function sanitizeQualification(qualification: unknown): AssistantQualification |
 
     const candidate = qualification as Partial<AssistantQualification>;
 
-    if (
-        candidate.status !== 'insufficient' &&
-        candidate.status !== 'partial' &&
-        candidate.status !== 'sufficient'
-    ) {
+    if (candidate.status !== 'insufficient' && candidate.status !== 'partial' && candidate.status !== 'sufficient') {
         return undefined;
     }
 
@@ -167,10 +164,7 @@ export function parseAssistantRequest(body: string | null): AssistantApiRequest 
             return { error: 'History content cannot be empty.', statusCode: 400 };
         }
 
-        history.push({
-            role: entry.role,
-            content,
-        });
+        history.push({ role: entry.role, content });
     }
 
     return { message, history };
@@ -179,7 +173,6 @@ export function parseAssistantRequest(body: string | null): AssistantApiRequest 
 function extractJsonObject(content: string) {
     const fencedMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/i);
     const candidate = fencedMatch ? fencedMatch[1].trim() : content.trim();
-
     const firstBrace = candidate.indexOf('{');
     const lastBrace = candidate.lastIndexOf('}');
 
@@ -195,24 +188,34 @@ function sanitizeAction(action: unknown): AssistantAction | null {
         return null;
     }
 
-    const candidate = action as Partial<AssistantAction>;
+    const candidate = action as Partial<AssistantAction> & { target?: unknown; filter?: unknown };
 
-    if (
-        candidate.type !== 'scroll' ||
-        typeof candidate.label !== 'string' ||
-        typeof candidate.id !== 'string' ||
-        typeof candidate.target !== 'string' ||
-        !VALID_TARGETS.has(candidate.target as AssistantActionTarget)
-    ) {
+    if (typeof candidate.label !== 'string' || typeof candidate.id !== 'string' || typeof candidate.target !== 'string') {
         return null;
     }
 
-    return {
-        id: sanitizeText(candidate.id, 60) || `scroll-${candidate.target}`,
-        label: sanitizeText(candidate.label, 40) || 'Open section',
-        type: 'scroll',
-        target: candidate.target as AssistantActionTarget,
-    };
+    const id = sanitizeText(candidate.id, 60);
+    const label = sanitizeText(candidate.label, 40);
+
+    if (!id || !label) {
+        return null;
+    }
+
+    if (candidate.type === 'scroll' && VALID_SCROLL_TARGETS.has(candidate.target as AssistantSectionTarget)) {
+        const target = candidate.target as AssistantSectionTarget;
+        const filter =
+            target === 'works' && typeof candidate.filter === 'string' && VALID_WORK_FILTERS.has(candidate.filter as AssistantWorksFilter)
+                ? (candidate.filter as AssistantWorksFilter)
+                : undefined;
+
+        return { id, label, type: 'scroll', target, filter };
+    }
+
+    if (candidate.type === 'route' && VALID_ROUTE_TARGETS.has(candidate.target as AssistantRouteTarget)) {
+        return { id, label, type: 'route', target: candidate.target as AssistantRouteTarget };
+    }
+
+    return null;
 }
 
 export function parseAssistantModelResponse(content: string): AssistantApiResponse | null {
@@ -251,10 +254,7 @@ export function parseAssistantModelResponse(content: string): AssistantApiRespon
         : undefined;
 
     const recommendations = Array.isArray(candidate.recommendations)
-        ? candidate.recommendations
-              .map((recommendation) => sanitizeRecommendation(recommendation))
-              .filter((recommendation): recommendation is AssistantRecommendation => Boolean(recommendation))
-              .slice(0, 2)
+        ? candidate.recommendations.map((recommendation) => sanitizeRecommendation(recommendation)).filter((recommendation): recommendation is AssistantRecommendation => Boolean(recommendation)).slice(0, 2)
         : undefined;
 
     return {

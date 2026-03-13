@@ -1,6 +1,10 @@
 import { inferCommercialSignals } from '../../src/lib/assistantLeadUtils';
 import { buildProviderMessages } from './_shared/portfolioPrompt';
-import { jsonResponse, parseAssistantModelResponse, parseAssistantRequest } from './_shared/portfolioSchema';
+import {
+    jsonResponse,
+    parseAssistantModelResponse,
+    parseAssistantRequest,
+} from './_shared/portfolioSchema';
 import { checkRateLimit, getRateLimitKey } from './_shared/rateLimit';
 
 type NetlifyEvent = {
@@ -17,8 +21,8 @@ type ProviderResponse = {
     }>;
 };
 
-const DEFAULT_BASE_URL = 'https://api.openai.com/v1';
-const DEFAULT_MODEL = 'gpt-4o-mini';
+const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai';
+const DEFAULT_MODEL = 'gemini-3-flash-preview';
 const PROVIDER_TIMEOUT_MS = 15000;
 
 export async function handler(event: NetlifyEvent) {
@@ -29,6 +33,7 @@ export async function handler(event: NetlifyEvent) {
     const headers = Object.fromEntries(
         Object.entries(event.headers ?? {}).map(([key, value]) => [key.toLowerCase(), value])
     );
+
     const rateLimitKey = getRateLimitKey(headers);
 
     if (!checkRateLimit(rateLimitKey)) {
@@ -40,7 +45,10 @@ export async function handler(event: NetlifyEvent) {
         });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey =
+        process.env.GEMINI_API_KEY ||
+        process.env.GOOGLE_API_KEY ||
+        process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
         return jsonResponse(503, { error: 'Assistant provider is not configured.' });
@@ -52,10 +60,16 @@ export async function handler(event: NetlifyEvent) {
         return jsonResponse(request.statusCode, { error: request.error });
     }
 
-    const insightHistory = [...(request.history ?? []), { role: 'user' as const, content: request.message }];
+    const insightHistory = [
+        ...(request.history ?? []),
+        { role: 'user' as const, content: request.message },
+    ];
+
     const commercialSignals = inferCommercialSignals(insightHistory);
+
     const baseUrl = (process.env.OPENAI_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
     const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
 
@@ -77,21 +91,29 @@ export async function handler(event: NetlifyEvent) {
         if (!response.ok) {
             const errorText = await response.text();
             console.error('portfolio-chat provider error', response.status, errorText.slice(0, 400));
-            return jsonResponse(502, { error: 'Assistant provider request failed.' });
+
+            return jsonResponse(502, {
+                error: 'Assistant provider request failed.',
+            });
         }
 
         const data = (await response.json()) as ProviderResponse;
         const content = data.choices?.[0]?.message?.content;
 
         if (!content) {
-            return jsonResponse(502, { error: 'Assistant provider returned no content.' });
+            return jsonResponse(502, {
+                error: 'Assistant provider returned no content.',
+            });
         }
 
         const parsed = parseAssistantModelResponse(content);
 
         if (!parsed) {
             console.error('portfolio-chat invalid model output', content.slice(0, 400));
-            return jsonResponse(502, { error: 'Assistant provider returned invalid content.' });
+
+            return jsonResponse(502, {
+                error: 'Assistant provider returned invalid content.',
+            });
         }
 
         return jsonResponse(200, {
@@ -108,7 +130,10 @@ export async function handler(event: NetlifyEvent) {
         });
     } catch (error) {
         console.error('portfolio-chat request failed', error);
-        return jsonResponse(500, { error: 'Assistant request failed.' });
+
+        return jsonResponse(500, {
+            error: 'Assistant request failed.',
+        });
     } finally {
         clearTimeout(timeoutId);
     }

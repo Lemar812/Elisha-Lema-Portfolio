@@ -14,16 +14,22 @@ export type AssistantIntent =
 
 export type AssistantResponseIntent = 'general' | 'contact' | 'projects' | 'services' | 'skills' | 'about' | 'lead';
 
-export type AssistantActionTarget =
+export type AssistantSectionTarget =
     | 'hero'
     | 'skills'
     | 'works'
     | 'services'
+    | 'pricing'
     | 'about'
     | 'testimonials'
     | 'contact';
 
-export type AssistantActionType = 'scroll';
+export type AssistantRouteTarget = '/privacy-policy' | '/terms-of-service';
+export type AssistantWorksFilter = 'Logo' | 'Poster/Banner' | "Website's Screenshot";
+export type AssistantActionTarget = AssistantSectionTarget | AssistantRouteTarget;
+export type AssistantActionType = 'scroll' | 'route';
+export type AssistantSiteFeatureKind = 'section' | 'page' | 'feature';
+export type AssistantOrbState = 'idle' | 'userTyping' | 'thinking' | 'speaking';
 export type AssistantServiceCategory =
     | 'web-development'
     | 'branding-design'
@@ -33,12 +39,20 @@ export type AssistantServiceCategory =
     | 'graphic-design'
     | 'general';
 
-export interface AssistantAction {
-    id: string;
-    label: string;
-    type: AssistantActionType;
-    target: AssistantActionTarget;
-}
+export type AssistantAction =
+    | {
+          id: string;
+          label: string;
+          type: 'scroll';
+          target: AssistantSectionTarget;
+          filter?: AssistantWorksFilter;
+      }
+    | {
+          id: string;
+          label: string;
+          type: 'route';
+          target: AssistantRouteTarget;
+      };
 
 export interface AssistantCta {
     label: string;
@@ -88,7 +102,7 @@ export interface QuickAction {
     id: string;
     label: string;
     prompt: string;
-    target: AssistantActionTarget;
+    target: AssistantSectionTarget;
 }
 
 export interface AssistantKnowledgeService {
@@ -110,7 +124,7 @@ export interface AssistantKnowledgeProject {
     capabilities: string[];
     serviceTypes: AssistantServiceCategory[];
     keywords: string[];
-    sectionTarget: Extract<AssistantActionTarget, 'works'>;
+    sectionTarget: Extract<AssistantSectionTarget, 'works'>;
     featured?: boolean;
 }
 
@@ -124,6 +138,27 @@ export interface AssistantKnowledgeContactMethod {
     label: string;
     value: string;
     kind: 'email' | 'phone' | 'social' | 'form';
+}
+
+export interface AssistantSiteFeature {
+    id: string;
+    label: string;
+    kind: AssistantSiteFeatureKind;
+    description: string;
+    keywords: string[];
+    target: AssistantActionTarget;
+    actionType: AssistantActionType;
+}
+
+export interface AssistantWorksCategory {
+    id: string;
+    label: string;
+    description: string;
+    keywords: string[];
+    target: 'works';
+    actionType: 'scroll';
+    filter?: AssistantWorksFilter;
+    exampleProjectIds: string[];
 }
 
 export interface AssistantKnowledge {
@@ -153,11 +188,15 @@ export interface AssistantKnowledge {
     projects: AssistantKnowledgeProject[];
     testimonials: AssistantKnowledgeTestimonial[];
     contactMethods: AssistantKnowledgeContactMethod[];
+    siteFeatures: AssistantSiteFeature[];
+    workCategories: AssistantWorksCategory[];
     behaviorHints: string[];
     actionHints: Array<{
         target: AssistantActionTarget;
+        type: AssistantActionType;
         label: string;
         when: string;
+        filter?: AssistantWorksFilter;
     }>;
     quickActions: QuickAction[];
 }
@@ -245,6 +284,7 @@ export type AssistantPersistedState = {
 export interface UseAssistantReturn {
     isOpen: boolean;
     isTyping: boolean;
+    orbState: AssistantOrbState;
     messages: AssistantMessage[];
     showQuickActions: boolean;
     quickActions: QuickAction[];
@@ -253,6 +293,7 @@ export interface UseAssistantReturn {
     closeAssistant: () => void;
     toggleAssistant: () => void;
     submitMessage: (input: string, source?: 'input' | 'quick_action') => void;
+    setIsDrafting: (value: boolean) => void;
     handleQuickAction: (action: QuickAction) => void;
     handleMessageAction: (action: AssistantAction) => void;
     handleMessageCta: (cta: AssistantCta) => void;

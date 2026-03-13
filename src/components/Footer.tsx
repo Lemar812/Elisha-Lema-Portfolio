@@ -26,7 +26,7 @@ export default function Footer() {
     };
 
     return (
-        <footer ref={footerRef} className="relative pt-16 md:pt-32 pb-12 overflow-hidden">
+        <footer ref={footerRef} data-floating-footer-boundary className="relative overflow-hidden pt-16 pb-12 md:pt-32">
             {/* Large background label */}
             <motion.div
                 style={{ x: "-50%", y, opacity, scale }}
@@ -205,7 +205,7 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 pt-8">
                     <p className="text-text-muted text-sm font-mono">
-                        © {currentYear} ELISHA LEMA. All rights reserved.
+                        Copyright {currentYear} ELISHA LEMA. All rights reserved.
                     </p>
                     <div className="flex gap-8 text-sm text-text-muted">
                         <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
@@ -216,4 +216,5 @@ export default function Footer() {
         </footer>
     );
 }
+
 

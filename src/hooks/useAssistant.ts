@@ -3,12 +3,13 @@ import { assistantKnowledge } from '../data/assistantKnowledge';
 import { runAssistantAction } from '../lib/assistantActions';
 import { trackAssistantEvent } from '../lib/assistantAnalytics';
 import { inferCommercialSignals } from '../lib/assistantLeadUtils';
-import { clearInquiryDraft, loadAssistantSession, saveAssistantSession, saveInquiryDraft } from '../lib/assistantSession';
+import { clearInquiryDraft, saveInquiryDraft } from '../lib/assistantSession';
 import type {
     AssistantAction,
     AssistantApiRequest,
     AssistantCta,
     AssistantMessage,
+    AssistantOrbState,
     AssistantRecommendation,
     QuickAction,
     UseAssistantReturn,
@@ -19,37 +20,57 @@ import {
     createAssistantMessage,
     sanitizeAssistantApiResponse,
     toAssistantHistory,
-    toStoredAssistantMessages,
     trimAssistantContent,
 } from '../lib/assistantUtils';
 
 const ASSISTANT_ENDPOINT = '/.netlify/functions/portfolio-chat';
 const RESPONSE_DELAY_MS = 320;
 const REQUEST_TIMEOUT_MS = 12000;
+const SPEAKING_STATE_MS = 2400;
 
 type ReplyFailureReason = 'network' | 'provider' | 'invalid_response' | 'rate_limited';
 
 export function useAssistant(): UseAssistantReturn {
-    const initialSession = useMemo(() => loadAssistantSession(), []);
     const [isOpen, setIsOpen] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
-    const [messages, setMessages] = useState<AssistantMessage[]>(() => initialSession?.messages ?? []);
-    const hasWelcomedRef = useRef(initialSession?.hasWelcomed ?? false);
-    const hasOpenedRef = useRef(initialSession?.hasOpened ?? false);
+    const [isDrafting, setIsDrafting] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [messages, setMessages] = useState<AssistantMessage[]>([]);
+    const messagesRef = useRef<AssistantMessage[]>([]);
+    const hasWelcomedRef = useRef(false);
+    const hasOpenedRef = useRef(false);
     const pendingRequestRef = useRef<AbortController | null>(null);
     const pendingInputRef = useRef<string | null>(null);
     const typingTimeoutRef = useRef<number | null>(null);
+    const speakingTimeoutRef = useRef<number | null>(null);
     const lastSummaryRef = useRef<string | null>(null);
     const lastLeadKeyRef = useRef<string | null>(null);
 
+    useEffect(() => {
+        messagesRef.current = messages;
+    }, [messages]);
+
     const commercialSignals = useMemo(() => inferCommercialSignals(toAssistantHistory(messages)), [messages]);
     const inquirySummary = commercialSignals.summary;
+    const orbState: AssistantOrbState = isTyping ? 'thinking' : isDrafting ? 'userTyping' : isSpeaking ? 'speaking' : 'idle';
 
     useEffect(() => {
         if (messages.length > 0 && !hasWelcomedRef.current) {
             hasWelcomedRef.current = true;
         }
     }, [messages]);
+
+    const triggerSpeakingState = useCallback(() => {
+        if (speakingTimeoutRef.current) {
+            window.clearTimeout(speakingTimeoutRef.current);
+        }
+
+        setIsSpeaking(true);
+        speakingTimeoutRef.current = window.setTimeout(() => {
+            setIsSpeaking(false);
+            speakingTimeoutRef.current = null;
+        }, SPEAKING_STATE_MS);
+    }, []);
 
     const appendAssistantReply = useCallback(
         (
@@ -76,9 +97,15 @@ export function useAssistant(): UseAssistantReturn {
                     qualification: reply.qualification,
                 });
 
-                setMessages((current) => [...current, nextMessage]);
+                setMessages((current) => {
+                    const nextMessages = [...current, nextMessage];
+                    messagesRef.current = nextMessages;
+                    return nextMessages;
+                });
                 setIsTyping(false);
+                setIsDrafting(false);
                 pendingInputRef.current = null;
+                triggerSpeakingState();
 
                 trackAssistantEvent('assistant_response_received', {
                     mode: nextMessage.mode ?? 'fallback',
@@ -108,26 +135,47 @@ export function useAssistant(): UseAssistantReturn {
                 }
             }, RESPONSE_DELAY_MS);
         },
-        []
+        [triggerSpeakingState]
     );
+
+    const resetAssistantState = useCallback(() => {
+        pendingRequestRef.current?.abort();
+        pendingRequestRef.current = null;
+
+        if (typingTimeoutRef.current) {
+            window.clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+
+        if (speakingTimeoutRef.current) {
+            window.clearTimeout(speakingTimeoutRef.current);
+            speakingTimeoutRef.current = null;
+        }
+
+        pendingInputRef.current = null;
+        lastSummaryRef.current = null;
+        lastLeadKeyRef.current = null;
+        hasWelcomedRef.current = false;
+        hasOpenedRef.current = false;
+        messagesRef.current = [];
+        setIsTyping(false);
+        setIsDrafting(false);
+        setIsSpeaking(false);
+        setMessages([]);
+    }, []);
 
     useEffect(() => {
         return () => {
             if (typingTimeoutRef.current) {
                 window.clearTimeout(typingTimeoutRef.current);
             }
+            if (speakingTimeoutRef.current) {
+                window.clearTimeout(speakingTimeoutRef.current);
+            }
 
             pendingRequestRef.current?.abort();
         };
     }, []);
-
-    useEffect(() => {
-        saveAssistantSession({
-            messages: toStoredAssistantMessages(messages),
-            hasWelcomed: hasWelcomedRef.current,
-            hasOpened: hasOpenedRef.current,
-        });
-    }, [messages]);
 
     useEffect(() => {
         if (!inquirySummary || inquirySummary.summaryText === lastSummaryRef.current) {
@@ -166,17 +214,21 @@ export function useAssistant(): UseAssistantReturn {
             return;
         }
 
-        if (messages.length > 0) {
+        if (messagesRef.current.length > 0) {
             hasWelcomedRef.current = true;
             return;
         }
 
+        const welcomeMessage = createAssistantMessage('assistant', assistantKnowledge.welcomeMessage, undefined, undefined, {
+            intent: 'general',
+        });
+
         hasWelcomedRef.current = true;
-        setMessages([createAssistantMessage('assistant', assistantKnowledge.welcomeMessage, undefined, undefined, { intent: 'general' })]);
-    }, [messages.length]);
+        messagesRef.current = [welcomeMessage];
+        setMessages([welcomeMessage]);
+    }, []);
 
     const openAssistant = useCallback(() => {
-        const restoredSession = Boolean(initialSession?.messages?.length);
         ensureWelcome();
 
         if (!hasOpenedRef.current) {
@@ -185,22 +237,17 @@ export function useAssistant(): UseAssistantReturn {
 
         setIsOpen((current) => {
             if (!current) {
-                trackAssistantEvent('assistant_opened', { restoredSession });
+                trackAssistantEvent('assistant_opened', { restoredSession: false });
             }
 
             return true;
         });
-
-        saveAssistantSession({
-            messages: toStoredAssistantMessages(messages),
-            hasWelcomed: hasWelcomedRef.current,
-            hasOpened: hasOpenedRef.current,
-        });
-    }, [ensureWelcome, initialSession?.messages?.length, messages]);
+    }, [ensureWelcome]);
 
     const closeAssistant = useCallback(() => {
         setIsOpen(false);
-    }, []);
+        resetAssistantState();
+    }, [resetAssistantState]);
 
     const toggleAssistant = useCallback(() => {
         if (isOpen) {
@@ -328,6 +375,7 @@ export function useAssistant(): UseAssistantReturn {
 
             ensureWelcome();
             setIsTyping(true);
+            setIsSpeaking(false);
             pendingInputRef.current = normalized;
 
             trackAssistantEvent('assistant_message_sent', {
@@ -335,12 +383,13 @@ export function useAssistant(): UseAssistantReturn {
                 source,
             });
 
+            const currentMessages = messagesRef.current;
             const userMessage = createAssistantMessage('user', trimmed);
+            const nextMessages = [...currentMessages, userMessage];
 
-            setMessages((current) => {
-                void requestAssistantReply(current, trimmed);
-                return [...current, userMessage];
-            });
+            messagesRef.current = nextMessages;
+            setMessages(nextMessages);
+            void requestAssistantReply(currentMessages, trimmed);
         },
         [ensureWelcome, isTyping, requestAssistantReply]
     );
@@ -432,6 +481,7 @@ export function useAssistant(): UseAssistantReturn {
     return {
         isOpen,
         isTyping,
+        orbState,
         messages,
         showQuickActions,
         quickActions,
@@ -440,6 +490,7 @@ export function useAssistant(): UseAssistantReturn {
         closeAssistant,
         toggleAssistant,
         submitMessage,
+        setIsDrafting,
         handleQuickAction,
         handleMessageAction,
         handleMessageCta,
