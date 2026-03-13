@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion, type Transition } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useFloatingDockOffset } from '../../hooks/useFloatingDockOffset';
 import type { AssistantOrbState } from '../../lib/assistantTypes';
@@ -63,7 +63,6 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                 typeof window.sessionStorage === 'undefined' ||
                 !canShowNudge ||
                 open ||
-                orbState === 'userTyping' ||
                 hasStoppedNudges()
             ) {
                 return;
@@ -71,7 +70,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
 
             clearShowTimer();
             showTimerRef.current = window.setTimeout(() => {
-                if (open || orbState === 'userTyping' || hasStoppedNudges()) {
+                if (open || hasStoppedNudges()) {
                     showTimerRef.current = null;
                     return;
                 }
@@ -80,7 +79,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                 showTimerRef.current = null;
             }, delayMs);
         },
-        [canShowNudge, clearShowTimer, hasStoppedNudges, open, orbState]
+        [canShowNudge, clearShowTimer, hasStoppedNudges, open]
     );
 
     const dismissNudge = useCallback(() => {
@@ -93,15 +92,6 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
         }
 
         switch (orbState) {
-            case 'userTyping':
-                return {
-                    scale: [1, 1.06, 1],
-                    boxShadow: [
-                        '0 18px 46px rgba(0,0,0,0.42)',
-                        '0 0 0 10px rgba(34,211,238,0.12), 0 22px 55px rgba(34,211,238,0.22)',
-                        '0 18px 46px rgba(0,0,0,0.42)',
-                    ],
-                };
             case 'thinking':
                 return {
                     scale: [1, 1.03, 1],
@@ -135,20 +125,18 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
         }
     }, [orbState, reduceMotion]);
 
-    const orbTransition = useMemo(() => {
+    const orbTransition = useMemo<Transition>(() => {
         if (reduceMotion) {
             return { duration: 0.18 };
         }
 
         switch (orbState) {
-            case 'userTyping':
-                return { duration: 1.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' };
             case 'thinking':
-                return { duration: 1.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' };
+                return { duration: 1.4, repeat: Infinity, ease: 'easeInOut' };
             case 'speaking':
-                return { duration: 1.8, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' };
+                return { duration: 1.8, repeat: Infinity, ease: 'easeInOut' };
             default:
-                return { duration: 5.8, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' };
+                return { duration: 5.8, repeat: Infinity, ease: 'easeInOut' };
         }
     }, [orbState, reduceMotion]);
 
@@ -165,13 +153,6 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
             return;
         }
 
-        if (orbState === 'userTyping') {
-            setShowNudge(false);
-            clearHideTimer();
-            scheduleNextNudge(REAPPEAR_NUDGE_DELAY_MS);
-            return;
-        }
-
         if (!showNudge) {
             scheduleNextNudge(FIRST_NUDGE_DELAY_MS);
         }
@@ -181,7 +162,6 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
         clearShowTimer,
         hasStoppedNudges,
         open,
-        orbState,
         scheduleNextNudge,
         showNudge,
         stopNudgesForSession,
@@ -191,7 +171,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
         if (!showNudge) {
             clearHideTimer();
 
-            if (!open && canShowNudge && !hasStoppedNudges() && orbState !== 'userTyping') {
+            if (!open && canShowNudge && !hasStoppedNudges()) {
                 scheduleNextNudge(REAPPEAR_NUDGE_DELAY_MS);
             }
             return;
@@ -206,7 +186,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
         return () => {
             clearHideTimer();
         };
-    }, [canShowNudge, clearHideTimer, hasStoppedNudges, open, orbState, scheduleNextNudge, showNudge]);
+    }, [canShowNudge, clearHideTimer, hasStoppedNudges, open, scheduleNextNudge, showNudge]);
 
     useEffect(() => {
         return () => {
@@ -279,20 +259,20 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                 <motion.span
                     aria-hidden="true"
                     animate={reduceMotion ? undefined : { rotate: [0, 360] }}
-                    transition={{ duration: orbState === 'thinking' ? 8 : 16, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
+                    transition={{ duration: orbState === 'thinking' ? 8 : 16, repeat: Infinity, ease: 'linear' }}
                     className="absolute inset-[-6px] rounded-full border border-white/10 border-t-secondary/55 border-r-primary/40 opacity-70"
                 />
                 <motion.span
                     aria-hidden="true"
-                    animate={reduceMotion ? undefined : { scale: orbState === 'userTyping' ? [1, 1.18, 1] : [1, 1.1, 1], opacity: [0.32, 0.58, 0.32] }}
-                    transition={{ duration: orbState === 'userTyping' ? 1.05 : 2.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+                    animate={reduceMotion ? undefined : { scale: [1, 1.1, 1], opacity: [0.32, 0.58, 0.32] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
                     className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.65),transparent_20%),radial-gradient(circle_at_35%_35%,rgba(124,58,237,0.95),rgba(124,58,237,0.38)_46%,rgba(5,5,5,0.05)_74%),radial-gradient(circle_at_72%_76%,rgba(34,211,238,0.72),transparent_28%)] blur-[1px]"
                 />
                 <span className="absolute inset-[8px] rounded-full border border-white/12 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_60%_70%,rgba(34,211,238,0.28),transparent_30%),radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.18),rgba(8,8,8,0.7)_75%)] backdrop-blur-xl" />
                 <motion.span
                     aria-hidden="true"
                     animate={reduceMotion ? undefined : { scale: orbState === 'speaking' ? [1, 1.08, 1] : [1, 1.02, 1], opacity: [0.65, 0.95, 0.65] }}
-                    transition={{ duration: orbState === 'speaking' ? 1.6 : 2.8, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
+                    transition={{ duration: orbState === 'speaking' ? 1.6 : 2.8, repeat: Infinity, ease: 'easeInOut' }}
                     className="absolute inset-[14px] rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.5),transparent_18%),radial-gradient(circle_at_50%_55%,rgba(124,58,237,0.8),rgba(124,58,237,0.2)_60%,transparent_82%)]"
                 />
                 <span className="absolute inset-[18px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.22),transparent_18%),radial-gradient(circle_at_68%_72%,rgba(34,211,238,0.2),transparent_22%),radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.24),rgba(5,5,5,0.22)_72%)]" />
