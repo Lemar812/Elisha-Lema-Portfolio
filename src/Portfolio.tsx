@@ -72,7 +72,7 @@ export default function Portfolio({ canShowAssistantNudge = true }: PortfolioPro
             <BackgroundFX />
             <div className="relative z-10">
                 <Navbar />
-                <main>
+                <main className="pt-[108px] md:pt-[116px]">
                     <Hero />
                     <Skills />
                     <WorksGallery />

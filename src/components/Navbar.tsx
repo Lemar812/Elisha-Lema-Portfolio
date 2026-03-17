@@ -67,7 +67,7 @@ export default function Navbar() {
                 <div className="mx-auto w-full max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[240px_minmax(0,1fr)_170px] lg:gap-10',
+                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[220px_minmax(0,1fr)_180px] lg:gap-8 xl:gap-10',
                             isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
                         )}
                     >
@@ -104,7 +104,7 @@ export default function Navbar() {
                             </div>
                         </motion.a>
 
-                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] px-2 py-1.5 backdrop-blur-xl lg:flex lg:justify-self-center">
+                        <div className="mx-auto hidden min-w-0 w-fit items-center justify-center rounded-full border border-white/5 bg-white/[0.03] px-2 py-1.5 backdrop-blur-xl lg:flex lg:justify-self-center">
                             {navLinks.map((link) => (
                                 <motion.a
                                     key={link.name}
@@ -112,7 +112,7 @@ export default function Navbar() {
                                     onClick={(e) => scrollToSection(e, link.href)}
                                     whileHover="hover"
                                     initial="initial"
-                                    className="group relative whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white"
+                                    className="group relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white xl:px-5"
                                 >
                                     <div className="relative z-10 flex items-center gap-2">
                                         <motion.div
@@ -161,7 +161,7 @@ export default function Navbar() {
                                     variant="primary"
                                     size="sm"
                                     onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
-                                    className="min-w-[156px] rounded-full border border-primary/25 bg-gradient-to-r from-primary via-[#8b4ff8] to-[#9f67ff] px-7 py-2.5 font-semibold tracking-[0.01em] text-white shadow-[0_10px_26px_rgba(124,58,237,0.24)] hover:shadow-[0_14px_32px_rgba(124,58,237,0.3)]"
+                                    className="min-w-[152px] rounded-full border border-primary/25 bg-gradient-to-r from-primary via-[#8b4ff8] to-[#9f67ff] px-6 py-2.5 font-semibold tracking-[0.01em] text-white shadow-[0_10px_26px_rgba(124,58,237,0.24)] hover:shadow-[0_14px_32px_rgba(124,58,237,0.3)]"
                                 >
                                     Let&apos;s Work
                                 </Button>
