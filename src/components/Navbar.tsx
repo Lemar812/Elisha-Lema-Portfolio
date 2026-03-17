@@ -67,8 +67,8 @@ export default function Navbar() {
                 <div className="mx-auto w-full max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[220px_minmax(0,1fr)_160px] lg:gap-8',
-                            isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-1'
+                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[240px_minmax(0,1fr)_170px] lg:gap-10',
+                            isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
                         )}
                     >
                         <motion.a
@@ -81,26 +81,30 @@ export default function Navbar() {
                         >
                             <motion.span
                                 aria-hidden="true"
-                                animate={{ opacity: [0.05, 0.12, 0.05], scale: [0.99, 1.02, 0.99] }}
-                                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                                className="absolute inset-x-2 inset-y-0 rounded-full bg-primary/12 blur-xl"
+                                animate={{ opacity: [0.06, 0.16, 0.06], scale: [0.99, 1.015, 0.99] }}
+                                transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
+                                className="absolute inset-x-1 inset-y-0 rounded-full bg-primary/14 blur-xl"
                             />
                             <div className="relative inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
-                                <span className="text-xl font-black tracking-[0.09em] text-white md:text-2xl">
-                                    ELISHA
-                                </span>
                                 <motion.span
-                                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'], textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 16px rgba(124,58,237,0.24)', '0 0 0 rgba(124,58,237,0)'] }}
+                                    animate={{ opacity: [0.9, 1, 0.9] }}
+                                    transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="text-xl font-black tracking-[0.09em] text-primary md:text-2xl"
+                                >
+                                    ELISHA
+                                </motion.span>
+                                <motion.span
+                                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'], textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 14px rgba(124,58,237,0.22)', '0 0 0 rgba(124,58,237,0)'] }}
                                     whileHover={{ filter: 'brightness(1.08)' }}
-                                    transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
-                                    className="bg-[linear-gradient(90deg,#7c3aed_0%,#9f67ff_50%,#7c3aed_100%)] bg-[length:200%_100%] bg-clip-text text-xl font-black tracking-[0.09em] text-transparent md:text-2xl"
+                                    transition={{ duration: 5.8, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="bg-[linear-gradient(90deg,#7c3aed_0%,#a66cff_50%,#8f4dff_100%)] bg-[length:200%_100%] bg-clip-text text-xl font-black tracking-[0.09em] text-transparent md:text-2xl"
                                 >
                                     LEMA
                                 </motion.span>
                             </div>
                         </motion.a>
 
-                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] p-1.5 backdrop-blur-xl lg:flex lg:justify-self-center">
+                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] px-2 py-1.5 backdrop-blur-xl lg:flex lg:justify-self-center">
                             {navLinks.map((link) => (
                                 <motion.a
                                     key={link.name}
@@ -108,7 +112,7 @@ export default function Navbar() {
                                     onClick={(e) => scrollToSection(e, link.href)}
                                     whileHover="hover"
                                     initial="initial"
-                                    className="group relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white xl:px-5"
+                                    className="group relative whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white"
                                 >
                                     <div className="relative z-10 flex items-center gap-2">
                                         <motion.div
@@ -152,12 +156,12 @@ export default function Navbar() {
 
                         <div className="ml-auto hidden shrink-0 lg:ml-0 lg:block lg:justify-self-end">
                             <motion.div whileHover={{ y: -1 }} transition={{ type: 'spring', stiffness: 320, damping: 24 }} className="relative">
-                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/10 blur-md" />
+                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/14 blur-lg" />
                                 <Button
                                     variant="primary"
                                     size="sm"
                                     onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
-                                    className="min-w-[148px] rounded-full border border-primary/20 bg-gradient-to-r from-primary to-[#8f4dff] px-6 py-2.5 font-semibold tracking-[0.015em] text-white shadow-[0_8px_22px_rgba(124,58,237,0.18)] hover:shadow-[0_12px_28px_rgba(124,58,237,0.24)]"
+                                    className="min-w-[156px] rounded-full border border-primary/25 bg-gradient-to-r from-primary via-[#8b4ff8] to-[#9f67ff] px-7 py-2.5 font-semibold tracking-[0.01em] text-white shadow-[0_10px_26px_rgba(124,58,237,0.24)] hover:shadow-[0_14px_32px_rgba(124,58,237,0.3)]"
                                 >
                                     Let&apos;s Work
                                 </Button>
