@@ -205,7 +205,7 @@ export function parseAssistantRequest(body: string | null): AssistantApiRequest 
 
         const context = candidate.sessionContext as Partial<AssistantSessionIntentContext>;
         sessionContext = {
-            language: context.language === 'sw' ? 'sw' : context.language === 'fr' ? 'fr' : 'en',
+            language: context.language === 'sw' ? 'sw' : context.language === 'fr' ? 'fr' : context.language === 'es' ? 'es' : 'en',
             selectedService:
                 context.selectedService === 'logo' ||
                 context.selectedService === 'poster' ||

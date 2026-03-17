@@ -12,7 +12,12 @@ import type {
 } from './assistantTypes';
 import { extractInquiryProfile, inferServiceCategoriesFromText } from './assistantLeadUtils';
 function normalize(value: string) {
-    return value.toLowerCase().replace(/\s+/g, ' ').trim();
+    return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 function unique<T>(values: T[]) {
@@ -20,32 +25,35 @@ function unique<T>(values: T[]) {
 }
 
 const SERVICE_ALIASES: Array<{ workflow: AssistantWorkflowType; keywords: string[] }> = [
-    { workflow: 'logo', keywords: ['logo', 'nembo', 'brand mark', 'business logo'] },
-    { workflow: 'poster', keywords: ['poster', 'banner', 'flyer', 'brochure', 'promo graphic', 'church flyer'] },
-    { workflow: 'website', keywords: ['website', 'web', 'landing page', 'portfolio site', 'business site', 'tovuti'] },
-    { workflow: 'branding', keywords: ['branding', 'brand identity', 'visual identity', 'identity system', 'chapa'] },
-    { workflow: 'hiring', keywords: ['hire', 'work with you', 'start a project', 'project', 'quote', 'availability'] },
+    { workflow: 'logo', keywords: ['need a logo', 'want a logo', 'je veux un logo', 'nataka logo', 'nahitaji logo', 'quiero un logo', 'necesito un logo'] },
+    { workflow: 'poster', keywords: ['need a poster', 'need a banner', 'need a flyer', 'nataka poster', 'nahitaji poster', 'je veux une affiche', 'quiero un poster'] },
+    { workflow: 'website', keywords: ['need a website', 'want a website', 'je veux un site web', 'nataka website', 'nahitaji tovuti', 'quiero un sitio web', 'necesito una web'] },
+    { workflow: 'branding', keywords: ['need branding', 'want branding', 'brand identity for', 'je veux du branding', 'nataka branding', 'quiero branding'] },
+    { workflow: 'hiring', keywords: ['hire', 'work with you', 'start a project', 'get a quote', 'request work', 'book a project', 'je veux travailler avec toi', 'nataka kuanza mradi', 'quiero trabajar contigo'] },
 ];
 
 const QUESTION_COPY: Record<
     AssistantWorkflowType,
-    Partial<Record<'projectType' | 'goal' | 'timeline', { en: string; sw: string; fr: string }>>
+    Partial<Record<'projectType' | 'goal' | 'timeline', { en: string; sw: string; fr: string; es: string }>>
 > = {
     logo: {
         projectType: {
             en: 'Great. What should the logo be for: a business, personal brand, event, or something else?',
             sw: 'Sawa. Nembo hiyo ni ya biashara, personal brand, tukio, au kitu kingine?',
             fr: 'Très bien. Ce logo est pour une entreprise, une marque personnelle, un événement, ou autre chose ?',
+            es: 'Muy bien. Ese logo es para un negocio, una marca personal, un evento o algo mas?',
         },
         goal: {
             en: 'What should the logo help communicate or achieve?',
             sw: 'Nembo hiyo inapaswa kuwasilisha au kusaidia kufanikisha nini?',
             fr: 'Que doit communiquer ou accomplir ce logo ?',
+            es: 'Que debe comunicar o lograr ese logo?',
         },
         timeline: {
             en: 'Do you have a timeline in mind for it?',
             sw: 'Una muda gani unaolenga kwa kazi hiyo?',
             fr: 'Avez-vous un délai en tête pour cela ?',
+            es: 'Tienes algun plazo en mente para esto?',
         },
     },
     poster: {
@@ -53,16 +61,19 @@ const QUESTION_COPY: Record<
             en: 'What is the poster, banner, or flyer promoting?',
             sw: 'Poster, banner, au flyer hiyo inatangaza nini?',
             fr: 'Que doit promouvoir l’affiche, la bannière ou le flyer ?',
+            es: 'Que debe promocionar el poster, banner o flyer?',
         },
         goal: {
             en: 'What outcome do you want it to drive?',
             sw: 'Unataka ilete matokeo gani?',
             fr: 'Quel résultat voulez-vous obtenir avec cela ?',
+            es: 'Que resultado quieres conseguir con esto?',
         },
         timeline: {
             en: 'When do you need it ready?',
             sw: 'Unaihitaji iwe tayari lini?',
             fr: 'Pour quand en avez-vous besoin ?',
+            es: 'Para cuando lo necesitas?',
         },
     },
     website: {
@@ -70,16 +81,19 @@ const QUESTION_COPY: Record<
             en: 'Great. What kind of website are you planning: portfolio, business, landing page, or something else?',
             sw: 'Vizuri. Unapanga tovuti ya aina gani: portfolio, biashara, landing page, au nyingine?',
             fr: 'Très bien. Quel type de site préparez-vous : portfolio, site business, landing page, ou autre ?',
+            es: 'Muy bien. Que tipo de sitio estas planeando: portfolio, negocio, landing page u otro?',
         },
         goal: {
             en: 'What should the website help you achieve?',
             sw: 'Tovuti hiyo inapaswa kukusaidia kufanikisha nini?',
             fr: 'Quel objectif le site doit-il vous aider à atteindre ?',
+            es: 'Que objetivo debe ayudarte a lograr el sitio?',
         },
         timeline: {
             en: 'Do you have a target launch timeline?',
             sw: 'Una muda gani wa uzinduzi unaolenga?',
             fr: 'Avez-vous un calendrier de lancement visé ?',
+            es: 'Tienes un plazo objetivo para lanzar el sitio?',
         },
     },
     branding: {
@@ -87,16 +101,19 @@ const QUESTION_COPY: Record<
             en: 'Is this for a new brand, or a refresh of an existing identity?',
             sw: 'Hii ni kwa brand mpya au kuboresha identity iliyopo?',
             fr: 'Est-ce pour une nouvelle marque ou pour rafraîchir une identité existante ?',
+            es: 'Es para una marca nueva o para refrescar una identidad existente?',
         },
         goal: {
             en: 'What should the branding help improve first?',
             sw: 'Branding hiyo inapaswa kuboresha nini kwanza?',
             fr: 'Qu’est-ce que le branding doit améliorer en priorité ?',
+            es: 'Que debe mejorar primero el branding?',
         },
         timeline: {
             en: 'What timeline are you working with?',
             sw: 'Unafanya kazi kwa muda gani?',
             fr: 'Quel délai avez-vous en tête ?',
+            es: 'Con que plazo estas trabajando?',
         },
     },
     hiring: {
@@ -104,45 +121,53 @@ const QUESTION_COPY: Record<
             en: 'Happy to help. What would you like to start with: logo design, promotional graphics, a website, or full branding?',
             sw: 'Ninaweza kusaidia. Ungependa kuanza na nini: logo, promo graphics, website, au full branding?',
             fr: 'Avec plaisir. Vous souhaitez commencer par un logo, des visuels promotionnels, un site web ou une identité complète ?',
+            es: 'Con gusto. Que te gustaria empezar: logo, piezas promocionales, un sitio web o branding completo?',
         },
         goal: {
             en: 'What are you trying to get done with the project?',
             sw: 'Unataka mradi huo ukusaidie kufanikisha nini?',
             fr: 'Quel résultat voulez-vous obtenir avec ce projet ?',
+            es: 'Que quieres lograr con el proyecto?',
         },
         timeline: {
             en: 'Do you have a preferred timeline?',
             sw: 'Una muda unaoupendelea?',
             fr: 'Avez-vous un délai préféré ?',
+            es: 'Tienes un plazo preferido?',
         },
     },
 };
 
-const READY_COPY: Record<AssistantWorkflowType, { en: string; sw: string; fr: string }> = {
+const READY_COPY: Record<AssistantWorkflowType, { en: string; sw: string; fr: string; es: string }> = {
     logo: {
         en: 'That gives me enough to guide the next step for the logo request.',
         sw: 'Hiyo inanipa taarifa za kutosha kukuongoza kwenye hatua inayofuata ya ombi la logo.',
         fr: 'Cela me donne assez d’éléments pour guider la prochaine étape de la demande de logo.',
+        es: 'Eso me da suficiente para guiar el siguiente paso de la solicitud de logo.',
     },
     poster: {
         en: 'That gives me enough to shape the design request.',
         sw: 'Hiyo inanipa taarifa za kutosha kupanga ombi la design.',
         fr: 'Cela me donne assez d’éléments pour structurer la demande de design.',
+        es: 'Eso me da suficiente para estructurar la solicitud de diseno.',
     },
     website: {
         en: 'That gives me enough to shape the website request.',
         sw: 'Hiyo inanipa taarifa za kutosha kupanga ombi la website.',
         fr: 'Cela me donne assez d’éléments pour structurer la demande de site web.',
+        es: 'Eso me da suficiente para estructurar la solicitud del sitio web.',
     },
     branding: {
         en: 'That gives me enough to shape the branding direction.',
         sw: 'Hiyo inanipa taarifa za kutosha kupanga mwelekeo wa branding.',
         fr: 'Cela me donne assez d’éléments pour orienter le travail de branding.',
+        es: 'Eso me da suficiente para definir la direccion del branding.',
     },
     hiring: {
         en: 'That gives me enough to move your project forward.',
         sw: 'Hiyo inanipa taarifa za kutosha kusogeza mradi wako mbele.',
         fr: 'Cela me donne assez d’éléments pour faire avancer votre projet.',
+        es: 'Eso me da suficiente para hacer avanzar tu proyecto.',
     },
 };
 
@@ -173,7 +198,7 @@ export function inferRelevantFilter(workflow: AssistantWorkflowType | null) {
 }
 
 function classifyLeadStatus(text: string) {
-    return /(hire|quote|budget|price|pricing|start a project|project|need|want|looking for|availability|contact)/i.test(text)
+    return /(hire|quote|budget|start a project|need a|want a|looking for a|work with you|je veux|j'ai besoin|nataka|nahitaji|quiero|necesito)/i.test(text)
         ? 'likelyLead'
         : 'browsing';
 }
@@ -281,13 +306,14 @@ export function buildGuidedWorkflowReply(
                 en: 'I can show relevant pricing, similar work, or carry this into contact for you.',
                 sw: 'Naweza kukuonyesha bei inayokaribiana, kazi zinazofanana, au kukupeleka kwenye contact ukiendelee.',
                 fr: 'Je peux vous montrer le tarif pertinent, des réalisations proches, ou transférer cela vers le contact pour vous.',
+                es: 'Puedo mostrarte el precio relevante, trabajo similar o llevar esto a contacto por ti.',
             })}`,
             mode: 'fallback',
             intent: 'lead',
             actions: [
-                createBusinessAction('show_pricing_for_current_service', localizeAssistantText(language, { en: 'Relevant pricing', sw: 'Bei ya karibu', fr: 'Tarif pertinent' }), { workflow }),
-                createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Relevant work', sw: 'Kazi zinazofanana', fr: 'Travaux proches' }), { workflow }),
-                createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Continue to Contact', sw: 'Endelea Contact', fr: 'Continuer vers Contact' }), { workflow }),
+                createBusinessAction('show_pricing_for_current_service', localizeAssistantText(language, { en: 'Relevant pricing', sw: 'Bei ya karibu', fr: 'Tarif pertinent', es: 'Precio relevante' }), { workflow }),
+                createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Relevant work', sw: 'Kazi zinazofanana', fr: 'Travaux proches', es: 'Trabajo relevante' }), { workflow }),
+                createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Continue to Contact', sw: 'Endelea Contact', fr: 'Continuer vers Contact', es: 'Continuar a contacto' }), { workflow }),
             ],
         };
     }

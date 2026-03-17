@@ -66,37 +66,45 @@ const LEAD_KEYWORDS = [
     'hire',
     'work with you',
     'start a project',
-    'pricing',
-    'price',
     'quote',
     'availability',
     'available',
     'budget',
-    'contact',
     'need a logo',
     'need a website',
     'need branding',
+    'nataka logo',
+    'nahitaji website',
+    'je veux un logo',
+    'je veux un site web',
+    'quiero un logo',
+    'quiero un sitio web',
 ];
 
 const INTENT_KEYWORDS: Record<AssistantIntent, string[]> = {
-    greeting: ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'habari', 'mambo'],
-    projects: ['project', 'projects', 'work', 'works', 'portfolio', 'case study', 'gallery', 'logo work', 'logos'],
-    services: ['service', 'services', 'offer', 'offering', 'help with', 'what do you do', 'branding', 'website'],
-    skills: ['skill', 'skills', 'stack', 'tools', 'tech', 'technology', 'software'],
-    about: ['about', 'who are you', 'who is', 'background', 'bio'],
-    testimonials: ['testimonial', 'testimonials', 'review', 'reviews', 'client feedback', 'social proof', 'client stories'],
-    contact: ['contact', 'reach out', 'email', 'call', 'book', 'whatsapp'],
+    greeting: ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'habari', 'mambo', 'bonjour', 'hola'],
+    projects: ['project', 'projects', 'work', 'works', 'portfolio', 'case study', 'gallery', 'logo work', 'logos', 'miradi', 'portfolio work', 'projets', 'travaux', 'proyectos', 'galeria'],
+    services: ['service', 'services', 'offer', 'offering', 'what do you do', 'services offer', 'huduma', 'anafanya huduma gani', 'services propose', 'quels services', 'servicios', 'que servicios'],
+    skills: ['skill', 'skills', 'stack', 'tools', 'tech', 'technology', 'software', 'ujuzi', 'ana ujuzi gani', 'competences', 'quelles sont les competences', 'habilidades', 'que habilidades'],
+    about: ['about', 'who are you', 'who is', 'background', 'bio', 'kuhusu', 'a propos', 'acerca de'],
+    testimonials: ['testimonial', 'testimonials', 'review', 'reviews', 'client feedback', 'social proof', 'client stories', 'ushuhuda', 'temoignages', 'avis', 'testimonios'],
+    contact: ['contact', 'reach out', 'email', 'call', 'book', 'whatsapp', 'wasiliana', 'contacter', 'contacto'],
     lead: LEAD_KEYWORDS,
-    outOfScope: ['weather', 'news', 'politics', 'sports', 'recipe', 'stock', 'bitcoin', 'math homework'],
+    outOfScope: ['weather', 'news', 'politics', 'sports', 'recipe', 'stock', 'bitcoin', 'math homework', 'meteo', 'clima', 'quantum physics'],
     unknown: [],
 };
 
 const HISTORY_LIMIT = 8;
 const STORED_HISTORY_LIMIT = 16;
-const NAVIGATION_KEYWORDS = ['where', 'show', 'take me', 'go to', 'open', 'see', 'view', 'find', 'redirect'];
+const NAVIGATION_KEYWORDS = ['where', 'show', 'take me', 'go to', 'open', 'see', 'view', 'find', 'redirect', 'onyesha', 'peleka', 'montre-moi', 'ouvrir', 'muestrame', 'abre'];
 
 export function normalizeAssistantText(value: string) {
-    return value.toLowerCase().replace(/\s+/g, ' ').trim();
+    return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 export function trimAssistantContent(value: string, maxLength = 700) {
@@ -106,10 +114,6 @@ export function trimAssistantContent(value: string, maxLength = 700) {
 export function detectAssistantIntent(input: string): AssistantIntent {
     const normalized = normalizeAssistantText(input);
 
-    if (LEAD_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
-        return 'lead';
-    }
-
     for (const intent of Object.keys(INTENT_KEYWORDS) as AssistantIntent[]) {
         if (intent === 'unknown' || intent === 'lead') {
             continue;
@@ -118,6 +122,10 @@ export function detectAssistantIntent(input: string): AssistantIntent {
         if (INTENT_KEYWORDS[intent].some((keyword) => normalized.includes(keyword))) {
             return intent;
         }
+    }
+
+    if (LEAD_KEYWORDS.some((keyword) => normalized.includes(keyword))) {
+        return 'lead';
     }
 
     return 'unknown';
@@ -143,60 +151,70 @@ function getLocalizedKnowledgeText(
                 en: assistantKnowledge.greetingMessage,
                 sw: 'Habari, mimi ni Yookie. Uliza kuhusu miradi, huduma, bei, ujuzi, au namna ya kuanza, nami nitakuongoza.',
                 fr: 'Bonjour, je suis Yookie. Demandez-moi des projets, services, tarifs, compétences, ou la meilleure façon de commencer, et je vous guiderai.',
+                es: 'Hola, soy Yookie. Preguntame sobre proyectos, servicios, precios, habilidades o la mejor manera de empezar, y te guiare.',
             });
         case 'leadCaptureMessage':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.leadCaptureMessage,
                 sw: 'Ninaweza kusaidia kuhusu branding, website, au visual design. Nieleze kidogo kuhusu mradi au lengo lako, nikuelekeze kwenye kazi na hatua inayofaa.',
                 fr: 'Je peux vous aider pour le branding, les sites web ou le design visuel. Partagez brièvement votre projet ou votre objectif, et je vous orienterai vers le travail le plus pertinent et la suite.',
+                es: 'Puedo ayudarte con branding, sitios web o diseno visual. Comparte brevemente tu proyecto u objetivo y te orientare hacia el trabajo mas relevante y el siguiente paso.',
             });
         case 'projectsSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.projectsSummary,
                 sw: 'Sehemu ya works inaonyesha logos, posters na banners, pamoja na website visuals kama NatureWiseTours. Hapo ndipo mahali pazuri kuona mtindo na ubora wa kazi.',
                 fr: 'La section works présente des logos, des affiches et bannières, ainsi que des visuels de sites comme NatureWiseTours. C’est le meilleur endroit pour voir le style et la qualité d’exécution.',
+                es: 'La seccion works muestra logos, posters y banners, junto con visuales web como NatureWiseTours. Es el mejor lugar para ver el estilo y la calidad del trabajo.',
             });
         case 'servicesSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.servicesSummary,
                 sw: 'Huduma zinajikita kwenye brand identity, web development, na graphic design. Kazi inahusisha logos, visual systems, websites, posters, brochures, na promo assets.',
                 fr: 'Les services couvrent l’identité de marque, le développement web et le design graphique. Le travail comprend logos, systèmes visuels, sites responsives, affiches, brochures et assets promotionnels.',
+                es: 'Los servicios cubren identidad de marca, desarrollo web y diseno grafico. El trabajo incluye logos, sistemas visuales, sitios responsivos, posters, brochures y piezas promocionales.',
             });
         case 'skillsSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.skillsSummary,
                 sw: 'Vifaa na teknolojia kuu ni React, TypeScript, Tailwind CSS, Framer Motion, Node.js, Adobe Illustrator, Adobe Photoshop, Canva, na brand identity design.',
                 fr: 'Les outils et technologies clés incluent React, TypeScript, Tailwind CSS, Framer Motion, Node.js, Adobe Illustrator, Adobe Photoshop, Canva, ainsi que le design d’identité visuelle.',
+                es: 'Las herramientas y tecnologias principales incluyen React, TypeScript, Tailwind CSS, Framer Motion, Node.js, Adobe Illustrator, Adobe Photoshop, Canva y diseno de identidad visual.',
             });
         case 'aboutSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.aboutSummary,
                 sw: 'Elisha Lema ni designer na developer kutoka Tanzania anayechanganya visual design na frontend execution. Portfolio inaonyesha mtazamo unaojali aesthetics, utatuzi wa matatizo, na ushirikiano mzuri.',
                 fr: 'Elisha Lema est designer et développeur basé en Tanzanie, combinant design visuel et exécution frontend. Le portfolio montre une approche centrée sur l’esthétique, la résolution concrète des problèmes et la collaboration.',
+                es: 'Elisha Lema es disenador y desarrollador de Tanzania, combinando diseno visual con ejecucion frontend. El portfolio muestra una aproximacion centrada en la estetica, la resolucion practica de problemas y la colaboracion.',
             });
         case 'testimonialsSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.testimonialsSummary,
                 sw: 'Testimonials zinaonyesha namna kazi zilivyosaidia brand presentation, promotional communication, tourism visuals, na identity ya biashara kuwa imara zaidi.',
                 fr: 'Les témoignages montrent comment le travail a renforcé la présentation de marque, la communication promotionnelle, les visuels touristiques et l’identité business.',
+                es: 'Los testimonios muestran como el trabajo ha fortalecido la presentacion de marca, la comunicacion promocional, los visuales turisticos y la identidad del negocio.',
             });
         case 'contactSummary':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.contactSummary,
                 sw: 'Unaweza kumfikia Elisha kupitia contact form, email, simu, GitHub, LinkedIn, Upwork, Instagram, au WhatsApp. Sehemu ya contact ndiyo hatua bora kwa mazungumzo ya mradi.',
                 fr: 'Vous pouvez contacter Elisha via le formulaire, email, téléphone, GitHub, LinkedIn, Upwork, Instagram ou WhatsApp. La section contact est l’étape la plus claire pour parler du projet.',
+                es: 'Puedes contactar a Elisha por formulario, email, telefono, GitHub, LinkedIn, Upwork, Instagram o WhatsApp. La seccion de contacto es el paso mas claro para hablar del proyecto.',
             });
         case 'scopeGuardMessage':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.scopeGuardMessage,
                 sw: 'Niko hapa kusaidia kuhusu portfolio ya Elisha Lema. Uliza kuhusu miradi, huduma, bei, ujuzi, testimonials, legal pages, au contact, nami nitabaki kwenye hilo.',
                 fr: 'Je suis ici pour aider autour du portfolio d’Elisha Lema. Demandez-moi les projets, services, tarifs, compétences, pages légales ou le contact, et je resterai sur ce périmètre.',
+                es: 'Estoy aqui para ayudar con el portfolio de Elisha Lema. Preguntame sobre proyectos, servicios, precios, habilidades, testimonios, paginas legales o contacto, y me mantendre en ese alcance.',
             });
         case 'rateLimitMessage':
             return localizeAssistantText(language, {
                 en: assistantKnowledge.rateLimitMessage,
                 sw: 'Tafadhali subiri kidogo kabla ya kutuma ujumbe mwingine. Bado niko hapa kusaidia kuhusu miradi, huduma, bei, au contact.',
                 fr: 'Veuillez patienter un instant avant d’envoyer un autre message. Je suis toujours là pour aider avec les projets, services, tarifs ou le contact.',
+                es: 'Espera un momento antes de enviar otro mensaje. Sigo aqui para ayudarte con proyectos, servicios, precios o contacto.',
             });
     }
 }
@@ -274,6 +292,28 @@ function findWorkCategory(input: string, context?: AssistantSessionIntentContext
     }
 
     return assistantWorkCategories.find((category) => category.filter === context.relevantCategory) ?? null;
+}
+
+function inferServiceFromPricingQuestion(input: string) {
+    const normalized = normalizeAssistantText(input);
+
+    if (/(logo|logos|nembo)/.test(normalized)) {
+        return 'logo' as const;
+    }
+
+    if (/(poster|banner|flyer|brochure|affiche|poster ya|flyer ya)/.test(normalized)) {
+        return 'poster' as const;
+    }
+
+    if (/(website|site web|sitio web|tovuti)/.test(normalized)) {
+        return 'website' as const;
+    }
+
+    if (/(branding|brand identity|identite|marca)/.test(normalized)) {
+        return 'branding' as const;
+    }
+
+    return null;
 }
 
 export function createScrollAction(
@@ -573,30 +613,32 @@ function buildLowConfidenceReply(context: AssistantSessionIntentContext | null, 
                   en: "I can't answer that with confidence from the portfolio alone. I can show the closest relevant work or take you to contact if you'd like direct help.",
                   sw: 'Siwezi kujibu hilo kwa uhakika nikitumia portfolio pekee. Naweza kukuonyesha kazi iliyo karibu zaidi au kukupeleka kwenye contact kama unahitaji msaada wa moja kwa moja.',
                   fr: 'Je ne peux pas répondre à cela avec assez de certitude à partir du portfolio seul. Je peux vous montrer le travail le plus proche ou vous emmener vers le contact si vous voulez une aide directe.',
+                  es: 'No puedo responder eso con suficiente seguridad usando solo el portfolio. Puedo mostrarte el trabajo mas cercano o llevarte a contacto si quieres ayuda directa.',
               })
             : `${getLocalizedKnowledgeText(language, 'scopeGuardMessage')} ${localizeAssistantText(language, {
                   en: 'I can still point you to the most relevant section or contact path.',
                   sw: 'Bado naweza kukuonyesha sehemu inayofaa zaidi au njia ya contact.',
                   fr: 'Je peux quand même vous orienter vers la section la plus pertinente ou vers le contact.',
+                  es: 'Aun puedo llevarte a la seccion mas relevante o a la ruta de contacto.',
               })}`,
         actions: hasWorkContext
             ? [
-                  createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Closest work', sw: 'Kazi iliyo karibu', fr: 'Travail le plus proche' }), { workflow: context?.selectedService }),
-                  createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Contact Elisha', sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' })),
+                  createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Closest work', sw: 'Kazi iliyo karibu', fr: 'Travail le plus proche', es: 'Trabajo mas cercano' }), { workflow: context?.selectedService }),
+                  createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Contact Elisha', sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
               ]
             : [
-                  createScrollAction('works', localizeAssistantText(language, { en: 'Projects', sw: 'Miradi', fr: 'Projets' })),
-                  createScrollAction('contact', localizeAssistantText(language, { en: 'Contact', sw: 'Wasiliana', fr: 'Contact' })),
+                  createScrollAction('works', localizeAssistantText(language, { en: 'Projects', sw: 'Miradi', fr: 'Projets', es: 'Proyectos' })),
+                  createScrollAction('contact', localizeAssistantText(language, { en: 'Contact', sw: 'Wasiliana', fr: 'Contact', es: 'Contacto' })),
               ],
         mode: 'fallback',
         intent: 'general',
-        cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' })),
+        cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
         recommendations: signals.recommendations,
         confidence: {
             level: 'low',
             redirectLabel: hasWorkContext
-                ? localizeAssistantText(language, { en: 'Closest work', sw: 'Kazi iliyo karibu', fr: 'Travail le plus proche' })
-                : localizeAssistantText(language, { en: 'Projects', sw: 'Miradi', fr: 'Projets' }),
+                ? localizeAssistantText(language, { en: 'Closest work', sw: 'Kazi iliyo karibu', fr: 'Travail le plus proche', es: 'Trabajo mas cercano' })
+                : localizeAssistantText(language, { en: 'Projects', sw: 'Miradi', fr: 'Projets', es: 'Proyectos' }),
             escalateToContact: true,
         },
     };
@@ -614,7 +656,8 @@ export function buildLocalAssistantReply(
     const language = nextContext.language;
     const matchedFeature = findAssistantSiteFeature(input);
     const matchedWorkCategory = findWorkCategory(input, nextContext);
-    const hasPricingQuestion = /(how much|price|pricing|cost|budget|bei)/i.test(normalizeAssistantText(input));
+    const hasPricingQuestion = /(how much|price|pricing|cost|budget|bei|prix|tarif|precio|cuanto)/i.test(normalizeAssistantText(input));
+    const requestedService = nextContext.selectedService ?? inferServiceFromPricingQuestion(input);
     const workflowReply = buildGuidedWorkflowReply(nextContext, hasPricingQuestion);
 
     if (matchedWorkCategory) {
@@ -635,31 +678,37 @@ export function buildLocalAssistantReply(
         return buildFeatureNavigationReply(matchedFeature, signals, language);
     }
 
-    if (hasPricingQuestion && nextContext.selectedService) {
+    if (hasPricingQuestion && requestedService) {
         return {
             content: localizeAssistantText(language, {
                 en:
-                nextContext.selectedService === 'logo' || nextContext.selectedService === 'branding'
+                requestedService === 'logo' || requestedService === 'branding'
                     ? 'Logo design is listed at 20,000 TZS / 8 USD. If you want, I can show the pricing section or move this into contact with your brief.'
-                    : nextContext.selectedService === 'poster'
+                    : requestedService === 'poster'
                       ? 'Poster, banner, and flyer pricing starts at 15,000 TZS / 6 USD, with bulk work from 5,000 TZS / 2 USD each for 10+ items.'
                       : 'Website projects are listed in the 200,000 - 250,000 TZS / 77 - 95 USD range, depending on scope.',
                 sw:
-                    nextContext.selectedService === 'logo' || nextContext.selectedService === 'branding'
+                    requestedService === 'logo' || requestedService === 'branding'
                         ? 'Bei ya logo imeorodheshwa kama 20,000 TZS / 8 USD. Nikitaka, naweza kukuonyesha sehemu ya pricing au kupeleka hili kwenye contact pamoja na brief yako.'
-                        : nextContext.selectedService === 'poster'
+                        : requestedService === 'poster'
                           ? 'Bei ya poster, banner, na flyer inaanzia 15,000 TZS / 6 USD, na bulk work inaanzia 5,000 TZS / 2 USD kwa kila kazi kwa oda ya 10+.'
                           : 'Bei ya website imeorodheshwa kwenye kiwango cha 200,000 - 250,000 TZS / 77 - 95 USD kulingana na scope.',
                 fr:
-                    nextContext.selectedService === 'logo' || nextContext.selectedService === 'branding'
+                    requestedService === 'logo' || requestedService === 'branding'
                         ? 'Le tarif du logo est indiqué à 20,000 TZS / 8 USD. Si vous voulez, je peux vous montrer la section pricing ou transférer cela vers le contact avec votre brief.'
-                        : nextContext.selectedService === 'poster'
+                        : requestedService === 'poster'
                           ? 'Le tarif des affiches, bannières et flyers commence à 15,000 TZS / 6 USD, avec du volume à partir de 5,000 TZS / 2 USD par pièce pour 10+ éléments.'
                           : 'Les projets web sont indiqués dans la fourchette 200,000 - 250,000 TZS / 77 - 95 USD selon le périmètre.',
+                es:
+                    requestedService === 'logo' || requestedService === 'branding'
+                        ? 'El precio del logo figura en 20,000 TZS / 8 USD. Si quieres, puedo mostrarte la seccion de precios o llevar esto a contacto con tu brief.'
+                        : requestedService === 'poster'
+                          ? 'El precio de poster, banner y flyer empieza en 15,000 TZS / 6 USD, con trabajo por volumen desde 5,000 TZS / 2 USD por pieza para 10+ elementos.'
+                          : 'Los proyectos web figuran en el rango de 200,000 - 250,000 TZS / 77 - 95 USD segun el alcance.',
             }),
             actions: [
-                createBusinessAction('show_pricing_for_current_service', localizeAssistantText(language, { en: 'View pricing', sw: 'Angalia bei', fr: 'Voir les tarifs' }), { workflow: nextContext.selectedService }),
-                createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Continue to contact', sw: 'Endelea contact', fr: 'Continuer vers contact' }), { workflow: nextContext.selectedService }),
+                createBusinessAction('show_pricing_for_current_service', localizeAssistantText(language, { en: 'View pricing', sw: 'Angalia bei', fr: 'Voir les tarifs', es: 'Ver precios' }), { workflow: requestedService }),
+                createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Continue to contact', sw: 'Endelea contact', fr: 'Continuer vers contact', es: 'Continuar a contacto' }), { workflow: requestedService }),
             ],
             mode: 'fallback',
             intent: 'lead',
@@ -683,16 +732,17 @@ export function buildLocalAssistantReply(
                                   en: 'I can also point you to a relevant example.',
                                   sw: 'Pia naweza kukuonyesha mfano unaofaa.',
                                   fr: 'Je peux aussi vous montrer un exemple pertinent.',
+                                  es: 'Tambien puedo mostrarte un ejemplo relevante.',
                               })
                             : ''
                     }`.trim(),
                 actions: [
-                    createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Relevant work', sw: 'Kazi zinazofaa', fr: 'Travaux pertinents' }), { workflow: nextContext.selectedService }),
-                    createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact' }), { workflow: nextContext.selectedService }),
+                    createBusinessAction('show_relevant_work', localizeAssistantText(language, { en: 'Relevant work', sw: 'Kazi zinazofaa', fr: 'Travaux pertinents', es: 'Trabajo relevante' }), { workflow: nextContext.selectedService }),
+                    createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact', es: 'Usar este resumen en Contacto' }), { workflow: nextContext.selectedService }),
                 ],
                 mode: 'fallback',
                 intent: 'lead',
-                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' })),
+                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
                 recommendations: signals.recommendations,
                 qualification: signals.qualification,
                 confidence: { level: 'medium', escalateToContact: true },
@@ -700,10 +750,10 @@ export function buildLocalAssistantReply(
         case 'projects':
             return {
                 content: getLocalizedKnowledgeText(language, 'projectsSummary'),
-                actions: [createScrollAction('works', localizeAssistantText(language, { en: 'View projects', sw: 'Angalia miradi', fr: 'Voir les projets' })), createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Start a project', sw: 'Anza mradi', fr: 'Démarrer un projet' }))],
+                actions: [createScrollAction('works', localizeAssistantText(language, { en: 'View projects', sw: 'Angalia miradi', fr: 'Voir les projets', es: 'Ver proyectos' })), createBusinessAction('continue_to_contact', localizeAssistantText(language, { en: 'Start a project', sw: 'Anza mradi', fr: 'Démarrer un projet', es: 'Iniciar un proyecto' }))],
                 mode: 'fallback',
                 intent: 'projects',
-                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact' })),
+                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact', es: 'Usar este resumen en Contacto' })),
                 recommendations: signals.recommendations,
                 qualification: signals.qualification.status === 'insufficient' ? undefined : signals.qualification,
                 confidence: { level: 'high' },
@@ -711,10 +761,10 @@ export function buildLocalAssistantReply(
         case 'services':
             return {
                 content: getLocalizedKnowledgeText(language, 'servicesSummary'),
-                actions: [createScrollAction('services', localizeAssistantText(language, { en: 'Go to services', sw: 'Nenda huduma', fr: 'Voir les services' })), createScrollAction('pricing', localizeAssistantText(language, { en: 'See pricing', sw: 'Angalia bei', fr: 'Voir les tarifs' }))],
+                actions: [createScrollAction('services', localizeAssistantText(language, { en: 'Go to services', sw: 'Nenda huduma', fr: 'Voir les services', es: 'Ver servicios' })), createScrollAction('pricing', localizeAssistantText(language, { en: 'See pricing', sw: 'Angalia bei', fr: 'Voir les tarifs', es: 'Ver precios' }))],
                 mode: 'fallback',
                 intent: 'services',
-                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact' })),
+                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.projectBriefCtaLabel, sw: 'Tumia Muhtasari Huu kwenye Contact', fr: 'Utiliser ce résumé dans Contact', es: 'Usar este resumen en Contacto' })),
                 recommendations: signals.recommendations,
                 qualification: signals.qualification.status === 'insufficient' ? undefined : signals.qualification,
                 confidence: { level: 'high' },
@@ -722,7 +772,7 @@ export function buildLocalAssistantReply(
         case 'skills':
             return {
                 content: getLocalizedKnowledgeText(language, 'skillsSummary'),
-                actions: [createScrollAction('skills', localizeAssistantText(language, { en: 'View skills', sw: 'Angalia ujuzi', fr: 'Voir les compétences' }))],
+                actions: [createScrollAction('skills', localizeAssistantText(language, { en: 'View skills', sw: 'Angalia ujuzi', fr: 'Voir les compétences', es: 'Ver habilidades' }))],
                 mode: 'fallback',
                 intent: 'skills',
                 confidence: { level: 'high' },
@@ -730,7 +780,7 @@ export function buildLocalAssistantReply(
         case 'about':
             return {
                 content: getLocalizedKnowledgeText(language, 'aboutSummary'),
-                actions: [createScrollAction('about', localizeAssistantText(language, { en: 'Read about', sw: 'Soma kuhusu', fr: 'En savoir plus' }))],
+                actions: [createScrollAction('about', localizeAssistantText(language, { en: 'Read about', sw: 'Soma kuhusu', fr: 'En savoir plus', es: 'Ver mas' }))],
                 mode: 'fallback',
                 intent: 'about',
                 confidence: { level: 'high' },
@@ -738,19 +788,19 @@ export function buildLocalAssistantReply(
         case 'testimonials':
             return {
                 content: getLocalizedKnowledgeText(language, 'testimonialsSummary'),
-                actions: [createScrollAction('testimonials', localizeAssistantText(language, { en: 'See testimonials', sw: 'Angalia ushuhuda', fr: 'Voir les témoignages' })), createScrollAction('contact', localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' }))],
+                actions: [createScrollAction('testimonials', localizeAssistantText(language, { en: 'See testimonials', sw: 'Angalia ushuhuda', fr: 'Voir les témoignages', es: 'Ver testimonios' })), createScrollAction('contact', localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' }))],
                 mode: 'fallback',
                 intent: 'general',
-                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' })),
+                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
                 confidence: { level: 'high' },
             };
         case 'contact':
             return {
                 content: getLocalizedKnowledgeText(language, 'contactSummary'),
-                actions: [createScrollAction('contact', localizeAssistantText(language, { en: 'Open contact', sw: 'Fungua contact', fr: 'Ouvrir contact' }))],
+                actions: [createScrollAction('contact', localizeAssistantText(language, { en: 'Open contact', sw: 'Fungua contact', fr: 'Ouvrir contact', es: 'Abrir contacto' }))],
                 mode: 'fallback',
                 intent: 'contact',
-                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' })),
+                cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
                 qualification: signals.qualification.status === 'insufficient' ? undefined : signals.qualification,
                 confidence: { level: 'high', escalateToContact: true },
             };
@@ -768,7 +818,7 @@ export function buildLocalAssistantReply(
 export function buildRateLimitedReply(language: AssistantSessionIntentContext['language'] = 'en'): AssistantReply {
     return {
         content: getLocalizedKnowledgeText(language, 'rateLimitMessage'),
-        actions: [createScrollAction('contact', localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha' }))],
+        actions: [createScrollAction('contact', localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' }))],
         mode: 'fallback',
         intent: 'general',
         confidence: { level: 'medium' },

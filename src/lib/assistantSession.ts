@@ -42,7 +42,7 @@ function sanitizeSessionContext(context: unknown): AssistantSessionIntentContext
 
     const candidate = context as Partial<AssistantSessionIntentContext>;
 
-    if (candidate.language !== 'en' && candidate.language !== 'sw' && candidate.language !== 'fr') {
+    if (candidate.language !== 'en' && candidate.language !== 'sw' && candidate.language !== 'fr' && candidate.language !== 'es') {
         return null;
     }
 

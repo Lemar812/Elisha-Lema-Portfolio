@@ -1,5 +1,5 @@
 export type MessageRole = 'user' | 'assistant';
-export type AssistantLanguage = 'en' | 'sw' | 'fr';
+export type AssistantLanguage = 'en' | 'sw' | 'fr' | 'es';
 export type AssistantWorkflowType = 'logo' | 'poster' | 'website' | 'branding' | 'hiring';
 export type AssistantLeadStatus = 'browsing' | 'likelyLead';
 export type AssistantBusinessActionTarget =
