@@ -603,8 +603,8 @@ function buildWorkCategoryReply(
     };
 }
 
-function buildLowConfidenceReply(context: AssistantSessionIntentContext | null, signals: ReturnType<typeof inferCommercialSignals>): AssistantReply {
-    const hasWorkContext = Boolean(context?.selectedService || signals.recommendations.length);
+function buildLowConfidenceReply(context: AssistantSessionIntentContext | null): AssistantReply {
+    const hasWorkContext = Boolean(context?.selectedService || context?.relevantCategory);
     const language = context?.language ?? 'en';
 
     return {
@@ -633,7 +633,6 @@ function buildLowConfidenceReply(context: AssistantSessionIntentContext | null, 
         mode: 'fallback',
         intent: 'general',
         cta: createContactCta(localizeAssistantText(language, { en: assistantKnowledge.contactCtaLabel, sw: 'Wasiliana na Elisha', fr: 'Contacter Elisha', es: 'Contactar a Elisha' })),
-        recommendations: signals.recommendations,
         confidence: {
             level: 'low',
             redirectLabel: hasWorkContext
@@ -805,13 +804,13 @@ export function buildLocalAssistantReply(
                 confidence: { level: 'high', escalateToContact: true },
             };
         case 'outOfScope':
-            return buildLowConfidenceReply(nextContext, signals);
+            return buildLowConfidenceReply(nextContext);
         default:
             if (matchedFeature) {
                 return buildFeatureNavigationReply(matchedFeature, signals, language);
             }
 
-            return buildLowConfidenceReply(nextContext, signals);
+            return buildLowConfidenceReply(nextContext);
     }
 }
 

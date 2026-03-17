@@ -1,4 +1,5 @@
 import { inferCommercialSignals } from '../../src/lib/assistantLeadUtils';
+import { localizeAssistantText } from '../../src/lib/assistantLanguage';
 import { buildSessionIntentContext } from '../../src/lib/assistantWorkflow';
 import { buildProviderMessages } from './_shared/portfolioPrompt';
 import {
@@ -31,6 +32,12 @@ export async function handler(event: NetlifyEvent) {
         return jsonResponse(405, { error: 'Method not allowed.' });
     }
 
+    const request = parseAssistantRequest(event.body);
+
+    if ('error' in request) {
+        return jsonResponse(request.statusCode, { error: request.error });
+    }
+
     const headers = Object.fromEntries(
         Object.entries(event.headers ?? {}).map(([key, value]) => [key.toLowerCase(), value])
     );
@@ -38,8 +45,14 @@ export async function handler(event: NetlifyEvent) {
     const rateLimitKey = getRateLimitKey(headers);
 
     if (!checkRateLimit(rateLimitKey)) {
+        const language = request.sessionContext?.language ?? 'en';
         return jsonResponse(429, {
-            message: 'Please wait a moment before sending another message.',
+            message: localizeAssistantText(language, {
+                en: 'Please wait a moment before sending another message.',
+                sw: 'Tafadhali subiri kidogo kabla ya kutuma ujumbe mwingine.',
+                fr: 'Veuillez patienter un instant avant d’envoyer un autre message.',
+                es: 'Espera un momento antes de enviar otro mensaje.',
+            }),
             mode: 'fallback',
             intent: 'general',
             reason: 'rate_limited',
@@ -53,12 +66,6 @@ export async function handler(event: NetlifyEvent) {
 
     if (!apiKey) {
         return jsonResponse(503, { error: 'Assistant provider is not configured.' });
-    }
-
-    const request = parseAssistantRequest(event.body);
-
-    if ('error' in request) {
-        return jsonResponse(request.statusCode, { error: request.error });
     }
 
     const insightHistory = [
@@ -118,6 +125,11 @@ export async function handler(event: NetlifyEvent) {
             });
         }
 
+        const allowInjectedRecommendations =
+            parsed.intent === 'projects' ||
+            parsed.intent === 'services' ||
+            (parsed.intent === 'lead' && parsed.confidence?.level !== 'low');
+
         return jsonResponse(200, {
             ...parsed,
             intent:
@@ -127,7 +139,9 @@ export async function handler(event: NetlifyEvent) {
             recommendations:
                 parsed.recommendations && parsed.recommendations.length
                     ? parsed.recommendations
-                    : commercialSignals.recommendations,
+                    : allowInjectedRecommendations
+                      ? commercialSignals.recommendations
+                      : undefined,
             qualification: commercialSignals.qualification,
             confidence:
                 parsed.confidence ??
