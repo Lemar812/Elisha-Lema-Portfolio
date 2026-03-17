@@ -71,49 +71,15 @@ export default function Navbar() {
                             isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
                         )}
                     >
-                        <motion.a href="#" className="group relative flex items-center overflow-hidden whitespace-nowrap" whileHover="hover">
-                            <div className="relative flex py-1">
-                                {'ELISHA LEMA'.split('').map((letter, i) => (
-                                    <div
-                                        key={i}
-                                        className={cn('relative flex h-[28px] flex-col overflow-hidden md:h-[32px]', letter === ' ' ? 'w-2 md:w-3' : '')}
-                                    >
-                                        {letter === ' ' ? (
-                                            <span className="sr-only"> </span>
-                                        ) : (
-                                            <>
-                                                <motion.span
-                                                    initial={{ y: 30, opacity: 0 }}
-                                                    animate={{ y: [0, -40, -40, 0], opacity: [1, 0, 0, 1] }}
-                                                    transition={{
-                                                        duration: 4,
-                                                        repeat: Infinity,
-                                                        delay: 2 + i * 0.1,
-                                                        times: [0, 0.1, 0.9, 1],
-                                                        ease: 'easeInOut',
-                                                    }}
-                                                    className="text-xl font-black tracking-tighter text-white md:text-2xl"
-                                                >
-                                                    {letter}
-                                                </motion.span>
-                                                <motion.span
-                                                    initial={{ y: 0, opacity: 0 }}
-                                                    animate={{ y: [0, -28, -28, 0], opacity: [0, 1, 1, 0] }}
-                                                    transition={{
-                                                        duration: 4,
-                                                        repeat: Infinity,
-                                                        delay: 2 + i * 0.1,
-                                                        times: [0, 0.1, 0.9, 1],
-                                                        ease: 'easeInOut',
-                                                    }}
-                                                    className="absolute left-0 top-[28px] text-xl font-black tracking-tighter text-primary opacity-0 md:top-[32px] md:text-2xl"
-                                                >
-                                                    {letter}
-                                                </motion.span>
-                                            </>
-                                        )}
-                                    </div>
-                                ))}
+                        <motion.a
+                            href="#"
+                            className="group flex shrink-0 items-center whitespace-nowrap"
+                            whileHover={{ x: 1 }}
+                            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                        >
+                            <div className="inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
+                                <span className="text-xl font-black tracking-[0.12em] text-white md:text-2xl">ELISHA</span>
+                                <span className="text-xl font-black tracking-[0.12em] text-primary md:text-2xl">LEMA</span>
                             </div>
                         </motion.a>
 
