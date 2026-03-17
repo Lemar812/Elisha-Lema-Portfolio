@@ -67,7 +67,7 @@ export default function Navbar() {
                 <div className="mx-auto w-full max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500',
+                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-8',
                             isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
                         )}
                     >
@@ -81,29 +81,23 @@ export default function Navbar() {
                         >
                             <motion.span
                                 aria-hidden="true"
-                                animate={{ opacity: [0.28, 0.45, 0.28], scale: [0.98, 1.02, 0.98] }}
-                                transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-                                className="absolute inset-x-4 inset-y-0 rounded-full bg-primary/12 blur-xl"
+                                className="absolute inset-x-3 inset-y-1 rounded-full bg-primary/10 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-100"
                             />
                             <div className="relative inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
-                                <motion.span
-                                    animate={{ y: [0, -1.5, 0], textShadow: ['0 0 0 rgba(255,255,255,0)', '0 0 14px rgba(255,255,255,0.18)', '0 0 0 rgba(255,255,255,0)'] }}
-                                    transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-                                    className="text-xl font-black tracking-[0.12em] text-white md:text-2xl"
-                                >
+                                <span className="text-xl font-black tracking-[0.1em] text-white md:text-2xl">
                                     ELISHA
-                                </motion.span>
+                                </span>
                                 <motion.span
-                                    animate={{ y: [0, -1.5, 0], textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 18px rgba(124,58,237,0.42)', '0 0 0 rgba(124,58,237,0)'] }}
-                                    transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-                                    className="text-xl font-black tracking-[0.12em] text-primary md:text-2xl"
+                                    whileHover={{ color: '#9f67ff' }}
+                                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                                    className="text-xl font-black tracking-[0.1em] text-primary md:text-2xl"
                                 >
                                     LEMA
                                 </motion.span>
                             </div>
                         </motion.a>
 
-                        <div className="ml-8 hidden items-center gap-1.5 rounded-full border border-white/5 bg-white/[0.03] p-1.5 backdrop-blur-xl lg:flex">
+                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] p-1.5 backdrop-blur-xl lg:flex">
                             {navLinks.map((link) => (
                                 <motion.a
                                     key={link.name}
@@ -111,7 +105,7 @@ export default function Navbar() {
                                     onClick={(e) => scrollToSection(e, link.href)}
                                     whileHover="hover"
                                     initial="initial"
-                                    className="group relative whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white"
+                                    className="group relative whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold text-text-muted transition-all duration-300 hover:text-white xl:px-5"
                                 >
                                     <div className="relative z-10 flex items-center gap-2">
                                         <motion.div
@@ -155,12 +149,12 @@ export default function Navbar() {
 
                         <div className="ml-auto hidden shrink-0 lg:block">
                             <motion.div whileHover={{ y: -1 }} transition={{ type: 'spring', stiffness: 320, damping: 24 }} className="relative">
-                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/20 blur-lg" />
+                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/12 blur-md" />
                                 <Button
                                     variant="primary"
                                     size="sm"
                                     onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
-                                    className="min-w-[140px] rounded-full border border-primary/30 bg-gradient-to-r from-primary via-primary to-secondary/80 px-6 py-2.5 font-semibold tracking-[0.02em] text-white shadow-[0_12px_28px_rgba(124,58,237,0.32)] hover:shadow-[0_18px_36px_rgba(124,58,237,0.4)]"
+                                    className="min-w-[144px] rounded-full border border-primary/25 bg-gradient-to-r from-primary via-primary to-primary/90 px-6 py-2.5 font-semibold tracking-[0.02em] text-white shadow-[0_10px_24px_rgba(124,58,237,0.22)] hover:shadow-[0_14px_28px_rgba(124,58,237,0.28)]"
                                 >
                                     Let&apos;s Work
                                 </Button>
