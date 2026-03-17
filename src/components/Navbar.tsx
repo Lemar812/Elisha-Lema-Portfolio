@@ -67,33 +67,33 @@ export default function Navbar() {
                 <div className="mx-auto w-full max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-6 xl:gap-8',
-                            isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
+                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[220px_minmax(0,1fr)_160px] lg:gap-8',
+                            isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-1'
                         )}
                     >
                         <motion.a
                             href="#"
                             initial={{ opacity: 0, y: -6 }}
                             animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ x: 1 }}
+                            whileHover={{ x: 1, y: -1 }}
                             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                            className="group relative flex shrink-0 items-center whitespace-nowrap"
+                            className="group relative flex shrink-0 items-center whitespace-nowrap lg:justify-self-start"
                         >
                             <motion.span
                                 aria-hidden="true"
-                                animate={{ opacity: [0.04, 0.1, 0.04] }}
-                                transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
-                                className="absolute inset-x-3 inset-y-1 rounded-full bg-primary/10 blur-lg"
+                                animate={{ opacity: [0.05, 0.12, 0.05], scale: [0.99, 1.02, 0.99] }}
+                                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                                className="absolute inset-x-2 inset-y-0 rounded-full bg-primary/12 blur-xl"
                             />
                             <div className="relative inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
-                                <span className="text-xl font-black tracking-[0.1em] text-white md:text-2xl">
+                                <span className="text-xl font-black tracking-[0.09em] text-white md:text-2xl">
                                     ELISHA
                                 </span>
                                 <motion.span
-                                    animate={{ textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 12px rgba(124,58,237,0.24)', '0 0 0 rgba(124,58,237,0)'] }}
-                                    whileHover={{ color: '#9f67ff' }}
-                                    transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-                                    className="text-xl font-black tracking-[0.1em] text-primary md:text-2xl"
+                                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'], textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 16px rgba(124,58,237,0.24)', '0 0 0 rgba(124,58,237,0)'] }}
+                                    whileHover={{ filter: 'brightness(1.08)' }}
+                                    transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="bg-[linear-gradient(90deg,#7c3aed_0%,#9f67ff_50%,#7c3aed_100%)] bg-[length:200%_100%] bg-clip-text text-xl font-black tracking-[0.09em] text-transparent md:text-2xl"
                                 >
                                     LEMA
                                 </motion.span>
@@ -152,12 +152,12 @@ export default function Navbar() {
 
                         <div className="ml-auto hidden shrink-0 lg:ml-0 lg:block lg:justify-self-end">
                             <motion.div whileHover={{ y: -1 }} transition={{ type: 'spring', stiffness: 320, damping: 24 }} className="relative">
-                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/12 blur-md" />
+                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/10 blur-md" />
                                 <Button
                                     variant="primary"
                                     size="sm"
                                     onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
-                                    className="min-w-[144px] rounded-full border border-primary/25 bg-gradient-to-r from-primary via-primary to-primary/90 px-6 py-2.5 font-semibold tracking-[0.02em] text-white shadow-[0_10px_24px_rgba(124,58,237,0.22)] hover:shadow-[0_14px_28px_rgba(124,58,237,0.28)]"
+                                    className="min-w-[148px] rounded-full border border-primary/20 bg-gradient-to-r from-primary to-[#8f4dff] px-6 py-2.5 font-semibold tracking-[0.015em] text-white shadow-[0_8px_22px_rgba(124,58,237,0.18)] hover:shadow-[0_12px_28px_rgba(124,58,237,0.24)]"
                                 >
                                     Let&apos;s Work
                                 </Button>
