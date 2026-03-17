@@ -73,13 +73,33 @@ export default function Navbar() {
                     >
                         <motion.a
                             href="#"
-                            className="group flex shrink-0 items-center whitespace-nowrap"
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
                             whileHover={{ x: 1 }}
-                            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                            className="group relative flex shrink-0 items-center whitespace-nowrap"
                         >
-                            <div className="inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
-                                <span className="text-xl font-black tracking-[0.12em] text-white md:text-2xl">ELISHA</span>
-                                <span className="text-xl font-black tracking-[0.12em] text-primary md:text-2xl">LEMA</span>
+                            <motion.span
+                                aria-hidden="true"
+                                animate={{ opacity: [0.28, 0.45, 0.28], scale: [0.98, 1.02, 0.98] }}
+                                transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+                                className="absolute inset-x-4 inset-y-0 rounded-full bg-primary/12 blur-xl"
+                            />
+                            <div className="relative inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
+                                <motion.span
+                                    animate={{ y: [0, -1.5, 0], textShadow: ['0 0 0 rgba(255,255,255,0)', '0 0 14px rgba(255,255,255,0.18)', '0 0 0 rgba(255,255,255,0)'] }}
+                                    transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="text-xl font-black tracking-[0.12em] text-white md:text-2xl"
+                                >
+                                    ELISHA
+                                </motion.span>
+                                <motion.span
+                                    animate={{ y: [0, -1.5, 0], textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 18px rgba(124,58,237,0.42)', '0 0 0 rgba(124,58,237,0)'] }}
+                                    transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+                                    className="text-xl font-black tracking-[0.12em] text-primary md:text-2xl"
+                                >
+                                    LEMA
+                                </motion.span>
                             </div>
                         </motion.a>
 
@@ -133,15 +153,18 @@ export default function Navbar() {
                             ))}
                         </div>
 
-                        <div className="ml-auto hidden lg:block">
-                            <Button
-                                variant="primary"
-                                size="sm"
-                                onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
-                                className="rounded-full px-6 py-2.5 shadow-glow-sm hover:shadow-glow-md"
-                            >
-                                Let&apos;s Work
-                            </Button>
+                        <div className="ml-auto hidden shrink-0 lg:block">
+                            <motion.div whileHover={{ y: -1 }} transition={{ type: 'spring', stiffness: 320, damping: 24 }} className="relative">
+                                <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/20 blur-lg" />
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={(e) => scrollToSection(e as unknown as React.MouseEvent<HTMLAnchorElement>, '#contact')}
+                                    className="min-w-[140px] rounded-full border border-primary/30 bg-gradient-to-r from-primary via-primary to-secondary/80 px-6 py-2.5 font-semibold tracking-[0.02em] text-white shadow-[0_12px_28px_rgba(124,58,237,0.32)] hover:shadow-[0_18px_36px_rgba(124,58,237,0.4)]"
+                                >
+                                    Let&apos;s Work
+                                </Button>
+                            </motion.div>
                         </div>
 
                         <button
