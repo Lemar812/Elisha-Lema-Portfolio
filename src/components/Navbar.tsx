@@ -67,7 +67,7 @@ export default function Navbar() {
                 <div className="mx-auto w-full max-w-7xl px-6">
                     <div
                         className={cn(
-                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-8',
+                            'flex h-[72px] w-full items-center rounded-full transition-all duration-500 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-6 xl:gap-8',
                             isScrolled ? 'border border-white/5 bg-background/60 px-4 shadow-lg shadow-black/20 backdrop-blur-xl md:px-6' : 'px-0'
                         )}
                     >
@@ -81,15 +81,18 @@ export default function Navbar() {
                         >
                             <motion.span
                                 aria-hidden="true"
-                                className="absolute inset-x-3 inset-y-1 rounded-full bg-primary/10 opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-100"
+                                animate={{ opacity: [0.04, 0.1, 0.04] }}
+                                transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
+                                className="absolute inset-x-3 inset-y-1 rounded-full bg-primary/10 blur-lg"
                             />
                             <div className="relative inline-flex min-w-fit items-baseline gap-2 py-1 leading-none">
                                 <span className="text-xl font-black tracking-[0.1em] text-white md:text-2xl">
                                     ELISHA
                                 </span>
                                 <motion.span
+                                    animate={{ textShadow: ['0 0 0 rgba(124,58,237,0)', '0 0 12px rgba(124,58,237,0.24)', '0 0 0 rgba(124,58,237,0)'] }}
                                     whileHover={{ color: '#9f67ff' }}
-                                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                                    transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
                                     className="text-xl font-black tracking-[0.1em] text-primary md:text-2xl"
                                 >
                                     LEMA
@@ -97,7 +100,7 @@ export default function Navbar() {
                             </div>
                         </motion.a>
 
-                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] p-1.5 backdrop-blur-xl lg:flex">
+                        <div className="mx-auto hidden min-w-0 items-center justify-center rounded-full border border-white/5 bg-white/[0.03] p-1.5 backdrop-blur-xl lg:flex lg:justify-self-center">
                             {navLinks.map((link) => (
                                 <motion.a
                                     key={link.name}
@@ -147,7 +150,7 @@ export default function Navbar() {
                             ))}
                         </div>
 
-                        <div className="ml-auto hidden shrink-0 lg:block">
+                        <div className="ml-auto hidden shrink-0 lg:ml-0 lg:block lg:justify-self-end">
                             <motion.div whileHover={{ y: -1 }} transition={{ type: 'spring', stiffness: 320, damping: 24 }} className="relative">
                                 <span className="pointer-events-none absolute inset-0 rounded-full bg-primary/12 blur-md" />
                                 <Button
