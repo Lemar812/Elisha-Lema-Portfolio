@@ -10,7 +10,7 @@ import FloatingTooltip from './FloatingTooltip';
 export default function Hero() {
 
     return (
-        <section id="hero" className="relative flex min-h-[calc(100vh-108px)] items-center justify-center overflow-hidden px-4 pt-6 md:min-h-[calc(100vh-116px)] md:px-6 md:pt-8 scroll-mt-28">
+        <section id="hero" className="relative flex min-h-[calc(100vh-96px)] items-center justify-center overflow-hidden px-4 pt-4 md:min-h-[calc(100vh-104px)] md:px-6 md:pt-6 scroll-mt-28">
             <div className="container mx-auto max-w-6xl 2xl:max-w-7xl">
                 <div className="grid lg:grid-cols-2 gap-6 lg:gap-6 items-center mb-16 md:mb-20">
 
