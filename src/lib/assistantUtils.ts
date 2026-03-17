@@ -607,7 +607,7 @@ export function buildLocalAssistantReply(
     history: AssistantHistoryEntry[] = [],
     context?: AssistantSessionIntentContext | null
 ): AssistantReply {
-    const fullHistory = [...history, { role: 'user', content: input }];
+    const fullHistory: AssistantHistoryEntry[] = [...history, { role: 'user', content: input }];
     const intent = detectAssistantIntent(input);
     const signals = inferCommercialSignals(fullHistory);
     const nextContext = buildSessionIntentContext(fullHistory, context);

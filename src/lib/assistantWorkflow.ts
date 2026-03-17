@@ -214,12 +214,12 @@ export function buildSessionIntentContext(
             .map((category) => category.id)
     );
 
-    const currentWorkflow = workflow
+    const currentWorkflow: AssistantSessionIntentContext['currentWorkflow'] = workflow
         ? {
               type: workflow,
               status: projectType && goal ? 'ready' : 'collecting',
           }
-        : previous?.currentWorkflow;
+        : previous?.currentWorkflow ?? null;
 
     return {
         language: detectAssistantLanguage(latestUserMessage || previous?.language || 'en'),
