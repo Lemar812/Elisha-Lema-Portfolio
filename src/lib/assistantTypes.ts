@@ -1,4 +1,14 @@
 export type MessageRole = 'user' | 'assistant';
+export type AssistantLanguage = 'en' | 'sw' | 'fr';
+export type AssistantWorkflowType = 'logo' | 'poster' | 'website' | 'branding' | 'hiring';
+export type AssistantLeadStatus = 'browsing' | 'likelyLead';
+export type AssistantBusinessActionTarget =
+    | 'start_project_request'
+    | 'build_project_brief'
+    | 'continue_to_contact'
+    | 'copy_project_summary'
+    | 'show_relevant_work'
+    | 'show_pricing_for_current_service';
 
 export type AssistantIntent =
     | 'greeting'
@@ -27,7 +37,7 @@ export type AssistantSectionTarget =
 export type AssistantRouteTarget = '/privacy-policy' | '/terms-of-service';
 export type AssistantWorksFilter = 'Logo' | 'Poster/Banner' | "Website's Screenshot";
 export type AssistantActionTarget = AssistantSectionTarget | AssistantRouteTarget;
-export type AssistantActionType = 'scroll' | 'route';
+export type AssistantActionType = 'scroll' | 'route' | 'business';
 export type AssistantSiteFeatureKind = 'section' | 'page' | 'feature';
 export type AssistantOrbState = 'idle' | 'userTyping' | 'thinking' | 'speaking';
 export type AssistantServiceCategory =
@@ -52,6 +62,14 @@ export type AssistantAction =
           label: string;
           type: 'route';
           target: AssistantRouteTarget;
+      }
+    | {
+          id: string;
+          label: string;
+          type: 'business';
+          target: AssistantBusinessActionTarget;
+          workflow?: AssistantWorkflowType;
+          filter?: AssistantWorksFilter;
       };
 
 export interface AssistantCta {
@@ -70,6 +88,12 @@ export interface AssistantRecommendation {
 export interface AssistantQualification {
     status: 'insufficient' | 'partial' | 'sufficient';
     missingFields?: string[];
+}
+
+export interface AssistantConfidence {
+    level: 'low' | 'medium' | 'high';
+    redirectLabel?: string;
+    escalateToContact?: boolean;
 }
 
 export interface AssistantInquirySummary {
@@ -96,6 +120,7 @@ export interface AssistantMessage {
     cta?: AssistantCta;
     recommendations?: AssistantRecommendation[];
     qualification?: AssistantQualification;
+    confidence?: AssistantConfidence;
 }
 
 export interface QuickAction {
@@ -103,6 +128,18 @@ export interface QuickAction {
     label: string;
     prompt: string;
     target: AssistantSectionTarget;
+}
+
+export interface AssistantWorkflowDefinition {
+    type: AssistantWorkflowType;
+    triggers: string[];
+    summary: string;
+    followUps: string[];
+}
+
+export interface AssistantQuickSuggestionGroup {
+    workflow: AssistantWorkflowType;
+    actions: QuickAction[];
 }
 
 export interface AssistantKnowledgeService {
@@ -190,15 +227,17 @@ export interface AssistantKnowledge {
     contactMethods: AssistantKnowledgeContactMethod[];
     siteFeatures: AssistantSiteFeature[];
     workCategories: AssistantWorksCategory[];
+    workflows: AssistantWorkflowDefinition[];
     behaviorHints: string[];
     actionHints: Array<{
-        target: AssistantActionTarget;
+        target: AssistantActionTarget | AssistantBusinessActionTarget;
         type: AssistantActionType;
         label: string;
         when: string;
         filter?: AssistantWorksFilter;
     }>;
     quickActions: QuickAction[];
+    quickSuggestionGroups: AssistantQuickSuggestionGroup[];
 }
 
 export interface AssistantReply {
@@ -209,6 +248,7 @@ export interface AssistantReply {
     cta?: AssistantCta;
     recommendations?: AssistantRecommendation[];
     qualification?: AssistantQualification;
+    confidence?: AssistantConfidence;
 }
 
 export interface AssistantHistoryEntry {
@@ -219,6 +259,7 @@ export interface AssistantHistoryEntry {
 export interface AssistantApiRequest {
     message: string;
     history?: AssistantHistoryEntry[];
+    sessionContext?: AssistantSessionIntentContext;
 }
 
 export interface AssistantApiResponse {
@@ -230,8 +271,30 @@ export interface AssistantApiResponse {
     cta?: AssistantCta;
     recommendations?: AssistantRecommendation[];
     qualification?: AssistantQualification;
+    confidence?: AssistantConfidence;
     reason?: 'rate_limited';
 }
+
+export interface AssistantSessionIntentContext {
+    language: AssistantLanguage;
+    selectedService: AssistantWorkflowType | null;
+    currentWorkflow: {
+        type: AssistantWorkflowType;
+        status: 'collecting' | 'ready';
+    } | null;
+    projectType?: string;
+    goal?: string;
+    timeline?: string;
+    relevantCategory?: AssistantWorksFilter;
+    categoryInterest: string[];
+    leadStatus: AssistantLeadStatus;
+    serviceTypes: AssistantServiceCategory[];
+}
+
+export type AssistantSuggestionContext = Pick<
+    AssistantSessionIntentContext,
+    'selectedService' | 'currentWorkflow' | 'relevantCategory' | 'leadStatus'
+>;
 
 export type AssistantAnalyticsEventName =
     | 'assistant_opened'
@@ -260,9 +323,10 @@ export interface AssistantAnalyticsEventMap {
         hasCta: boolean;
         hasRecommendations: boolean;
         qualificationStatus: AssistantQualification['status'] | 'none';
+        confidence: AssistantConfidence['level'] | 'none';
     };
     assistant_fallback_used: { reason: 'network' | 'provider' | 'invalid_response' | 'rate_limited' | 'local_rule' };
-    assistant_action_clicked: { actionId: string; target: AssistantActionTarget };
+    assistant_action_clicked: { actionId: string; target: AssistantActionTarget | AssistantBusinessActionTarget };
     assistant_contact_cta_shown: { label: string };
     assistant_contact_cta_clicked: { label: string; target: 'contact' };
     assistant_rate_limited: { source: 'backend' };
@@ -279,6 +343,7 @@ export type AssistantPersistedState = {
     messages: AssistantMessage[];
     hasWelcomed: boolean;
     hasOpened: boolean;
+    sessionContext?: AssistantSessionIntentContext | null;
 };
 
 export interface UseAssistantReturn {
@@ -289,6 +354,7 @@ export interface UseAssistantReturn {
     showQuickActions: boolean;
     quickActions: QuickAction[];
     inquirySummary: AssistantInquirySummary | null;
+    sessionContext: AssistantSessionIntentContext | null;
     openAssistant: () => void;
     closeAssistant: () => void;
     toggleAssistant: () => void;

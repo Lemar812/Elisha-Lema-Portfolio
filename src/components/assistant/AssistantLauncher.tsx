@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion, type Transition } from 'fram
 import { X } from 'lucide-react';
 import { useFloatingDockOffset } from '../../hooks/useFloatingDockOffset';
 import type { AssistantOrbState } from '../../lib/assistantTypes';
+import YookieOrb from './YookieOrb';
 
 interface AssistantLauncherProps {
     open: boolean;
@@ -220,10 +221,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                         <div className="relative overflow-hidden rounded-[22px] border border-white/12 bg-surface/92 px-4 py-3 text-left shadow-[0_20px_55px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.16),transparent_46%)]" />
                             <div className="relative flex items-start gap-3">
-                                <div className="relative mt-0.5 h-9 w-9 shrink-0">
-                                    <span className="absolute inset-0 rounded-full border border-white/12 border-t-secondary/55 border-r-primary/40 opacity-80" />
-                                    <span className="absolute inset-[4px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.38),transparent_22%),radial-gradient(circle_at_45%_55%,rgba(124,58,237,0.78),rgba(124,58,237,0.14)_62%,rgba(3,7,18,0.78)_82%),radial-gradient(circle_at_74%_76%,rgba(34,211,238,0.36),transparent_28%)]" />
-                                </div>
+                                <YookieOrb size="nudge" />
                                 <div className="min-w-0 flex-1">
                                     <p className="text-sm font-semibold text-white">Hi, I&apos;m Yookie.</p>
                                     <p className="mt-1 text-xs leading-5 text-text-muted">Need help exploring the portfolio?</p>
@@ -254,28 +252,15 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                 transition={orbTransition}
                 whileHover={reduceMotion ? undefined : { scale: 1.04, y: -4 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-                className="group relative flex h-[4.35rem] w-[4.35rem] items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="group relative flex items-center gap-2.5 rounded-full border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.92),rgba(10,14,28,0.82))] px-2.5 py-2 shadow-[0_18px_46px_rgba(0,0,0,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-                <motion.span
-                    aria-hidden="true"
-                    animate={reduceMotion ? undefined : { rotate: [0, 360] }}
-                    transition={{ duration: orbState === 'thinking' ? 8 : 16, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-[-6px] rounded-full border border-white/10 border-t-secondary/55 border-r-primary/40 opacity-70"
-                />
-                <motion.span
-                    aria-hidden="true"
-                    animate={reduceMotion ? undefined : { scale: [1, 1.1, 1], opacity: [0.32, 0.58, 0.32] }}
-                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.65),transparent_20%),radial-gradient(circle_at_35%_35%,rgba(124,58,237,0.95),rgba(124,58,237,0.38)_46%,rgba(5,5,5,0.05)_74%),radial-gradient(circle_at_72%_76%,rgba(34,211,238,0.72),transparent_28%)] blur-[1px]"
-                />
-                <span className="absolute inset-[8px] rounded-full border border-white/12 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.22),transparent_24%),radial-gradient(circle_at_60%_70%,rgba(34,211,238,0.28),transparent_30%),radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.18),rgba(8,8,8,0.7)_75%)] backdrop-blur-xl" />
-                <motion.span
-                    aria-hidden="true"
-                    animate={reduceMotion ? undefined : { scale: orbState === 'speaking' ? [1, 1.08, 1] : [1, 1.02, 1], opacity: [0.65, 0.95, 0.65] }}
-                    transition={{ duration: orbState === 'speaking' ? 1.6 : 2.8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute inset-[14px] rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.5),transparent_18%),radial-gradient(circle_at_50%_55%,rgba(124,58,237,0.8),rgba(124,58,237,0.2)_60%,transparent_82%)]"
-                />
-                <span className="absolute inset-[18px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.22),transparent_18%),radial-gradient(circle_at_68%_72%,rgba(34,211,238,0.2),transparent_22%),radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.24),rgba(5,5,5,0.22)_72%)]" />
+                <YookieOrb size="launcher" className="relative z-10" />
+                {!open && (
+                    <div className="relative z-10 pr-1 text-left">
+                        <div className="text-[11px] font-semibold tracking-[0.08em] text-white">Ask Yookie</div>
+                        <div className="text-[10px] uppercase tracking-[0.2em] text-text-muted/80">Portfolio guide</div>
+                    </div>
+                )}
                 <AnimatePresence>
                     {open && (
                         <motion.span
@@ -284,7 +269,7 @@ export default function AssistantLauncher({ open, onToggle, canShowNudge = true,
                             animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
                             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
                             transition={{ duration: 0.16 }}
-                            className="relative z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/20 text-white"
+                            className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-black/20 text-white"
                         >
                             <X size={20} />
                         </motion.span>

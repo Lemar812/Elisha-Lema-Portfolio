@@ -1,4 +1,5 @@
 import { inferCommercialSignals } from '../../src/lib/assistantLeadUtils';
+import { buildSessionIntentContext } from '../../src/lib/assistantWorkflow';
 import { buildProviderMessages } from './_shared/portfolioPrompt';
 import {
     jsonResponse,
@@ -66,6 +67,7 @@ export async function handler(event: NetlifyEvent) {
     ];
 
     const commercialSignals = inferCommercialSignals(insightHistory);
+    const sessionContext = buildSessionIntentContext(insightHistory, request.sessionContext);
 
     const baseUrl = (process.env.OPENAI_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
     const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
@@ -83,7 +85,7 @@ export async function handler(event: NetlifyEvent) {
             body: JSON.stringify({
                 model,
                 temperature: 0.2,
-                messages: buildProviderMessages(request.history ?? [], request.message),
+                messages: buildProviderMessages(request.history ?? [], request.message, sessionContext),
             }),
             signal: controller.signal,
         });
@@ -127,6 +129,12 @@ export async function handler(event: NetlifyEvent) {
                     ? parsed.recommendations
                     : commercialSignals.recommendations,
             qualification: commercialSignals.qualification,
+            confidence:
+                parsed.confidence ??
+                ({
+                    level: commercialSignals.qualification.status === 'sufficient' ? 'high' : 'medium',
+                    escalateToContact: commercialSignals.qualification.status !== 'insufficient',
+                } as const),
         });
     } catch (error) {
         console.error('portfolio-chat request failed', error);

@@ -35,6 +35,25 @@ const TIMELINE_PATTERNS = [
     /soon/i,
 ];
 
+const SEMANTIC_CLUSTERS = [
+    {
+        triggers: ['safari', 'tourism', 'travel', 'wildlife', 'tour'],
+        aliases: ['travel', 'tourism', 'safari', 'travel brand', 'wildlife', 'tours'],
+    },
+    {
+        triggers: ['church', 'ministry', 'gospel', 'choir', 'event flyer'],
+        aliases: ['church', 'gospel', 'choir', 'event', 'poster', 'promo'],
+    },
+    {
+        triggers: ['accessories', 'retail', 'shop', 'store', 'fashion'],
+        aliases: ['retail', 'accessories', 'store', 'business collateral', 'promo design'],
+    },
+    {
+        triggers: ['premium', 'portfolio website', 'business website', 'landing page'],
+        aliases: ['premium design', 'website', 'web', 'ui', 'responsive web experience'],
+    },
+];
+
 function normalize(value: string) {
     return value.toLowerCase().replace(/\s+/g, ' ').trim();
 }
@@ -201,6 +220,9 @@ export function recommendProjectsFromHistory(history: AssistantHistoryEntry[]): 
     const sourceText = history.map((item) => item.content).join(' ');
     const normalizedText = normalize(sourceText);
     const inferredServiceTypes = inferServiceCategoriesFromText(sourceText);
+    const activeAliases = SEMANTIC_CLUSTERS.filter((cluster) =>
+        cluster.triggers.some((trigger) => normalizedText.includes(trigger))
+    ).flatMap((cluster) => cluster.aliases);
 
     const scoredProjects = assistantKnowledge.projects
         .map((project) => {
@@ -209,6 +231,15 @@ export function recommendProjectsFromHistory(history: AssistantHistoryEntry[]): 
             score += project.keywords.filter((keyword) => normalizedText.includes(keyword)).length * 3;
             score += project.capabilities.filter((capability) => normalizedText.includes(capability.toLowerCase())).length * 2;
             score += project.serviceTypes.filter((serviceType) => inferredServiceTypes.includes(serviceType)).length * 2;
+            score += project.industries.filter((industry) =>
+                activeAliases.some((alias) => normalize(industry).includes(alias) || alias.includes(normalize(industry)))
+            ).length * 2;
+            score += project.tags.filter((tag) =>
+                activeAliases.some((alias) => normalize(tag).includes(alias) || alias.includes(normalize(tag)))
+            ).length * 2;
+            score += activeAliases.filter((alias) =>
+                project.keywords.some((keyword) => normalize(keyword).includes(alias) || alias.includes(normalize(keyword)))
+            ).length * 2;
 
             return {
                 project,

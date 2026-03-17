@@ -10,8 +10,10 @@ import type {
     QuickAction,
 } from '../../lib/assistantTypes';
 import { formatAssistantTimestamp } from '../../lib/assistantUtils';
+import AssistantRichText from './AssistantRichText';
 import QuickActions from './QuickActions';
 import TypingIndicator from './TypingIndicator';
+import YookieOrb from './YookieOrb';
 
 interface AssistantMessageListProps {
     messages: AssistantMessage[];
@@ -81,7 +83,17 @@ export default function AssistantMessageList({
                                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.09),transparent_28%)]" />
                             )}
                             <div className="relative">
-                                <p className="whitespace-pre-line break-words text-[13px] leading-6">{message.content}</p>
+                                {isAssistant && (
+                                    <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted/80">
+                                        <YookieOrb size="message" />
+                                        <span>Yookie</span>
+                                    </div>
+                                )}
+                                {isAssistant ? (
+                                    <AssistantRichText content={message.content} />
+                                ) : (
+                                    <p className="whitespace-pre-line break-words text-[13px] leading-6">{message.content}</p>
+                                )}
                                 <div className="mt-1.5 flex items-center justify-between gap-3">
                                     <span className={`text-[10px] font-medium uppercase tracking-[0.18em] ${isAssistant ? 'text-text-muted/70' : 'text-white/70'}`}>
                                         {formatAssistantTimestamp(message.createdAt)}
@@ -139,7 +151,7 @@ export default function AssistantMessageList({
                                         </button>
                                     </motion.div>
                                 )}
-                                {isAssistant && showQuickActions && index === 0 && (
+                                {isAssistant && showQuickActions && index === messages.length - 1 && (
                                     <div className="mt-2.5">
                                         <QuickActions actions={quickActions} disabled={isTyping} onSelect={onQuickAction} />
                                     </div>

@@ -11,6 +11,7 @@ import type {
 } from '../../lib/assistantTypes';
 import AssistantInput from './AssistantInput';
 import AssistantMessageList from './AssistantMessageList';
+import YookieOrb from './YookieOrb';
 
 interface AssistantPanelProps {
     open: boolean;
@@ -56,6 +57,7 @@ export default function AssistantPanel({
     const scrollerRef = useRef<HTMLDivElement>(null);
     const bottomAnchorRef = useRef<HTMLDivElement>(null);
     const shouldStickToBottomRef = useRef(true);
+    const previousMessageCountRef = useRef(messages.length);
     const inputRef = useRef<HTMLInputElement>(null);
     const reduceMotion = useReducedMotion();
     const titleId = useId();
@@ -91,7 +93,10 @@ export default function AssistantPanel({
             return;
         }
 
-        if (!shouldStickToBottomRef.current) {
+        const hasNewMessage = messages.length > previousMessageCountRef.current;
+        previousMessageCountRef.current = messages.length;
+
+        if (!hasNewMessage && !shouldStickToBottomRef.current) {
             return;
         }
 
@@ -100,6 +105,18 @@ export default function AssistantPanel({
             behavior: reduceMotion ? 'auto' : 'smooth',
         });
     }, [messages, isTyping, open, reduceMotion]);
+
+    useEffect(() => {
+        if (!open || !bottomAnchorRef.current) {
+            return;
+        }
+
+        shouldStickToBottomRef.current = true;
+        bottomAnchorRef.current.scrollIntoView({
+            block: 'end',
+            behavior: reduceMotion ? 'auto' : 'smooth',
+        });
+    }, [open, reduceMotion]);
 
     useEffect(() => {
         if (!open) {
@@ -158,15 +175,7 @@ export default function AssistantPanel({
                             <div className="absolute inset-x-0 bottom-0 h-20 bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.14),transparent_70%)]" />
                             <div className="relative flex items-start justify-between gap-3">
                                 <div className="flex items-start gap-3">
-                                    <div className="relative mt-0.5 h-10 w-10 shrink-0">
-                                        <motion.span
-                                            aria-hidden="true"
-                                            animate={reduceMotion ? undefined : { rotate: [0, 360] }}
-                                            transition={{ duration: 16, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
-                                            className="absolute inset-0 rounded-full border border-white/12 border-t-secondary/55 border-r-primary/45 opacity-75"
-                                        />
-                                        <span className="absolute inset-[4px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.35),transparent_24%),radial-gradient(circle_at_50%_55%,rgba(124,58,237,0.7),rgba(124,58,237,0.16)_58%,rgba(4,8,20,0.75)_80%),radial-gradient(circle_at_74%_76%,rgba(34,211,238,0.42),transparent_28%)] shadow-[0_0_28px_rgba(124,58,237,0.22)]" />
-                                    </div>
+                                    <YookieOrb size="header" />
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <h2 id={titleId} className="font-satoshi text-[15px] font-bold text-white">

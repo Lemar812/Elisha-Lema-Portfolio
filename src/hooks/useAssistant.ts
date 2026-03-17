@@ -3,7 +3,12 @@ import { assistantKnowledge } from '../data/assistantKnowledge';
 import { runAssistantAction } from '../lib/assistantActions';
 import { trackAssistantEvent } from '../lib/assistantAnalytics';
 import { inferCommercialSignals } from '../lib/assistantLeadUtils';
-import { clearInquiryDraft, saveInquiryDraft } from '../lib/assistantSession';
+import {
+    clearInquiryDraft,
+    loadAssistantSession,
+    saveAssistantSession,
+    saveInquiryDraft,
+} from '../lib/assistantSession';
 import type {
     AssistantAction,
     AssistantApiRequest,
@@ -11,6 +16,7 @@ import type {
     AssistantMessage,
     AssistantOrbState,
     AssistantRecommendation,
+    AssistantSessionIntentContext,
     QuickAction,
     UseAssistantReturn,
 } from '../lib/assistantTypes';
@@ -18,10 +24,14 @@ import {
     buildLocalAssistantReply,
     buildRateLimitedReply,
     createAssistantMessage,
+    createScrollAction,
     sanitizeAssistantApiResponse,
     toAssistantHistory,
+    toStoredAssistantMessages,
     trimAssistantContent,
 } from '../lib/assistantUtils';
+import { localizeAssistantText } from '../lib/assistantLanguage';
+import { buildDynamicQuickActions, buildSessionIntentContext } from '../lib/assistantWorkflow';
 
 const ASSISTANT_ENDPOINT = '/.netlify/functions/portfolio-chat';
 const RESPONSE_DELAY_MS = 320;
@@ -31,14 +41,17 @@ const SPEAKING_STATE_MS = 2400;
 type ReplyFailureReason = 'network' | 'provider' | 'invalid_response' | 'rate_limited';
 
 export function useAssistant(): UseAssistantReturn {
-    const [isOpen, setIsOpen] = useState(false);
+    const restoredSession = useMemo(() => loadAssistantSession(), []);
+    const [isOpen, setIsOpen] = useState(Boolean(restoredSession?.hasOpened));
     const [isTyping, setIsTyping] = useState(false);
     const [isDrafting, setIsDrafting] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [messages, setMessages] = useState<AssistantMessage[]>([]);
-    const messagesRef = useRef<AssistantMessage[]>([]);
-    const hasWelcomedRef = useRef(false);
-    const hasOpenedRef = useRef(false);
+    const [messages, setMessages] = useState<AssistantMessage[]>(restoredSession?.messages ?? []);
+    const [sessionContext, setSessionContext] = useState<AssistantSessionIntentContext | null>(restoredSession?.sessionContext ?? null);
+    const messagesRef = useRef<AssistantMessage[]>(restoredSession?.messages ?? []);
+    const sessionContextRef = useRef<AssistantSessionIntentContext | null>(restoredSession?.sessionContext ?? null);
+    const hasWelcomedRef = useRef(Boolean(restoredSession?.hasWelcomed || restoredSession?.messages?.length));
+    const hasOpenedRef = useRef(Boolean(restoredSession?.hasOpened));
     const pendingRequestRef = useRef<AbortController | null>(null);
     const pendingInputRef = useRef<string | null>(null);
     const typingTimeoutRef = useRef<number | null>(null);
@@ -50,9 +63,22 @@ export function useAssistant(): UseAssistantReturn {
         messagesRef.current = messages;
     }, [messages]);
 
+    useEffect(() => {
+        sessionContextRef.current = sessionContext;
+    }, [sessionContext]);
+
     const commercialSignals = useMemo(() => inferCommercialSignals(toAssistantHistory(messages)), [messages]);
     const inquirySummary = commercialSignals.summary;
     const orbState: AssistantOrbState = isTyping ? 'thinking' : isDrafting ? 'userTyping' : isSpeaking ? 'speaking' : 'idle';
+
+    useEffect(() => {
+        saveAssistantSession({
+            messages: toStoredAssistantMessages(messages),
+            hasWelcomed: hasWelcomedRef.current,
+            hasOpened: isOpen,
+            sessionContext,
+        });
+    }, [isOpen, messages, sessionContext]);
 
     useEffect(() => {
         if (messages.length > 0 && !hasWelcomedRef.current) {
@@ -82,6 +108,7 @@ export function useAssistant(): UseAssistantReturn {
                 cta?: AssistantCta;
                 recommendations?: AssistantMessage['recommendations'];
                 qualification?: AssistantMessage['qualification'];
+                confidence?: AssistantMessage['confidence'];
             },
             fallbackReason?: ReplyFailureReason | 'local_rule'
         ) => {
@@ -95,6 +122,7 @@ export function useAssistant(): UseAssistantReturn {
                     cta: reply.cta,
                     recommendations: reply.recommendations,
                     qualification: reply.qualification,
+                    confidence: reply.confidence,
                 });
 
                 setMessages((current) => {
@@ -114,6 +142,7 @@ export function useAssistant(): UseAssistantReturn {
                     hasCta: Boolean(nextMessage.cta),
                     hasRecommendations: Boolean(nextMessage.recommendations?.length),
                     qualificationStatus: nextMessage.qualification?.status ?? 'none',
+                    confidence: nextMessage.confidence?.level ?? 'none',
                 });
 
                 if (nextMessage.mode === 'fallback') {
@@ -137,32 +166,6 @@ export function useAssistant(): UseAssistantReturn {
         },
         [triggerSpeakingState]
     );
-
-    const resetAssistantState = useCallback(() => {
-        pendingRequestRef.current?.abort();
-        pendingRequestRef.current = null;
-
-        if (typingTimeoutRef.current) {
-            window.clearTimeout(typingTimeoutRef.current);
-            typingTimeoutRef.current = null;
-        }
-
-        if (speakingTimeoutRef.current) {
-            window.clearTimeout(speakingTimeoutRef.current);
-            speakingTimeoutRef.current = null;
-        }
-
-        pendingInputRef.current = null;
-        lastSummaryRef.current = null;
-        lastLeadKeyRef.current = null;
-        hasWelcomedRef.current = false;
-        hasOpenedRef.current = false;
-        messagesRef.current = [];
-        setIsTyping(false);
-        setIsDrafting(false);
-        setIsSpeaking(false);
-        setMessages([]);
-    }, []);
 
     useEffect(() => {
         return () => {
@@ -221,6 +224,7 @@ export function useAssistant(): UseAssistantReturn {
 
         const welcomeMessage = createAssistantMessage('assistant', assistantKnowledge.welcomeMessage, undefined, undefined, {
             intent: 'general',
+            confidence: { level: 'high' },
         });
 
         hasWelcomedRef.current = true;
@@ -237,17 +241,18 @@ export function useAssistant(): UseAssistantReturn {
 
         setIsOpen((current) => {
             if (!current) {
-                trackAssistantEvent('assistant_opened', { restoredSession: false });
+                trackAssistantEvent('assistant_opened', { restoredSession: Boolean(restoredSession?.messages?.length) });
             }
 
             return true;
         });
-    }, [ensureWelcome]);
+    }, [ensureWelcome, restoredSession]);
 
     const closeAssistant = useCallback(() => {
         setIsOpen(false);
-        resetAssistantState();
-    }, [resetAssistantState]);
+        setIsDrafting(false);
+        setIsSpeaking(false);
+    }, []);
 
     const toggleAssistant = useCallback(() => {
         if (isOpen) {
@@ -259,7 +264,7 @@ export function useAssistant(): UseAssistantReturn {
     }, [closeAssistant, isOpen, openAssistant]);
 
     const requestAssistantReply = useCallback(
-        async (historyMessages: AssistantMessage[], input: string) => {
+        async (historyMessages: AssistantMessage[], input: string, nextContext: AssistantSessionIntentContext | null) => {
             const controller = new AbortController();
             pendingRequestRef.current = controller;
 
@@ -270,6 +275,7 @@ export function useAssistant(): UseAssistantReturn {
                 const payload: AssistantApiRequest = {
                     message: trimAssistantContent(input, 500),
                     history: compactHistory,
+                    sessionContext: nextContext ?? undefined,
                 };
 
                 const response = await fetch(ASSISTANT_ENDPOINT, {
@@ -287,20 +293,18 @@ export function useAssistant(): UseAssistantReturn {
                 if (response.status === 429) {
                     trackAssistantEvent('assistant_rate_limited', { source: 'backend' });
 
-                    const rateLimitedReply = data ?? buildRateLimitedReply();
+                    const rateLimitedReply = data ?? buildRateLimitedReply(nextContext?.language ?? sessionContextRef.current?.language ?? 'en');
 
                     appendAssistantReply(
                         {
-                            content:
-                                'message' in rateLimitedReply
-                                    ? rateLimitedReply.message
-                                    : rateLimitedReply.content ?? assistantKnowledge.rateLimitMessage,
+                            content: 'message' in rateLimitedReply ? rateLimitedReply.message : rateLimitedReply.content,
                             actions: rateLimitedReply.actions,
                             mode: 'fallback',
                             intent: rateLimitedReply.intent ?? 'general',
                             cta: rateLimitedReply.cta,
                             recommendations: rateLimitedReply.recommendations,
                             qualification: rateLimitedReply.qualification,
+                            confidence: rateLimitedReply.confidence,
                         },
                         'rate_limited'
                     );
@@ -330,6 +334,7 @@ export function useAssistant(): UseAssistantReturn {
                     cta: data.cta,
                     recommendations: data.recommendations,
                     qualification: data.qualification,
+                    confidence: data.confidence,
                 });
             } catch (error) {
                 const reason: ReplyFailureReason =
@@ -343,7 +348,7 @@ export function useAssistant(): UseAssistantReturn {
                     kind: reason === 'network' ? 'network' : reason === 'invalid_response' ? 'validation' : 'provider',
                 });
 
-                const fallback = buildLocalAssistantReply(input, compactHistory);
+                const fallback = buildLocalAssistantReply(input, compactHistory, nextContext);
                 appendAssistantReply(
                     {
                         content: fallback.content,
@@ -353,6 +358,7 @@ export function useAssistant(): UseAssistantReturn {
                         cta: fallback.cta,
                         recommendations: fallback.recommendations,
                         qualification: fallback.qualification,
+                        confidence: fallback.confidence,
                     },
                     reason
                 );
@@ -386,12 +392,38 @@ export function useAssistant(): UseAssistantReturn {
             const currentMessages = messagesRef.current;
             const userMessage = createAssistantMessage('user', trimmed);
             const nextMessages = [...currentMessages, userMessage];
+            const nextContext = buildSessionIntentContext(toAssistantHistory(nextMessages), sessionContextRef.current);
 
             messagesRef.current = nextMessages;
             setMessages(nextMessages);
-            void requestAssistantReply(currentMessages, trimmed);
+            setSessionContext(nextContext);
+
+            const localReply = buildLocalAssistantReply(trimmed, toAssistantHistory(currentMessages), nextContext);
+            const shouldUseLocalOnly =
+                localReply.mode === 'fallback' &&
+                ((localReply.intent === 'lead' && nextContext?.currentWorkflow?.status === 'collecting') ||
+                    localReply.confidence?.level === 'low');
+
+            if (shouldUseLocalOnly) {
+                appendAssistantReply(
+                    {
+                        content: localReply.content,
+                        actions: localReply.actions,
+                        mode: 'fallback',
+                        intent: localReply.intent,
+                        cta: localReply.cta,
+                        recommendations: localReply.recommendations,
+                        qualification: localReply.qualification,
+                        confidence: localReply.confidence,
+                    },
+                    'local_rule'
+                );
+                return;
+            }
+
+            void requestAssistantReply(currentMessages, trimmed, nextContext);
         },
-        [ensureWelcome, isTyping, requestAssistantReply]
+        [appendAssistantReply, ensureWelcome, isTyping, requestAssistantReply]
     );
 
     const handleQuickAction = useCallback(
@@ -401,27 +433,6 @@ export function useAssistant(): UseAssistantReturn {
         },
         [openAssistant, submitMessage]
     );
-
-    const handleMessageAction = useCallback((action: AssistantAction) => {
-        trackAssistantEvent('assistant_action_clicked', {
-            actionId: action.id,
-            target: action.target,
-        });
-        runAssistantAction(action);
-    }, []);
-
-    const handleRecommendationClick = useCallback((recommendation: AssistantRecommendation) => {
-        trackAssistantEvent('assistant_recommendation_clicked', {
-            recommendationId: recommendation.id,
-            target: recommendation.target,
-        });
-        runAssistantAction({
-            id: `recommendation-${recommendation.id}`,
-            label: recommendation.title,
-            type: 'scroll',
-            target: 'works',
-        });
-    }, []);
 
     const handoffToContact = useCallback(() => {
         const summaryText = inquirySummary?.summaryText ?? '';
@@ -444,17 +455,6 @@ export function useAssistant(): UseAssistantReturn {
         });
     }, [inquirySummary]);
 
-    const handleMessageCta = useCallback(
-        (cta: AssistantCta) => {
-            trackAssistantEvent('assistant_contact_cta_clicked', {
-                label: cta.label,
-                target: cta.target,
-            });
-            handoffToContact();
-        },
-        [handoffToContact]
-    );
-
     const handleCopyInquirySummary = useCallback(async () => {
         if (!inquirySummary?.summaryText) {
             return false;
@@ -471,12 +471,126 @@ export function useAssistant(): UseAssistantReturn {
         }
     }, [inquirySummary]);
 
+    const handleBusinessAction = useCallback(
+        async (action: Extract<AssistantAction, { type: 'business' }>) => {
+            switch (action.target) {
+                case 'continue_to_contact':
+                    handoffToContact();
+                    return;
+                case 'show_pricing_for_current_service':
+                    runAssistantAction(createScrollAction('pricing', 'See pricing'));
+                    return;
+                case 'show_relevant_work':
+                    runAssistantAction({
+                        id: `business-work-${action.filter ?? 'all'}`,
+                        label: localizeAssistantText(sessionContextRef.current?.language ?? 'en', { en: 'View work', sw: 'Angalia kazi', fr: 'Voir le travail' }),
+                        type: 'scroll',
+                        target: 'works',
+                        filter: action.filter ?? sessionContextRef.current?.relevantCategory,
+                    });
+                    return;
+                case 'copy_project_summary':
+                    await handleCopyInquirySummary();
+                    return;
+                case 'build_project_brief':
+                    appendAssistantReply({
+                        content: inquirySummary?.summaryText
+                            ? localizeAssistantText(sessionContextRef.current?.language ?? 'en', {
+                                  en: 'I have the project summary ready. You can copy it or continue to contact.',
+                                  sw: 'Muhtasari wa mradi uko tayari. Unaweza kuunakili au kuendelea kwenye contact.',
+                                  fr: 'Le resume du projet est pret. Vous pouvez le copier ou continuer vers le contact.',
+                              })
+                            : localizeAssistantText(sessionContextRef.current?.language ?? 'en', {
+                                  en: 'Share a little more about the project and I will shape the brief with you.',
+                                  sw: 'Shiriki maelezo kidogo zaidi kuhusu mradi, nami nitakusaidia kuunda brief.',
+                                  fr: 'Partagez un peu plus de details sur le projet et je vous aiderai a structurer le brief.',
+                              }),
+                        actions: inquirySummary?.summaryText
+                            ? [
+                                  {
+                                      id: 'business-copy-summary',
+                                      label: localizeAssistantText(sessionContextRef.current?.language ?? 'en', { en: 'Copy summary', sw: 'Nakili muhtasari', fr: 'Copier le resume' }),
+                                      type: 'business',
+                                      target: 'copy_project_summary',
+                                      workflow: action.workflow,
+                                  },
+                                  {
+                                      id: 'business-contact-summary',
+                                      label: localizeAssistantText(sessionContextRef.current?.language ?? 'en', { en: 'Continue to contact', sw: 'Endelea contact', fr: 'Continuer vers contact' }),
+                                      type: 'business',
+                                      target: 'continue_to_contact',
+                                      workflow: action.workflow,
+                                  },
+                              ]
+                            : undefined,
+                        mode: 'fallback',
+                        intent: 'lead',
+                        confidence: { level: inquirySummary?.summaryText ? 'high' : 'medium' },
+                    }, 'local_rule');
+                    return;
+                case 'start_project_request':
+                    submitMessage(
+                        localizeAssistantText(sessionContextRef.current?.language ?? 'en', {
+                            en: `I want to start a ${action.workflow ?? 'project'} project`,
+                            sw: `Nataka kuanza mradi wa ${action.workflow ?? 'project'}`,
+                            fr: `Je veux commencer un projet de ${action.workflow ?? 'projet'}`,
+                        }),
+                        'quick_action'
+                    );
+                    return;
+            }
+        },
+        [appendAssistantReply, handoffToContact, handleCopyInquirySummary, inquirySummary, submitMessage]
+    );
+
+    const handleMessageAction = useCallback(
+        (action: AssistantAction) => {
+            trackAssistantEvent('assistant_action_clicked', {
+                actionId: action.id,
+                target: action.target,
+            });
+
+            if (action.type === 'business') {
+                void handleBusinessAction(action);
+                return;
+            }
+
+            runAssistantAction(action);
+        },
+        [handleBusinessAction]
+    );
+
+    const handleRecommendationClick = useCallback((recommendation: AssistantRecommendation) => {
+        trackAssistantEvent('assistant_recommendation_clicked', {
+            recommendationId: recommendation.id,
+            target: recommendation.target,
+        });
+        runAssistantAction({
+            id: `recommendation-${recommendation.id}`,
+            label: recommendation.title,
+            type: 'scroll',
+            target: 'works',
+        });
+    }, []);
+
+    const handleMessageCta = useCallback(
+        (cta: AssistantCta) => {
+            trackAssistantEvent('assistant_contact_cta_clicked', {
+                label: cta.label,
+                target: cta.target,
+            });
+            handoffToContact();
+        },
+        [handoffToContact]
+    );
+
     const handleUseInquirySummary = useCallback(() => {
         handoffToContact();
     }, [handoffToContact]);
 
-    const showQuickActions = messages.length === 1 && messages[0]?.role === 'assistant' && !isTyping;
-    const quickActions = useMemo(() => assistantKnowledge.quickActions, []);
+    const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
+    const showQuickActions = Boolean(latestAssistantMessage) && !isTyping;
+    const quickActions = useMemo(() => buildDynamicQuickActions(sessionContext), [sessionContext]);
 
     return {
         isOpen,
@@ -486,6 +600,7 @@ export function useAssistant(): UseAssistantReturn {
         showQuickActions,
         quickActions,
         inquirySummary,
+        sessionContext,
         openAssistant,
         closeAssistant,
         toggleAssistant,
