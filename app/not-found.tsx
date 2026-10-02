@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound() { return <main className="project-page"><section className="project-sheet"><p className="eyebrow text-muted">Elisha Creatives / 404</p><h1 className="my-4 text-3xl font-semibold text-heading">This page isn’t here.</h1><p className="mb-6 text-muted">Explore the portfolio or return to the creative workspace.</p><div className="flex gap-3"><Link className="button-primary" href="/">Open workspace</Link><Link className="button-secondary" href="/work">Browse projects</Link></div></section></main>; }

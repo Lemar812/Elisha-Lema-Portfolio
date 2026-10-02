@@ -1,0 +1,7 @@
+export const testimonials = [
+  { name: "Samson Lotha", role: "Founder & Owner, Maasai Adventures", text: "The design work helped Maasai Adventures present our safari experiences in a more professional and attractive way. The visuals communicate our brand much better and give potential travelers a clear sense of the adventure we offer." },
+  { name: "Alexander Demetro", role: "Founder & Owner, A & B Accessories", text: "The branding and promotional designs made a big difference for our business. Our products are now presented with a cleaner and more professional visual identity, which has helped us build stronger trust with customers." },
+  { name: "Baltazary Twati", role: "Founder & Managing Director, Tanzania Smile Safaris", text: "The design work helped Tanzania Smile Safaris present itself with much better clarity. It strengthened how we communicate our safari experience and improved our overall brand image." },
+  { name: "George Macha", role: "Macha Stores Owner", text: "The logo and business presentation gave Macha Stores a stronger identity. The brand now looks cleaner, more credible, and better aligned with the kind of customers we want to attract." },
+  { name: "Jeremiah Lema", role: "CEO & Founder, Our Destiny", text: "The logo design captured the vision of Our Destiny perfectly. It gave our brand a clear identity that represents our mission and helps us present ourselves confidently to our audience." },
+];
