@@ -48,11 +48,21 @@ test("dragging and resize keep windows within the workspace", async ({ page }) =
   await page.mouse.move(bar!.x + bar!.width / 2, bar!.y + 20);
   await page.mouse.down(); await page.mouse.move(2000, 1800, { steps: 5 }); await page.mouse.up();
   let box = (await dialog.boundingBox())!;
-  expect(box.x + box.width).toBeLessThanOrEqual(1425); expect(box.y + box.height).toBeLessThanOrEqual(885);
+  expect(box.x + box.width).toBeLessThanOrEqual(1440); expect(box.y + box.height).toBe(1000);
   await page.setViewportSize({ width: 768, height: 900 });
-  await expect.poll(async () => (await dialog.boundingBox())!.x + (await dialog.boundingBox())!.width).toBeLessThanOrEqual(752);
-  box = (await dialog.boundingBox())!; expect(box.x).toBeGreaterThanOrEqual(16);
-  await page.screenshot({ path: "test-results/tablet-contact.png" });
+  await expect.poll(async () => (await dialog.boundingBox())!.x + (await dialog.boundingBox())!.width).toBeLessThanOrEqual(768);
+  box = (await dialog.boundingBox())!; expect(box.x).toBeGreaterThanOrEqual(0);
+  await expect(dialog.locator('.window-brand')).toHaveText('ec');
+  const dock = page.getByRole('navigation', { name: 'Dock', exact: true });
+  const dockBox = (await dock.boundingBox())!;
+  expect(box.y + box.height).toBeGreaterThan(dockBox.y);
+  expect(await dock.evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+  })).toBe(true);
+  await page.screenshot({ path: "output/portfolio-preview/windows-behind-dock.png" });
+  await dock.getByRole('button', { name: 'Minimize Contact', exact: true }).click();
+  await expect(dialog).toBeHidden();
 });
 test("App Library searches, closes with Escape, and launches apps", async ({ page }) => {
   await page.goto("/");

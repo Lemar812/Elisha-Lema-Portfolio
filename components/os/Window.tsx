@@ -70,7 +70,7 @@ export function Window({ id, title, width, height, area, mobile, children }: Win
         <button aria-label={`${win.isMaximized ? "Restore" : "Maximize"} ${title}`} onClick={() => toggleMaximize(id)} className="control-maximize">↗</button>
       </div>}
       <span className="window-title">{title}</span>
-      <span aria-hidden className="window-brand">EC</span>
+      <span aria-hidden className="window-brand">ec</span>
     </div>
     <div className="window-content">{children}</div>
   </motion.div>;
