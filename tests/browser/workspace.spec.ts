@@ -23,7 +23,7 @@ test("preferences persist, reduced motion stops video, music can be muted and re
   await page.goto("/#preferences");
   await expect(page.locator(".signature-motion img")).toBeVisible();
   await expect(page.locator(".signature-motion video")).toHaveCount(0);
-  const prefs = page.getByRole("dialog", { name: "Preferences", exact: true });
+  const prefs = page.getByRole("dialog", { name: "Settings", exact: true });
   await prefs.getByRole("button", { name: "Plain dark" }).click();
   await prefs.getByRole("checkbox", { name: "Background motion" }).uncheck();
   await prefs.getByRole("checkbox", { name: "Interface sounds" }).check();
@@ -47,7 +47,25 @@ test("About sections and the complete brand animation are available on mobile", 
   await about.getByRole("button", { name: "The brand", exact: true }).click();
   await expect(about.locator("video")).toHaveAttribute("controls", "");
   await about.getByRole("button", { name: "Home", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Preferences", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Settings", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Mute music", exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
+});
+
+test("dock keeps only pinned and running apps; reveal settles without looping", async ({ page }) => {
+  await page.goto('/');
+  const dock = page.getByRole('navigation', { name: 'Dock', exact: true });
+  await expect(dock.getByRole('button')).toHaveText(['Welcome', 'Apps', 'Settings', 'Help']);
+  await page.getByRole('button', { name: 'Desktop: Selected Work', exact: true }).click();
+  await expect(dock.locator('#dock-works')).toBeVisible();
+  const work = page.getByRole('dialog', { name: 'Works', exact: true });
+  await work.getByRole('button', { name: 'Minimize Works', exact: true }).click();
+  await expect(work).toBeHidden();
+  await expect(dock.locator('#dock-works')).toBeVisible();
+  await dock.locator('#dock-works').click();
+  await work.getByRole('button', { name: 'Close Works', exact: true }).click();
+  await expect(dock.locator('#dock-works')).toHaveCount(0);
+  await expect(page.locator('.signature-idle img')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('.signature-motion video')).toHaveCount(0);
+  await expect(page.locator('.signature-idle')).toHaveCSS('animation-name', 'signature-float');
 });

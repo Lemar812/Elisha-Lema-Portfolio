@@ -13,8 +13,10 @@ import {
   DocumentIcon,
   MailIcon,
   BriefcaseIcon,
-  GridIcon,
-  QuoteIcon,
+  WelcomeIcon,
+  SettingsIcon,
+  HelpIcon,
+  TestimonialIcon,
 } from "@/lib/icons";
 import type { AppId } from "@/lib/windowStore";
 
@@ -38,8 +40,8 @@ export const APPS: AppDefinition[] = [
   { id: "resume", label: "Resume", title: "Resume.pdf — Preview", icon: DocumentIcon, Component: ResumeApp, width: 620, height: 640 },
   { id: "contact", label: "Contact", title: "Contact", icon: MailIcon, Component: ContactApp, width: 520, height: 520 },
   { id: "services", label: "Services", title: "Services", icon: BriefcaseIcon, Component: ServicesApp, width: 680, height: 480 },
-  { id: "testimonials", label: "Testimonials", title: "Testimonials", icon: QuoteIcon, Component: TestimonialsApp, width: 680, height: 520 },
-  { id: "welcome", label: "Welcome", title: "Welcome to Elisha Creatives", icon: GridIcon, Component: WelcomeApp, width: 600, height: 570 },
-  { id: "help", label: "Help", title: "Workspace guide", icon: DocumentIcon, Component: HelpApp, width: 540, height: 520 },
-  { id: "preferences", label: "Preferences", title: "Preferences", icon: GridIcon, Component: PreferencesApp, width: 560, height: 600 },
+  { id: "testimonials", label: "Testimonials", title: "Testimonials", icon: TestimonialIcon, Component: TestimonialsApp, width: 680, height: 520 },
+  { id: "welcome", label: "Welcome", title: "Welcome to Elisha Creatives", icon: WelcomeIcon, Component: WelcomeApp, width: 600, height: 570 },
+  { id: "help", label: "Help", title: "Workspace guide", icon: HelpIcon, Component: HelpApp, width: 540, height: 520 },
+  { id: "preferences", label: "Settings", title: "Settings", icon: SettingsIcon, Component: PreferencesApp, width: 560, height: 600 },
 ];

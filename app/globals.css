@@ -161,9 +161,9 @@ button:disabled { cursor: default; }
 .workspace-footer button:hover, .workspace-footer a:hover { color: white; }
 .dock { max-width: calc(100vw - 28px); gap: 3px; }
 .dock-item { width: clamp(46px, 4.4vw, 62px); flex-shrink: 0; }
-.signature-motion { position: absolute; width: min(62vw, calc(100dvh - 200px), 680px); aspect-ratio: 1; left: 50%; top: calc(50% - 24px); transform: translate(-50%, -50%); opacity: .65; pointer-events: none; overflow: hidden; mask-image: radial-gradient(ellipse at center, black 25%, #000c 42%, transparent 70%); }
-.signature-motion video { display: block; width: 100%; height: 100%; object-fit: contain; }
-.signature-motion > img { padding: 20%; }
+.signature-motion { position: absolute; width: min(62vw, calc(100dvh - 200px), 680px); aspect-ratio: 1; left: 50%; top: calc(50% - 24px); transform: translate(-50%, -50%); opacity: .65; pointer-events: none; overflow: hidden; mask-image: radial-gradient(ellipse at center, black 40%, #000c 53%, transparent 72%); }
+.signature-motion video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+.signature-motion > img { width: 100%; height: 100%; object-fit: contain; }
 .wallpaper-plain { background-image: none; }
 .wallpaper-grid { background-image: radial-gradient(#ffffff15 .8px, transparent .8px); background-size: 22px 22px; }
 .welcome-window { padding: 28px 32px; }
@@ -225,3 +225,7 @@ button:disabled { cursor: default; }
   .desktop-shortcuts { top: 64px; gap: 18px; }
   .shortcut-icon { width: 56px; height: 56px; }
 }
+
+.signature-idle { animation: signature-float 12s ease-in-out infinite; }
+@keyframes signature-float { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, calc(-50% - 9px)) scale(1.018); } }
+@media (prefers-reduced-motion: reduce) { .signature-idle { animation: none; } }

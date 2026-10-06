@@ -4,9 +4,9 @@ import { useWindowStore } from "@/lib/windowStore";
 const steps = [
   ["Make yourself at home.", "This is the Elisha Creatives workspace. Open a window to explore the work, meet Elisha, or start a conversation."],
   ["Choose where to begin.", "On desktop, the four shortcuts open Selected Work, About Elisha, Services, and Contact. On a phone, use the app library."],
-  ["Arrange your workspace.", "Drag a window by its title bar. Minimize it to keep your place, maximize for more room, or close when you are finished. The dock brings it back."],
+  ["Arrange your workspace.", "Drag a window by its title bar. Minimize it to keep your place, maximize for more room, or close when you are finished. Open and minimized apps stay in the dock. Closed apps are available in Apps."],
   ["Explore the details.", "Selected Work introduces three projects across identity, promotional design, and web. Use the category filters to browse everything. On a phone, Back to list returns to the project list."],
-  ["Set the atmosphere.", "Preferences offers signature, grid, or plain backgrounds, a motion switch, music volume, and optional interface sounds. Music starts automatically when allowed, or after your first interaction. Use the music control to mute it."],
+  ["Set the atmosphere.", "Settings offers signature, grid, or plain backgrounds, a motion switch, music volume, and optional interface sounds. Music starts automatically when allowed, or after your first interaction. Use the music control to mute it."],
   ["Keep in touch.", "Contact opens email, WhatsApp, and phone links. Keyboard users can Tab through controls, press Escape to close a window, and move a focused title bar with Alt + arrow keys."],
 ];
 export function HelpApp() {

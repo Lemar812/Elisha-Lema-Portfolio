@@ -22,7 +22,7 @@ test("desktop branding, filter correctness and preserved minimize state", async 
 });
 test("window focus, maximize, keyboard movement and focus return", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Open Contact", exact: true }).click();
+  await page.getByRole("button", { name: "Desktop: Contact", exact: true }).click();
   const contact = page.getByRole("dialog", { name: "Contact", exact: true });
   const original = await contact.boundingBox();
   await contact.getByRole("button", { name: "Maximize Contact" }).click();
@@ -31,7 +31,7 @@ test("window focus, maximize, keyboard movement and focus return", async ({ page
   const bar = contact.locator(".window-titlebar");
   await bar.focus(); await page.keyboard.press("Alt+ArrowRight");
   expect((await contact.boundingBox())!.x).toBeGreaterThan(original!.x);
-  await page.getByRole("button", { name: "Open About", exact: true }).click();
+  await page.getByRole("button", { name: "Desktop: About Elisha", exact: true }).click();
   await page.getByRole("button", { name: "Focus Contact", exact: true }).click();
   await expect(contact).toBeVisible();
   await contact.getByRole("button", { name: "Close Contact" }).click();
@@ -67,8 +67,9 @@ test("App Library searches, closes with Escape, and launches apps", async ({ pag
 });
 test("all apps have readable dark surfaces and contact/CV links", async ({ page }) => {
   await page.goto("/");
-  for (const name of ["About", "Works", "Resume", "Contact", "Services", "Testimonials", "Help", "Preferences"]) {
-    await page.getByRole("button", { name: new RegExp("^Open " + name + "$") }).click();
+  for (const name of ["About", "Works", "Resume", "Contact", "Services", "Testimonials", "Help", "Settings"]) {
+    await page.getByRole("button", { name: "App Library", exact: true }).click();
+    await page.getByRole("dialog", { name: "App Library" }).getByRole("button", { name, exact: true }).click();
     const dialog = page.locator(".app-window.is-focused");
     await expect(dialog).toHaveCSS("background-color", "rgb(23, 25, 31)");
     await expect(dialog.locator(".window-content")).not.toBeEmpty();

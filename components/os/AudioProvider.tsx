@@ -38,10 +38,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       start();
     };
     start();
+    player.addEventListener("canplay", start);
+    document.addEventListener("pointerup", gesture);
     document.addEventListener("click", gesture);
     document.addEventListener("keydown", gesture);
     document.addEventListener("visibilitychange", start);
-    return () => { document.removeEventListener("click", gesture); document.removeEventListener("keydown", gesture); document.removeEventListener("visibilitychange", start); player.pause(); };
+    return () => { player.removeEventListener("canplay", start); document.removeEventListener("pointerup", gesture); document.removeEventListener("click", gesture); document.removeEventListener("keydown", gesture); document.removeEventListener("visibilitychange", start); player.pause(); };
   }, []);
   useEffect(() => {
     const visibility = () => {
@@ -68,8 +70,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     return () => { document.removeEventListener("visibilitychange", visibility); document.removeEventListener("click", sound); void synth.current?.close(); };
   }, []);
   return <AudioContextValue.Provider value={{ playing, enabled, error, toggle }}>
-    <audio ref={audio} src="/media/dream-culture.mp3" loop preload="auto" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
-      onError={() => { requested.current = false; setPlaying(false); setError("Music is unavailable. Please try again."); }} />
+    <audio ref={audio} src="/media/dream-culture.mp3" autoPlay loop preload="auto" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+      onError={() => { requested.current = false; setPlaying(false); setEnabled(false); setError("Music is unavailable. Please try again."); }} />
     {children}
   </AudioContextValue.Provider>;
 }

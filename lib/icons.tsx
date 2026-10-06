@@ -189,3 +189,16 @@ export function QuoteIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function WelcomeIcon(props: IconProps) {
+  return <svg {...base} {...props}><path d="m3 11 9-8 9 8M5 10v10h14V10M9 20v-7h6v7" /></svg>;
+}
+export function SettingsIcon(props: IconProps) {
+  return <svg {...base} {...props}><path d="M4 6h5m4 0h7M4 12h9m4 0h3M4 18h2m4 0h10" /><circle cx="11" cy="6" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="8" cy="18" r="2" /></svg>;
+}
+export function HelpIcon(props: IconProps) {
+  return <svg {...base} {...props}><circle cx="12" cy="12" r="9" /><path d="M9.5 8.5a2.5 2.5 0 1 1 4 2c-1.2.7-1.5 1.2-1.5 2.5M12 17h.01" /></svg>;
+}
+export function TestimonialIcon(props: IconProps) {
+  return <svg {...base} {...props}><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-3a2 2 0 0 1-2-2V7a3 3 0 0 1 3-3Z" /><path d="m12 7 1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4Z" /></svg>;
+}
