@@ -24,19 +24,21 @@ export function PortfolioShell() {
     let seen = false;
     try { seen = sessionStorage.getItem("elisha-intro-seen") === "1"; } catch { /* Continue without persistence. */ }
     const deepLink = APP_IDS.includes(window.location.hash.slice(1).split("/")[0] as AppId);
-    setEntry(seen || deepLink || window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "desktop" : "intro");
+    const reloading = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type === "reload";
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setEntry(reducedMotion || (!reloading && (seen || deepLink)) ? "desktop" : "intro");
   }, []);
   const { focusedId, libraryOpen, openApp, showLibrary } = useWindowStore();
   const previousFocus = useRef<AppId | null>(null);
   useEffect(() => {
-    const readHash = () => {
+    const readHash = (event?: Event) => {
       const [id, workId] = window.location.hash.slice(1).split("/");
       const state = useWindowStore.getState();
       if (APP_IDS.includes(id as AppId)) {
         const work = works.find(w => w.id === workId);
         if (id === "works" && work) state.selectWork(work.id, work.category);
         state.openApp(id as AppId);
-        setEntry("desktop");
+        if (event) setEntry("desktop");
       } else if (!id) state.showDesktop();
     };
     readHash();

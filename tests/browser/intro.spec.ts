@@ -17,8 +17,13 @@ test("silent introduction and brand title, then desktop reveal and music", async
   await expect(page.locator('.signature-idle img')).toBeVisible();
   await expect(page.locator('.signature-motion video')).toHaveCount(0);
   await page.reload();
+  await expect(page.getByText('Designer.', { exact: true })).toBeVisible();
+  await expect(page.locator('audio')).toHaveCount(0);
+  await expect(page.getByText('Developer.', { exact: true })).toBeVisible();
+  await expect(page.locator('.intro-manifesto')).toHaveText('Imagine.Design.Develop.Create.');
+  await expect(page.locator('.intro-brand h1')).toHaveText('Elisha Creatives');
   await expect(page.getByRole('navigation', { name: 'Dock', exact: true })).toBeVisible();
-  await expect(page.locator('.intro-role')).toHaveCount(0);
+  await expect(page.locator('.signature-motion video')).toBeVisible();
 });
 test("skip enters immediately and unlocks music; mute stays muted", async ({ page }) => {
   await page.goto('/');
@@ -44,4 +49,16 @@ test("mobile intro opens the app library without a second entry screen", async (
   await page.getByRole('button', { name: 'Skip intro' }).click();
   await expect(page.getByRole('button', { name: 'Works', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Enter workspace' })).toHaveCount(0);
+});
+
+test("reload with an open app repeats the silent intro and restores the app", async ({ page }) => {
+  await page.goto('/#contact');
+  await expect(page.getByRole('dialog', { name: 'Contact', exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Designer.', { exact: true })).toBeVisible();
+  await expect(page.locator('audio')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Skip intro' }).click();
+  await expect(page.getByRole('dialog', { name: 'Contact', exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Designer.', { exact: true })).toBeVisible();
 });
