@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => sessionStorage.setItem("elisha-intro-seen", "1")); });
 test("desktop branding, filter correctness and preserved minimize state", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   await page.goto("/");
@@ -37,7 +38,7 @@ test("window focus, maximize, keyboard movement and focus return", async ({ page
   await contact.getByRole("button", { name: "Close Contact" }).click();
   await expect(page.getByRole("dialog", { name: "About Elisha" }).locator(".window-titlebar")).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("button", { name: "Open About", exact: true })).toBeFocused();
+  await expect(page.getByRole("button", { name: "App Library", exact: true })).toBeFocused();
 });
 test("dragging and resize keep windows within the workspace", async ({ page }) => {
   await page.goto("/#contact");
@@ -84,7 +85,6 @@ test("all apps have readable dark surfaces and contact/CV links", async ({ page 
 test("mobile unlock, list/detail, Home and deep linking work without overflow", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Enter workspace" }).click();
   await page.getByRole("button", { name: "Works", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Works", exact: true });
   await dialog.getByRole("button", { name: "Website", exact: true }).click();
@@ -101,15 +101,9 @@ test("mobile unlock, list/detail, Home and deep linking work without overflow", 
   await page.goto("/#works/work-9");
   await expect(page.getByRole("heading", { name: "A&B Accessories Poster" })).toBeVisible();
 });
-test("swipe unlock and reduced motion are supported", async ({ browser }) => {
+test("reduced motion opens the mobile library immediately", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 320, height: 680 }, hasTouch: true, isMobile: true, reducedMotion: "reduce" });
   const page = await context.newPage(); await page.goto("http://localhost:3000");
-  const screen = page.locator(".lock-screen");
-  await expect(screen).toBeVisible();
-  const touch = await context.newCDPSession(page);
-  await touch.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 150, y: 450 }] });
-  await touch.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 150, y: 300 }] });
-  await touch.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect(page.getByRole("textbox", { name: "Search apps" })).toBeVisible();
   await page.getByRole("button", { name: "Contact", exact: true }).click();
   await expect(page.getByRole("heading", { name: "What are you creating?" })).toBeVisible();

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Wallpaper } from "./Wallpaper";
@@ -8,14 +8,24 @@ import { Dock } from "./Dock";
 import { WindowManager } from "./WindowManager";
 import { AudioProvider } from "./AudioProvider";
 import { APPS } from "@/lib/appRegistry";
-import { LockScreen } from "@/components/mobile/LockScreen";
+import { Intro } from "./Intro";
 import { AppLibrary } from "@/components/mobile/AppLibrary";
 import { APP_IDS, useWindowStore, type AppId } from "@/lib/windowStore";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { works } from "@/data/works";
 export function PortfolioShell() {
   const mobile = useIsMobile();
-  const [locked, setLocked] = useState(true);
+  const [entry, setEntry] = useState<"pending" | "intro" | "desktop">("pending");
+  const finishIntro = useCallback(() => {
+    try { sessionStorage.setItem("elisha-intro-seen", "1"); } catch { /* Storage may be disabled. */ }
+    setEntry("desktop");
+  }, []);
+  useEffect(() => {
+    let seen = false;
+    try { seen = sessionStorage.getItem("elisha-intro-seen") === "1"; } catch { /* Continue without persistence. */ }
+    const deepLink = APP_IDS.includes(window.location.hash.slice(1).split("/")[0] as AppId);
+    setEntry(seen || deepLink || window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "desktop" : "intro");
+  }, []);
   const { focusedId, libraryOpen, openApp, showLibrary } = useWindowStore();
   const previousFocus = useRef<AppId | null>(null);
   useEffect(() => {
@@ -26,7 +36,7 @@ export function PortfolioShell() {
         const work = works.find(w => w.id === workId);
         if (id === "works" && work) state.selectWork(work.id, work.category);
         state.openApp(id as AppId);
-        setLocked(false);
+        setEntry("desktop");
       } else if (!id) state.showDesktop();
     };
     readHash();
@@ -47,7 +57,9 @@ export function PortfolioShell() {
     }
     previousFocus.current = focusedId;
   }, [focusedId, mobile]);
-  return <AudioProvider><MotionConfig reducedMotion="user"><main className="os-shell">
+  if (entry === "pending") return <div className="intro-screen" aria-label="Opening Elisha Creatives" />;
+  if (entry === "intro") return <Intro onComplete={finishIntro} />;
+  return <AudioProvider><MotionConfig reducedMotion="user"><main className="os-shell desktop-arrival">
     <Wallpaper />
     <Link className="skip-link" href="/work">Skip to portfolio projects</Link>
     {!mobile && <>
@@ -62,9 +74,8 @@ export function PortfolioShell() {
       <footer className="workspace-footer"><button onClick={() => openApp("help")}>New here? Take a quick tour ↗</button><Link href="/work">Browse project pages ↗</Link></footer>
       <Dock />
     </>}
-    {mobile && !locked && !focusedId && <div id="mobile-home-focus" tabIndex={-1}><AppLibrary onOpenApp={openApp} /></div>}
-    <div inert={libraryOpen || (mobile && locked)}><WindowManager mobile={mobile} /></div>
-    <AnimatePresence>{mobile && locked && <LockScreen key="lock" onUnlock={() => setLocked(false)} />}</AnimatePresence>
+    {mobile && !focusedId && <div id="mobile-home-focus" tabIndex={-1}><AppLibrary onOpenApp={openApp} /></div>}
+    <div inert={libraryOpen}><WindowManager mobile={mobile} /></div>
     <AnimatePresence>{!mobile && libraryOpen && <div key="library" className="library-overlay" onClick={() => showLibrary(false)}><div onClick={e => e.stopPropagation()}><AppLibrary modal onOpenApp={openApp} onClose={() => showLibrary(false)} /></div></div>}</AnimatePresence>
   </main></MotionConfig></AudioProvider>;
 }

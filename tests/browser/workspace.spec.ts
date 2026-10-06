@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => sessionStorage.setItem("elisha-intro-seen", "1")); });
 test("welcome, shortcuts, featured projects and tour are connected", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open Welcome", exact: true }).click();
