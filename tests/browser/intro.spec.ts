@@ -1,15 +1,19 @@
 import { test, expect } from "@playwright/test";
-test("silent introduction, shared manifesto, reveal, then desktop and music", async ({ page }) => {
+test("silent introduction and brand title, then desktop reveal and music", async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Designer.', { exact: true })).toBeVisible();
   await expect(page.locator('audio')).toHaveCount(0);
   await expect(page.getByText('Developer.', { exact: true })).toBeVisible();
   await expect(page.locator('.intro-manifesto')).toHaveText('Imagine.Design.Develop.Create.');
   await expect(page.locator('.intro-manifesto span')).toHaveCount(4);
-  await expect(page.locator('.intro-reveal')).toBeVisible();
+  await expect(page.locator('.intro-brand h1')).toHaveText('Elisha Creatives');
+  await expect(page.locator('.intro-brand-byline')).toHaveText('by Elisha Lema');
+  await expect(page.locator('.intro-screen video')).toHaveCount(0);
+  await page.screenshot({ path: 'output/portfolio-preview/intro-brand.png' });
   await expect(page.locator('audio')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Dock', exact: true })).toBeVisible({ timeout: 12000 });
   await expect(page.locator('audio')).toHaveAttribute('autoplay', '');
+  await expect(page.locator('.signature-motion video')).toBeVisible();
   await expect(page.locator('.signature-idle img')).toBeVisible();
   await expect(page.locator('.signature-motion video')).toHaveCount(0);
   await page.reload();
