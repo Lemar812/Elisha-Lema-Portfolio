@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx -v)",
+      "Bash(git --version)",
+      "Bash(mkdir -p \"/c/Users/Admin/AppData/Local/Temp/claude/c--Projects-mimi/0fd6ce97-d52e-4cef-b755-f4cff078eba5/scratchpad/phase0-screenshots\")",
+      "Bash(mv \"c:/Projects/mimi/desktop-1440-full.png\" \"c:/Projects/mimi/desktop-projects-app.png\" \"c:/Projects/mimi/mobile-375.png\" \"c:/Projects/mimi/tablet-768.png\" \"/c/Users/Admin/AppData/Local/Temp/claude/c--Projects-mimi/0fd6ce97-d52e-4cef-b755-f4cff078eba5/scratchpad/phase0-screenshots/\")",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --eslint --use-npm)",
+      "Bash(mkdir -p ../mimi-stage)",
+      "Bash(mv works *)",
+      "Bash(mv .mcp.json ../mimi-stage/)",
+      "Bash(mv ../mimi-stage/works .)",
+      "Bash(mv ../mimi-stage/.mcp.json .)",
+      "Bash(rmdir ../mimi-stage)",
+      "Bash(npm install *)",
+      "Bash(npm ls *)",
+      "Bash(npm audit *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const p='node_modules/next/dist/compiled/@next/font/dist/google/font-data.json'; if\\(fs.existsSync\\(p\\)\\){const d=JSON.parse\\(fs.readFileSync\\(p,'utf8'\\)\\); console.log\\('Newsreader:', !!d['Newsreader']\\); console.log\\('Geist:', !!d['Geist']\\); console.log\\('Geist Mono:', !!d['Geist Mono']\\);} else {console.log\\('font-data.json not found at', p\\);}\")",
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_drag",
+      "Bash(tail -150 /tmp/nextdev.log 2>&1)",
+      "mcp__playwright__browser_evaluate",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 1; \"done\")",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "Bash(rm -rf .next)",
+      "Bash(tail -100 /tmp/nextdev3.log 2>&1)",
+      "PowerShell(\"stopped\")"
+    ]
+  }
+}

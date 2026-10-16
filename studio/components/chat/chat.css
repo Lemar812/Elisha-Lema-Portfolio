@@ -32,3 +32,10 @@
   .ec-guide-composer textarea { height: 30px; min-height: 30px; }
   .ec-guide-composer > p { margin-bottom: 4px; }
 }
+@media (max-height: 450px) {
+  .ec-guide > header { padding-block: 4px; }
+  .ec-guide > header p + p { display: none; }
+  .ec-guide > nav button { min-height: 32px; }
+  .ec-guide-welcome { padding-block: 12px; }
+  .ec-guide-composer { padding-top: 4px; padding-bottom: max(6px, env(safe-area-inset-bottom)); }
+}
