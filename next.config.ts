@@ -3,7 +3,7 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 const nextConfig: NextConfig = {
   // Keep static generation within a modest memory budget on local machines.
-  experimental: { cpus: 2 },
+  experimental: { cpus: 2, optimizePackageImports: ['@phosphor-icons/react', 'lucide-react'] },
 };
 
 export default function config(phase: string): NextConfig {

@@ -1,0 +1,696 @@
+/* ============================================
+   PORTFOLIO OS - THEME SYSTEM
+   ============================================ */
+
+:root {
+  /* Base colors - Light mode */
+  --color-bg: 245 245 247; /* #f5f5f7 - Light gray background */
+  --studio-surface: 255 255 255; /* #ffffff - White surfaces */
+  --color-text: 29 29 31; /* #1d1d1f - Dark text */
+  --color-text-secondary: 110 110 115; /* #6e6e73 - Secondary text */
+  --color-border: 210 210 215; /* #d2d2d7 - Borders */
+
+  /* Accent color - User controlled (default: iOS Blue) */
+  --color-accent: 0 122 255; /* #007AFF */
+
+  /* Glass effect levels - Light mode */
+  --glass-bg-subtle: rgba(255, 255, 255, 0.8);
+  --glass-bg-medium: rgba(255, 255, 255, 0.6);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.4);
+  --glass-bg-extreme: rgba(255, 255, 255, 0.3);
+
+  --glass-blur-subtle: 20px;
+  --glass-blur-medium: 40px;
+  --glass-blur-heavy: 60px;
+  --glass-blur-extreme: 80px;
+
+  /* Wallpaper tint - Extracted from wallpaper */
+  --wallpaper-tint: 0 122 255; /* Default to accent */
+  --wallpaper-tint-alpha: 0.1;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  /* Legacy variables for shadcn compatibility */
+  --background: 245 245 247;
+  --foreground: 29 29 31;
+  --card: 255 255 255;
+  --card-foreground: 29 29 31;
+  --primary: 0 122 255;
+  --primary-foreground: 255 255 255;
+  --secondary: 245 245 247;
+  --secondary-foreground: 29 29 31;
+  --studio-muted: 245 245 247;
+  --muted-foreground: 110 110 115;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 210 210 215;
+  --ring: 0 122 255;
+  --radius: 0.75rem;
+
+  /* Motion easing — single source of truth for the interaction curves the apps
+     use. Strong custom curves (built-in CSS easings are too weak); ease-out for
+     enter/exit so the first frame moves immediately, ease-in-out for on-screen
+     movement. Apps reference these instead of re-inlining the literal bezier. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Fluid type — clamp upper bounds match existing Tailwind sizes so desktop ≥768px is byte-identical */
+  --fs-display: clamp(28px, 4vw + 14px, 48px);
+  --fs-hero: clamp(20px, 2.5vw + 12px, 30px);
+  --fs-title: clamp(15px, 0.6vw + 13px, 18px);
+  --fs-body: clamp(14px, 0.5vw + 12px, 16px);
+  --fs-meta: clamp(11px, 0.4vw + 9.5px, 13px);
+  --fs-label: clamp(10px, 0.4vw + 8.5px, 12px);
+
+  /* Editorial display sizes: Instrument-foundation hero/headline scale.
+     Kept separate from --fs-display (which ~20 consumers depend on); these
+     are opt-in via the .editorial-* utilities, not the Tailwind fontSize map. */
+  --fs-editorial: clamp(48px, 10vw + 8px, 128px);
+  --fs-display-lg: clamp(34px, 6vw + 10px, 72px);
+
+  /* Editorial tracking + rule tokens */
+  --tracking-meta: 0.14em;
+  --tracking-label: 0.18em;
+  --rule-weight: 1px;
+  --ink-mid: var(--color-text-secondary);
+
+  /* Fluid spacing for mobile shell */
+  --sp-hero-pad: clamp(16px, 3vw + 8px, 24px);
+  --sp-icon-hero: clamp(72px, 18vw, 96px);
+}
+
+.dark {
+  /* Base colors - Dark mode */
+  --color-bg: 0 0 0; /* #000000 - True black (OLED friendly) */
+  --studio-surface: 28 28 30; /* #1c1c1e - Dark surfaces */
+  --color-text: 245 245 247; /* #f5f5f7 - Light text */
+  --color-text-secondary: 152 152 157; /* #98989d - Secondary text */
+  --color-border: 56 56 58; /* #38383a - Borders */
+
+  /* Accent stays same but shows differently on dark */
+
+  /* Glass effect levels - Dark mode */
+  --glass-bg-subtle: rgba(0, 0, 0, 0.6);
+  --glass-bg-medium: rgba(0, 0, 0, 0.4);
+  --glass-bg-heavy: rgba(0, 0, 0, 0.3);
+  --glass-bg-extreme: rgba(0, 0, 0, 0.2);
+
+  /* Wallpaper tint stronger in dark */
+  --wallpaper-tint-alpha: 0.15;
+
+  /* Shadows - Darker in dark mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+
+  /* Legacy variables for shadcn compatibility */
+  --background: 0 0 0;
+  --foreground: 245 245 247;
+  --card: 28 28 30;
+  --card-foreground: 245 245 247;
+  --primary: 0 122 255;
+  --primary-foreground: 255 255 255;
+  --secondary: 28 28 30;
+  --secondary-foreground: 245 245 247;
+  --studio-muted: 28 28 30;
+  --muted-foreground: 152 152 157;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 56 56 58;
+  --ring: 0 122 255;
+}
+
+/* ============================================
+   PALETTE — mono (default) vs color ("Fun")
+   ThemeProvider drives the live accent via inline style on <html>; these
+   selectors are the pre-hydration / no-JS fallback so the mono default paints
+   graphite instead of flashing the color accent. ThemeProvider sets
+   data-palette on mount, after which its inline accent takes precedence.
+   ============================================ */
+
+[data-palette="mono"] {
+  --color-accent: 29 29 31; /* graphite — matches --color-text (light) */
+  --wallpaper-tint: 29 29 31;
+}
+
+[data-palette="mono"].dark {
+  --color-accent: 245 245 247; /* graphite — matches --color-text (dark) */
+  --wallpaper-tint: 245 245 247;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li {
+  margin: 0;
+}
+
+body {
+  font-family:
+    var(--font-geist-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
+  overflow: hidden; /* OS environment */
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  /* Safe-area utilities — for phone shell with notch / home indicator */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+  .mt-safe {
+    margin-top: env(safe-area-inset-top);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  .h-safe-top {
+    height: env(safe-area-inset-top);
+  }
+  .h-safe-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+
+  /* Touch target floor — iOS HIG minimum is 44pt */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Hide native scrollbars while preserving scrollability — used by mobile shell */
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Glass effect utilities */
+  .glass-subtle {
+    background: var(--glass-bg-subtle);
+    backdrop-filter: blur(var(--glass-blur-subtle)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-subtle)) saturate(180%);
+    will-change: backdrop-filter;
+  }
+
+  .glass-medium {
+    background: var(--glass-bg-medium);
+    backdrop-filter: blur(var(--glass-blur-medium)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(180%);
+  }
+
+  .glass-heavy {
+    background: var(--glass-bg-heavy);
+    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(180%);
+  }
+
+  .glass-extreme {
+    background: var(--glass-bg-extreme);
+    backdrop-filter: blur(var(--glass-blur-extreme)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-extreme)) saturate(180%);
+  }
+
+  /* Editorial display face — opt-in, headings/hero only. Newsreader is a real
+     multi-weight serif, so faux-bold is no longer a concern: default heads sit
+     at 400, and you MAY step to font-weight 500/600 for restrained emphasis
+     (Tailwind font-medium / font-semibold). Keep it elegant — never heavy/black
+     (700+). Tracking/leading tuned for display. */
+  .font-display {
+    font-family: var(--font-serif), Georgia, Cambria, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+
+  /* ============================================
+     EDITORIAL FOUNDATION
+     Monochrome, restraint-first display + meta type and hairline rules.
+     The serif (Newsreader) carries real weights: heads default to 400, and
+     500/600 are available for tasteful emphasis. Never go heavy/black (700+).
+     ============================================ */
+
+  /* Uppercase mono eyebrow used across editorial surfaces. */
+  .font-mono-meta {
+    font-family: var(--font-geist-mono), "SF Mono", Monaco, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-meta);
+    font-size: var(--fs-meta);
+    color: rgb(var(--ink-mid));
+    font-weight: 500;
+  }
+
+  /* Oversized serif hero. */
+  .editorial-hero {
+    font-family: var(--font-serif), Georgia, Cambria, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    font-size: var(--fs-editorial);
+  }
+
+  /* Section-level serif headline. */
+  .editorial-head {
+    font-family: var(--font-serif), Georgia, Cambria, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    font-size: var(--fs-display-lg);
+  }
+
+  /* Inline emphasis: thin graphite underline, generous offset. */
+  .emphasis-underline {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: rgb(var(--ink-mid));
+  }
+
+  /* Hairline rule: 1px border at the theme border color. */
+  .hairline {
+    border: 0;
+    border-top: var(--rule-weight) solid rgb(var(--color-border));
+  }
+
+  /* Text utilities */
+  .text-primary {
+    color: rgb(var(--color-text));
+  }
+
+  .text-secondary {
+    color: rgb(var(--color-text-secondary));
+  }
+
+  .text-accent {
+    color: rgb(var(--color-accent));
+  }
+
+  /* Background utilities */
+  .bg-surface {
+    background: rgb(var(--studio-surface));
+  }
+
+  .bg-accent {
+    background: rgb(var(--color-accent));
+  }
+
+  /* Border utilities */
+  .border-default {
+    border-color: rgb(var(--color-border));
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLING — thin macOS overlay style
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-text-secondary), 0.25);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-text-secondary), 0.45);
+}
+
+/* ============================================
+   APP CHROME — macOS inner chrome utilities
+   ============================================ */
+
+/* Sidebar: distinct glass layer — depth: wallpaper → window glass (40px) → sidebar (8px) → content */
+.app-sidebar {
+  background: rgba(0, 0, 0, 0.04);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  will-change: backdrop-filter;
+}
+.dark .app-sidebar {
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Nav item base */
+.app-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgb(var(--color-text-secondary));
+  transition:
+    background 120ms,
+    color 120ms;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  border: none;
+  background: transparent;
+}
+.app-nav-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgb(var(--color-text));
+}
+.dark .app-nav-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+.app-nav-item.active {
+  background: rgb(var(--color-accent) / 0.12);
+  color: rgb(var(--color-accent));
+  font-weight: 500;
+}
+
+/* Toolbar separator */
+.app-toolbar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.dark .app-toolbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   SELECTION STYLING
+   ============================================ */
+
+::selection {
+  background: rgb(var(--color-accent) / 0.3);
+  color: rgb(var(--color-text));
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+/* Remove focus outline on elements that handle their own focus styles */
+[data-no-focus-ring]:focus-visible {
+  outline: none;
+}
+
+/* Radix UI menus (context menu, dropdown) handle their own hover states — no outline needed */
+[data-radix-collection-item]:focus-visible,
+[role="menuitem"]:focus-visible,
+[role="option"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(-1.5deg);
+  }
+  100% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(250%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION — global safety net
+   JS surfaces gate on framer-motion's useReducedMotion(); this neutralizes
+   any remaining CSS animations/transitions (e.g. the dock pulse, loading bar)
+   so the whole shell honors the OS "Reduce Motion" setting.
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   CUSTOM CURSOR
+   .cursor-none is added to <html> only when the custom Cursor is active
+   (fine pointer + motion allowed). Text fields keep a native caret for UX.
+   ============================================ */
+
+.cursor-none,
+.cursor-none * {
+  cursor: none !important;
+}
+
+.cursor-none input,
+.cursor-none textarea,
+.cursor-none [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* ============================================
+   IN-WINDOW RESPONSIVE TYPOGRAPHY
+   App content sizes its headings/body off the WINDOW width, not the
+   viewport, so text stays proportionate whether a window is small or
+   maximized. `.app-content` is a query container; the text utilities below
+   become fluid (cqi = 1% of the container's inline size) only inside it.
+   Upper clamp = the original Tailwind size, so a maximized window is
+   unchanged; small windows scale down.
+   ============================================ */
+
+.app-content {
+  container-type: inline-size;
+}
+
+.app-content .text-4xl {
+  font-size: clamp(1.5rem, 4.5cqi, 2.25rem);
+}
+.app-content .text-3xl {
+  font-size: clamp(1.35rem, 3.8cqi, 1.875rem);
+}
+.app-content .text-2xl {
+  font-size: clamp(1.15rem, 3cqi, 1.5rem);
+}
+.app-content .text-xl {
+  font-size: clamp(1.05rem, 2.4cqi, 1.25rem);
+}
+
+/* Editorial display heads scale off the WINDOW width too. Upper clamp = the
+   global token ceiling (128px / 72px), so a maximized window matches the
+   viewport-fluid version; small windows scale the serif down gracefully. */
+.app-content .editorial-hero {
+  font-size: clamp(2.25rem, 14cqi, 8rem);
+}
+/* Projects poster name: a project name is multi-word and shares the stage with
+   a subtitle + metadata, so it gets a tamer ceiling than the page-title hero.
+   Still window-dynamic via cqi; specificity (0-3-0) beats the base ramp. */
+.app-content .editorial-hero.project-hero {
+  font-size: clamp(1.9rem, 8cqi, 4.5rem);
+}
+.app-content .editorial-head {
+  font-size: clamp(1.75rem, 9cqi, 4.5rem);
+}
+
+/* Body, small text, and mono metadata scale off the WINDOW too, so a small
+   window reads proportionally tighter while a maximized one matches the
+   original size (upper clamp = the Tailwind/token value). Gentle ranges so
+   nothing breaks across the OS; this is what makes every app feel dynamic to
+   its window rather than fixed. */
+.app-content .text-base {
+  font-size: clamp(0.85rem, 1.9cqi, 1rem);
+}
+.app-content .text-sm {
+  font-size: clamp(0.78rem, 1.65cqi, 0.875rem);
+}
+.app-content .font-mono-meta {
+  font-size: clamp(0.62rem, 1.45cqi, 0.75rem);
+}
+
+/* ============================================
+   MAGNETIC FLAT BUTTONS
+   useMagneticField() writes --mag-x / --mag-y on hovered [data-magnetic="button"]
+   elements; this rule applies the translate and a spring-like settle. Scoped to
+   the ="button" value only, so dock app icons (bare [data-magnetic], which run
+   their own magnification scale transform) are never translated. Vars default to
+   0px, so the rule rests at no offset under reduced motion / coarse pointer.
+   ============================================ */
+[data-magnetic="button"] {
+  transform: translate(var(--mag-x, 0px), var(--mag-y, 0px));
+  transition: transform 200ms cubic-bezier(0.18, 0.9, 0.32, 1.2);
+}
+.app-content .text-lg {
+  font-size: clamp(0.95rem, 2cqi, 1.125rem);
+}
+
+/* ============================================
+   ABOUT ME — masthead name + responsive index rail
+   The About Me app lives inside .app-content (container-type: inline-size),
+   so everything below scales off the WINDOW (container) width via cqi/@container,
+   never the viewport. Keeps the masthead from clipping and lets the rail go
+   quiet/compact in a small window while staying generous when maximized.
+   ============================================ */
+
+/* Masthead name: serif clamps off container width and is ALLOWED to wrap, so
+   the full profile name never clips. Pairs with min-w-0 on the flex
+   column in JSX so the serif can shrink below its intrinsic width. */
+.about-masthead-name {
+  font-size: clamp(2rem, 9cqi, 4.25rem);
+  line-height: 1.04;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+
+/* Index rail: compact + quiet at small container widths, generous when wide. */
+.about-rail {
+  width: clamp(11rem, 20cqi, 14rem);
+}
+
+/* Per-row sizing tokens scale down in a narrow window. */
+.about-rail-row {
+  --about-row-py: 1rem;
+  --about-row-num: 0.72rem;
+  --about-row-label: 1.05rem;
+  padding-top: var(--about-row-py);
+  padding-bottom: var(--about-row-py);
+}
+.about-rail-row .about-rail-number {
+  font-size: var(--about-row-num);
+}
+.about-rail-row .about-rail-label {
+  font-size: var(--about-row-label);
+  line-height: 1.15;
+}
+
+/* Tighten the whole rail when the window/container is narrow. */
+@container (max-width: 720px) {
+  .about-rail-row {
+    --about-row-py: 0.5rem;
+    --about-row-num: 0.62rem;
+    --about-row-label: 0.9rem;
+  }
+}
+@container (max-width: 560px) {
+  .about-rail-row {
+    --about-row-py: 0.4rem;
+    --about-row-num: 0.58rem;
+    --about-row-label: 0.82rem;
+  }
+}
+
+/* ============================================
+   ABOUT ME — buttery scroll + gentle proximity snap
+   Proximity (NOT mandatory) so free scrolling is never fought; sections settle
+   near their start. scroll-padding keeps the snapped top clear of the masthead
+   breathing room. Disabled under reduced motion via the global safety net
+   (scroll-behavior: auto) and the JS branch for anchor scrolls.
+   ============================================ */
+.about-scroll {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: 1.5rem;
+}
+.about-snap {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  scroll-margin-top: 1.5rem;
+}

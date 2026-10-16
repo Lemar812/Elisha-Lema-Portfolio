@@ -1,2 +1,28 @@
 import Link from "next/link";
-export default function NotFound() { return <main className="project-page"><section className="project-sheet"><p className="eyebrow text-muted">Elisha Creatives / 404</p><h1 className="my-4 text-3xl font-semibold text-heading">This page isn’t here.</h1><p className="mb-6 text-muted">Explore the portfolio or return to the creative workspace.</p><div className="flex gap-3"><Link className="button-primary" href="/">Open workspace</Link><Link className="button-secondary" href="/work">Browse projects</Link></div></section></main>; }
+export default function NotFound() {
+  return (
+    <main className="ec-recovery">
+      <section>
+        <span className="ec-kicker">Elisha Creatives / System message</span>
+        <p className="ec-recovery-face" aria-hidden>
+          :(
+        </p>
+        <h1>This page wandered off.</h1>
+        <p>
+          The workspace is still here. Return to the desktop or explore the
+          creative collection.
+        </p>
+        <code>PAGE_NOT_FOUND · 404</code>
+        <div className="ec-actions">
+          <Link href="/" className="ec-primary">
+            Return to desktop
+          </Link>
+          <Link href="/work" className="ec-secondary">
+            Browse creatives
+          </Link>
+        </div>
+        <small>ec · Elisha Creatives by Elisha Lema</small>
+      </section>
+    </main>
+  );
+}

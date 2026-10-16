@@ -2,12 +2,33 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 export type WallpaperStyle = "signature" | "grid" | "plain";
-export const usePreferences = create(persist<{
-  wallpaper: WallpaperStyle; motion: boolean; sounds: boolean; volume: number;
-  setWallpaper: (value: WallpaperStyle) => void; setMotion: (value: boolean) => void;
-  setSounds: (value: boolean) => void; setVolume: (value: number) => void;
-}>(set => ({
-  wallpaper: "signature", motion: true, sounds: false, volume: .18,
-  setWallpaper: wallpaper => set({ wallpaper }), setMotion: motion => set({ motion }),
-  setSounds: sounds => set({ sounds }), setVolume: volume => set({ volume }),
-}), { name: "elisha-preferences-v1", skipHydration: true }));
+export const usePreferences = create(
+  persist<{
+    wallpaper: WallpaperStyle;
+    motion: boolean;
+    sounds: boolean;
+    volume: number;
+    masterMuted: boolean;
+    musicEnabled: boolean;
+    effectsVolume: number;
+    setWallpaper: (value: WallpaperStyle) => void;
+    setMotion: (value: boolean) => void;
+    setSounds: (value: boolean) => void;
+    setVolume: (value: number) => void;
+  }>(
+    (set) => ({
+      wallpaper: "signature",
+      motion: true,
+      sounds: false,
+      volume: 0.18,
+      masterMuted: false,
+      musicEnabled: true,
+      effectsVolume: 0.8,
+      setWallpaper: (wallpaper) => set({ wallpaper }),
+      setMotion: (motion) => set({ motion }),
+      setSounds: (sounds) => set({ sounds }),
+      setVolume: (volume) => set({ volume }),
+    }),
+    { name: "elisha-preferences-v1", skipHydration: true },
+  ),
+);

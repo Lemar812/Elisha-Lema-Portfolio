@@ -35,7 +35,7 @@ const HelpApp = dynamic(() => import("@/components/apps/HelpApp").then(m => m.He
 const PreferencesApp = dynamic(() => import("@/components/apps/PreferencesApp").then(m => m.PreferencesApp));
 
 export const APPS: AppDefinition[] = [
-  { id: "about", label: "About", title: "About Elisha", icon: PersonCardIcon, Component: AboutMeApp, width: 640, height: 580 },
+  { id: "about", label: "About", title: "About Elisha", icon: PersonCardIcon, Component: AboutMeApp, width: 1040, height: 780 },
   { id: "works", label: "Works", title: "Works", icon: FolderIcon, Component: WorksApp, width: 760, height: 580 },
   { id: "resume", label: "Resume", title: "Resume.pdf — Preview", icon: DocumentIcon, Component: ResumeApp, width: 620, height: 640 },
   { id: "contact", label: "Contact", title: "Contact", icon: MailIcon, Component: ContactApp, width: 520, height: 520 },

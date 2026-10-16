@@ -1,2 +1,6 @@
-import { PortfolioShell } from "@/components/os/PortfolioShell";
-export default function Home() { return <PortfolioShell />; }
+import DesktopHome from "@/studio/components/os/DesktopHome";
+import type { Metadata } from "next";
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+export default function Home() {
+  return <DesktopHome />;
+}

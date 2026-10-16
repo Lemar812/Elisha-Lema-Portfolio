@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { brand, siteUrl } from "@/lib/site";
 import "./globals.css";
+import "@/components/apps/about.css";
+import "@/studio/brand.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" });
 export const metadata: Metadata = {
   metadataBase: siteUrl ? new URL(siteUrl) : undefined,
@@ -17,5 +19,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ...(siteUrl ? { url: siteUrl, logo: siteUrl + "/brand/Wordmark-Navy.svg" } : {}),
     email: "elishalema12@gmail.com", telephone: "+255674175613", areaServed: "Tanzania",
     founder: { "@type": "Person", name: "Elisha Lema" }, sameAs: ["https://www.instagram.com/elishacreatives/", "https://github.com/Lemar812"] };
-  return <html lang="en" className={geist.variable}><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(identity).replace(/</g, "\\u003c") }} />{children}</body></html>;
+  return <html lang="en" className={`${geist.variable} dark`}><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(identity).replace(/</g, "\\u003c") }} />{children}</body></html>;
 }

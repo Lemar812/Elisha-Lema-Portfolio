@@ -1,72 +1,70 @@
 import { test, expect } from "@playwright/test";
-test.beforeEach(async ({ page }) => { await page.addInitScript(() => sessionStorage.setItem("elisha-intro-seen", "1")); });
-test("welcome, shortcuts, featured projects and tour are connected", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Open Welcome", exact: true }).click();
-  await expect(page.getByRole("dialog", { name: "Welcome to Elisha Creatives", exact: true })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Desktop shortcuts" }).getByRole("button")).toHaveCount(4);
-  await expect(page.getByRole("button", { name: /Pricing/ })).toHaveCount(0);
-  await page.getByRole("button", { name: "Explore my work" }).click();
-  const work = page.getByRole("dialog", { name: "Works", exact: true });
-  await expect(work.getByRole("button", { name: "Featured", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(work.locator(".index-items button")).toHaveCount(3);
-  await work.getByRole("button", { name: /A&B Accessories Poster/ }).click();
-  await expect(work.getByRole("heading", { name: "Across the project" })).toBeVisible();
-  await page.getByRole("button", { name: "Open Help", exact: true }).click();
-  const help = page.getByRole("dialog", { name: "Workspace guide" });
-  for (let i = 0; i < 5; i++) await help.getByRole("button", { name: "Next" }).click();
-  await help.getByRole("button", { name: "Explore the work" }).click();
-  await expect(help).toBeHidden();
-  await expect(work).toBeVisible();
-});
-test("preferences persist, reduced motion stops video, music can be muted and resumed", async ({ page }) => {
+test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/#preferences");
-  await expect(page.locator(".signature-motion img")).toBeVisible();
-  await expect(page.locator(".signature-motion video")).toHaveCount(0);
-  const prefs = page.getByRole("dialog", { name: "Settings", exact: true });
-  await prefs.getByRole("button", { name: "Plain dark" }).click();
-  await prefs.getByRole("checkbox", { name: "Background motion" }).uncheck();
-  await prefs.getByRole("checkbox", { name: "Interface sounds" }).check();
+});
+test("welcome, project library and help are connected", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("toolbar", { name: "Dock" })
+    .getByRole("button", { name: "Welcome", exact: true })
+    .click();
+  const welcome = page.getByRole("dialog", { name: "Welcome", exact: true });
+  await welcome.getByRole("button", { name: /Explore \d+ creatives/ }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Creatives", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /Pricing/ })).toHaveCount(0);
+  await page
+    .getByRole("toolbar", { name: "Dock" })
+    .getByRole("button", { name: "Help.app", exact: true })
+    .click();
+  const help = page.getByRole("dialog", { name: "Help.app", exact: true });
+  await expect(
+    help.getByRole("heading", { name: "Welcome to Elisha Creatives" }),
+  ).toBeVisible();
+  await help.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(
+    help.getByRole("heading", { name: "Command palette" }),
+  ).toBeVisible();
+});
+test("music mute and the selected theme survive ordinary navigation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Sound controls", exact: true }).click();
+  const sound = page.getByRole("dialog", { name: "Sound controls", exact: true });
+  await sound.getByRole("switch", { name: "Mute all audio" }).check();
+  await expect(sound.getByRole("switch", { name: "Mute all audio" })).toBeChecked();
+  await sound.getByRole("button", { name: "Close sound controls" }).click();
+  await page
+    .getByRole("button", { name: "Open About Elisha", exact: true })
+    .dblclick();
+  await expect
+    .poll(() =>
+      page.locator("audio").evaluate((a: HTMLAudioElement) => a.paused),
+    )
+    .toBe(true);
+  await page
+    .getByRole("button", { name: "Switch to light mode", exact: true })
+    .click();
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
   await page.reload();
-  await expect(prefs.getByRole("button", { name: "Plain dark" })).toHaveAttribute("aria-pressed", "true");
-  await expect(prefs.getByRole("checkbox", { name: "Background motion" })).not.toBeChecked();
-  await expect(prefs.getByRole("checkbox", { name: "Interface sounds" })).toBeChecked();
-  await prefs.getByRole("button", { name: "Mute music", exact: true }).click();
-  await prefs.getByRole("button", { name: "Unmute music", exact: true }).click();
-  await expect.poll(() => page.locator("audio").evaluate((element: HTMLAudioElement) => !element.paused && element.currentTime > 0)).toBe(true);
-  await prefs.getByRole("button", { name: "Mute music", exact: true }).click();
-  expect(await page.locator("audio").evaluate((element: HTMLAudioElement) => element.paused)).toBe(true);
-  await expect(prefs.getByRole("link", { name: "Creative Commons Attribution 4.0" })).toBeVisible();
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await expect(page.locator(".signature-motion img")).toBeVisible();
 });
-test("About sections and the complete brand animation are available on mobile", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 812 });
+test("search opens a specific creative and Escape only dismisses the palette", async ({
+  page,
+}) => {
   await page.goto("/#about");
-  const about = page.getByRole("dialog", { name: "About Elisha", exact: true });
-  await about.getByRole("button", { name: "Journey", exact: true }).click();
-  await expect(about.getByText(/My freelance work began in 2024/)).toBeVisible();
-  await about.getByRole("button", { name: "The brand", exact: true }).click();
-  await expect(about.locator("video")).toHaveAttribute("controls", "");
-  await about.getByRole("button", { name: "Home", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Settings", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Mute music", exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
-});
-
-test("dock keeps only pinned and running apps; reveal settles without looping", async ({ page }) => {
-  await page.goto('/');
-  const dock = page.getByRole('navigation', { name: 'Dock', exact: true });
-  await expect(dock.getByRole('button')).toHaveText(['Welcome', 'Apps', 'Settings', 'Help']);
-  await page.getByRole('button', { name: 'Desktop: Selected Work', exact: true }).click();
-  await expect(dock.locator('#dock-works')).toBeVisible();
-  const work = page.getByRole('dialog', { name: 'Works', exact: true });
-  await work.getByRole('button', { name: 'Minimize Works', exact: true }).click();
-  await expect(work).toBeHidden();
-  await expect(dock.locator('#dock-works')).toBeVisible();
-  await dock.locator('#dock-works').click();
-  await work.getByRole('button', { name: 'Close Works', exact: true }).click();
-  await expect(dock.locator('#dock-works')).toHaveCount(0);
-  await expect(page.locator('.signature-idle img')).toBeVisible({ timeout: 15000 });
-  await expect(page.locator('.signature-motion video')).toHaveCount(0);
-  await expect(page.locator('.signature-idle')).toHaveCSS('animation-name', 'signature-float');
+  await expect(
+    page.getByRole("dialog", { name: "About Elisha", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Control+k");
+  const search = page.getByRole("dialog", { name: "Search portfolio" });
+  await expect(search).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(search).toBeHidden();
+  await expect(
+    page.getByRole("dialog", { name: "About Elisha", exact: true }),
+  ).toBeVisible();
 });

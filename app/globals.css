@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "../studio/theme.css";
+@config "../studio/tailwind.config.mjs";
+@source "../studio";
 :root {
   --navy: #0d1b52;
   --desktop: #0b0c10;
@@ -17,7 +20,7 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-paper: var(--paper);
-  --color-surface: var(--surface);
+  --color-surface: rgb(var(--studio-surface));
   --font-sans: var(--font-geist-sans);
 }
 * { box-sizing: border-box; }
