@@ -38,6 +38,15 @@ interface ThemeStore {
   setWallpaperTint: (color: string) => void;
 }
 
+export const BRAND_WALLPAPER: Wallpaper = {
+  id: "elisha-brand",
+  name: "Elisha Creatives",
+  type: "static",
+  theme: "both",
+  imageUrl: "/media/elisha-reveal-still.jpg",
+  thumbnail: "/media/elisha-reveal-still.jpg",
+};
+
 // Default wallpapers
 export const DEFAULT_WALLPAPERS: Wallpaper[] = [
   {
@@ -83,14 +92,7 @@ export const useThemeStore = create<ThemeStore>()(
       // Premium black & white is the default; "Fun" (color) is opt-in.
       palette: "mono",
       accentColor: ACCENT_COLORS.blue,
-      wallpaper: {
-        id: "elisha-brand",
-        name: "Elisha Creatives",
-        type: "static",
-        theme: "both",
-        imageUrl: "/media/elisha-reveal-still.jpg",
-        thumbnail: "/media/elisha-reveal-still.jpg",
-      },
+      wallpaper: BRAND_WALLPAPER,
       wallpaperTint: null,
 
       // Actions
@@ -108,6 +110,13 @@ export const useThemeStore = create<ThemeStore>()(
     }),
     {
       name: "elisha-studio-theme", // localStorage key
+      version: 1,
+      // Adopt the brand desktop once; subsequent visitor choices still persist.
+      migrate: (persisted) => ({
+        ...(persisted as Partial<ThemeStore>),
+        wallpaper: BRAND_WALLPAPER,
+        wallpaperTint: null,
+      }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<ThemeStore>;
         const wallpaper = saved.wallpaper ?? current.wallpaper;

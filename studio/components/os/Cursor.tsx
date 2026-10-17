@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   motion,
   useMotionValue,
@@ -91,18 +92,19 @@ export default function Cursor() {
     };
   }, [enabled, x, y]);
 
-  if (!enabled) return null;
+  if (!enabled || reduced) return null;
 
   const ringSize = hovering ? 40 : 24;
 
-  return (
+  // Escape the desktop stacking context so portalled controls cannot cover it.
+  return createPortal(
     <>
       {/* Ring — spring-followed, grows on interactive hover, contracts on press.
           Accent-colored in both themes (no blend-mode inversion); a dual hairline
           plus a soft accent glow keep it readable on light, dark, and wallpapers. */}
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[10000] rounded-full"
+        className="pointer-events-none fixed top-0 left-0 z-[2147483647] rounded-full"
         style={{
           x: ringX,
           y: ringY,
@@ -124,7 +126,7 @@ export default function Cursor() {
       {/* Center dot — tracks the pointer exactly; fades as the ring takes over on hover */}
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[10000] rounded-full"
+        className="pointer-events-none fixed top-0 left-0 z-[2147483647] rounded-full"
         style={{
           x,
           y,
@@ -138,6 +140,7 @@ export default function Cursor() {
         animate={{ opacity: hovering ? 0 : 1, scale: pressed ? 0.7 : 1 }}
         transition={{ duration: 0.15 }}
       />
-    </>
+    </>,
+    document.body,
   );
 }
